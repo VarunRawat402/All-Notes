@@ -1,0 +1,453 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Spring Framework Concepts:
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Spring Container Vs Spring Context ( IOC Controller ) ( All are same thing ):
+
+Spring Container: The core mechanism that manages beans (objects).
+Spring Context (ApplicationContext): A more powerful version of the container that adds extra features like event handling, AOP, internationalization, and property management.
+So, Spring Context is a type of Spring Container but with additional capabilities!
+
+Ex:
+
+public class HelloService {
+    public void sayHello() {
+        System.out.println("Hello, Spring!");
+    }
+}
+
+public class MainApp {
+    public static void main(String[] args) {
+
+        //AnnotationConfigApplicationContext(MainApp.class)
+        //This will create a spring context ( application.context ) of all the beans in the main class and store the
+        //context in the context variable
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        //Asks Spring for an object of the HelloService class which is automatically created by spring 
+        //So we can use that object to access the features of that class
+        HelloService helloService = context.getBean(HelloService.class);
+        helloService.sayHello();
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Types of Spring Containers:
+
+BeanFactory (Lightweight, low-level container)
+    The basic container that manages beans.
+    Uses lazy initialization (beans are created only when needed).
+    Example: XmlBeanFactory (deprecated).
+
+ApplicationContext (Advanced, feature-rich container)
+    Built on top of BeanFactory with additional functionalities.
+    Supports event propagation, internationalization, declarative mechanisms, etc.
+    The ApplicationContext is the preferred container in most Spring applications.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@Qualifer vs @Primary:
+
+@Primary ( Default Bean Selection )
+Marks a bean as the default choice when multiple beans of the same type exist.
+Works unless another bean is explicitly chosen using @Qualifier.
+
+@Qualifier ( Choosing a Specific Bean )
+Used when multiple beans exist, and we need a specific one.
+Overrides @Primary.
+
+Ex:
+interface Vehicle {
+    void drive();
+}
+
+@Component
+@Primary  // This will be the default bean
+class Car implements Vehicle {
+    public void drive() {
+        System.out.println("Car is driving...");
+    }
+}
+
+@Component
+class Bike implements Vehicle {
+    public void drive() {
+        System.out.println("Bike is driving...");
+    }
+}
+
+@Service
+class TransportService {
+    private final Vehicle vehicle;
+
+    // No @Qualifier used, so Spring picks @Primary bean (Car)
+    public TransportService(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void startJourney() {
+        vehicle.drive();
+    }
+}
+
+@Service
+class TransportService {
+    private final Vehicle vehicle;
+
+    public TransportService(@Qualifier("bike") Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void startJourney() {
+        vehicle.drive();
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+POJO VS Java Bean VS Spring Bean:
+
+POJO (Plain Old Java Object)
+
+A POJO is a simple Java class with no special restrictions. 
+It Has no dependencies on frameworks (Spring, Hibernate, etc.)
+May or may not have getters/setters
+Can have any methods
+Ex:
+    public class Car {
+        private String brand;
+        
+        public Car(String brand) {
+            this.brand = brand;
+        }
+
+        public void drive() {
+            System.out.println(brand + " is moving...");
+        }
+    }
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Java Bean:
+
+A Java Bean is a special type of POJO with these rules:
+Must have private fields
+Must have public getters and setters
+Must have a no-argument constructor
+Serializable (optional)
+
+Ex:
+    public class Person implements Serializable { // Optional for Java Bean
+        private String name;
+    
+        // No-argument constructor (Required)
+        public Person() {}
+    
+        // Getter & Setter (Required)
+        public String getName() {
+            return name;
+        }
+    
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+    
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Spring Bean:
+
+A Spring Bean is an object that is managed by the Spring Container. 
+It can be a POJO or a Java Bean but is created and managed by Spring.
+Mark the class with @Component or register it with @Bean annotation
+
+Ex:
+    @Component  // Marks this as a Spring Bean
+    public class Car {
+        public void drive() {
+            System.out.println("Car is moving...");
+        }
+    }
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DI ( Dependency Injection Type ):
+
+1: Constructor Injection ( Best )
+Dependencies are passed via the constructor.
+    Recommended by Spring because it supports immutability and testability.
+    Ensures that dependencies must be provided when creating the object.
+    Encourages immutability because fields can be final.
+    Easier for unit testing
+
+Ex:
+    @Component
+    class Engine {
+        public void start() {
+            System.out.println("Engine started...");
+        }
+    }
+
+    // Dependent Class
+    @Service
+    class Car {
+        private final Engine engine;
+
+        // Constructor Injection
+        public Car(Engine engine) {
+            this.engine = engine;
+        }
+
+        public void drive() {
+            engine.start();
+            System.out.println("Car is moving...");
+        }
+    }
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2: Setter Injection:
+    Injects Dependency using setter functions
+    If a dependency is not always needed, you can set it only when required.
+    The object can be created without the dependency, and it may fail later at runtime.
+    Developers might forget to call the setter, leading to null pointer exceptions.
+    Fields cannot be final since they need to be set later.
+
+Ex:
+    @Service
+    class Car {
+        private Engine engine;
+
+        // Setter Injection
+        @Autowired
+        public void setEngine(Engine engine) {
+            this.engine = engine;
+        }
+
+        public void drive() {
+            engine.start();
+            System.out.println("Car is moving...");
+        }
+    }
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3: Feild Injection ( Worst ):
+    Uses @Autowired directly on fields (reflection-based).
+    Not recommended because it makes testing harder.
+    Uses @Autowired directly on the field, making it impossible to create an instance without Springs help.
+    You cannot replace the dependency easily for testing because it is injected by the framework (Spring) using reflection.
+    You cannot create a Car object manually in unit tests because Spring injects the dependency using reflection.
+    If you create an object of Car manually dependencies will not get injected and give
+    you null pointer exception making it harder to test the code.
+
+Ex:
+@Service
+class Car {
+    @Autowired
+    private Engine engine; // Field Injection
+
+    public void drive() {
+        engine.start();
+        System.out.println("Car is moving...");
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@Lazy vs @Eager
+
+Eager Initialization (Default):
+Spring creates all beans at startup, even if they are not used.
+This can slow down application startup.
+Useful when you want fast response times after startup.
+
+Lazy Initialization (@Lazy):
+Spring only creates the bean when it is first used.
+Improves startup time by delaying unnecessary bean creation.
+Useful for rarely used beans or heavy resources (e.g., database connections, large services).
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Types of Bean Scopes:
+
+Singleton Scope (Default):
+
+Only one instance of the bean is created and shared.
+Spring manages the lifecycle.
+Used : Service , Repository, Controller 
+
+Ex:
+    @Component
+    @Scope("singleton")  // Default scope (can be omitted)
+    class SingletonBean {
+        public SingletonBean() {
+            System.out.println("✅ SingletonBean Created!");
+        }
+    }
+
+    SingletonBean bean1 = context.getBean(SingletonBean.class);
+    SingletonBean bean2 = context.getBean(SingletonBean.class);
+
+    System.out.println(bean1 == bean2); // ✅ True (same instance)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Prototype Scope:
+A new instance is created each time it is requested.
+Spring does NOT manage the lifecycle (you must handle destruction).
+Used:
+A service which is new everytime you access it
+Coupon Generator ( whenever u access it creates a new one )
+
+Code:
+    PrototypeBean bean1 = context.getBean(PrototypeBean.class);
+    PrototypeBean bean2 = context.getBean(PrototypeBean.class);
+
+    System.out.println(bean1 == bean2); // ❌ False (different instances)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Request Scope (For Web Applications):
+A new instance is created for each HTTP request.
+Available only in Spring Web Applications.
+Used :
+Handling data specific to an HTTP request, such as request logging.
+( Whenever that request is fetched you can perform actions on that new request )
+
+Code:
+@Component
+@RequestScope  // Or use @Scope("request")
+class RequestBean {
+    public RequestBean() {
+        System.out.println("🌍 New RequestBean Created!");
+    }
+}
+
+@RestController
+public class TestController {
+    private final RequestBean requestBean;
+
+    public TestController(RequestBean requestBean) {
+        this.requestBean = requestBean;
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "Request Bean: " + requestBean;
+    }
+}
+
+O/P: 
+🌍 New RequestBean Created!  // For first request
+🌍 New RequestBean Created!  // For second request
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Session Scope (For Web Applications):
+One instance per user session.
+Useful for storing user-specific data (e.g., authentication, User Details ).
+Used:
+ShoppingCart:
+(You have an shopping cart so a new shopping cart is made per user and it
+will be same for same user and different for different user )
+
+Application Scope (For Web Applications):
+One instance per web application (shared across requests & sessions).
+Useful for global application settings or caching.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Difference Between Session and Singleton:
+Problem: 
+Shared Cart for All Users
+    With @Singleton, there is only one instance of ShoppingCart in the entire application.
+
+    Example of Unexpected Behavior
+    User A adds "Shoes" → The singleton ShoppingCart instance stores ["Shoes"].
+    User B adds "Watch" → The same ShoppingCart instance is used → The cart now contains ["Shoes", "Watch"].
+    User A views their cart → Sees User B's items too!
+    User C adds "Laptop" → Now all users see ["Shoes", "Watch", "Laptop"]
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Difference Between Session and Prototype:
+Problem: Cart Data Will Not Persist
+With @Prototype, the shopping cart will reset on every request, so users will lose previously added items.
+
+Example of Unexpected Behavior
+User A calls /add-to-cart?item=Shoes
+
+A new ShoppingCart instance is created.
+"Shoes" is added to this cart.
+User A calls /add-to-cart?item=Watch
+
+A new ShoppingCart instance is created again.
+"Watch" is added, but "Shoes" is lost.
+User A views /cart
+
+Instead of ["Shoes", "Watch"], they see only the last added item or an empty cart.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@PostContruct vs @PreConstruct:
+
+@PostConstruct (Executed After Bean Creation)
+Runs automatically after the bean is created and dependencies are injected.
+Typically used for initialization logic, like setting up resources or preloading data.
+Runs only once per bean lifecycle.
+When Spring creates DatabaseService, it automatically calls init().
+
+Code:
+@Component
+public class DatabaseService {
+    
+    @PostConstruct  // Executes after the bean is created
+    public void init() {
+        System.out.println("🔄 Database connection initialized...");
+    }
+}
+
+@PreDestroy (Executed Before Bean Destruction)
+Runs before the bean is removed from the Spring context.
+Typically used for cleanup logic, like closing database connections or releasing resources.
+Runs only once before the bean is destroyed.
+Example: Closing a Database Connection
+When the application shuts down, Spring calls cleanup() to release resources properly.
+
+Code:
+@Component
+public class DatabaseService {
+    
+    @PreDestroy  // Executes before the bean is destroyed
+    public void cleanup() {
+        System.out.println("❌ Closing database connection...");
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Real Application Example:
+
+@Component
+public class EmailService {
+    
+    private EmailClient client;
+
+    @PostConstruct
+    public void setup() {
+        client = new EmailClient();
+        client.connect();
+        System.out.println("📧 Email service is ready to send emails.");
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        client.disconnect();
+        System.out.println("📴 Email service is shutting down.");
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
