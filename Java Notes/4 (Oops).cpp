@@ -242,7 +242,7 @@ Ex:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 INHERITANCE:
-Taking properties and methods of another class into one class is called inheritance.
+Taking properties and methods of parent class into one class is called inheritance.
 
 There are 4 types of Inheritance.
 
@@ -338,3 +338,164 @@ Better Control → You can validate, restrict, or modify behavior when getting o
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
+Why use private vairables in the class when you provide getters and setters to change it and access it:
+
+1: Control ( Validation ):
+    With anyone accessing the data directly can change the value to nonsensical value too
+    If age is public, User can set it to -120, and the code will allow it
+    Using setter you can validate the age and if its out of bound you can throw exception
+
+2: Maintaining Internal Consistency:
+    Sometimes changing one feild might require change in another feild
+    So using setter you can validate the change in the feid and based on that change the another feild
+    But if user can directly access the things he may or might forget to change in the second which can cause inconsitentcy
+
+3: Read Only write:
+    If you dont want to change something and is for Read only like userId,
+    You can provide getter only not setters
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Super():
+    It is used to call the constructor of the parent class
+    You cannot access instance vairables of parent class if they are private then how you gonna initialize them
+    You can use Super() to call the constructor of the parent class to initialize it 
+    You can access parent class variables using it, Ex: super.name, will give you parent name
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Reference to parent class with creating child class object:
+Parent p1 = new Child():
+
+You can access parent methods
+You can access parent variables
+You cannot access child methods 
+You cannot access child vairables
+If parent methods are overriden then overriden methods will get executed ( run time polymorphism )
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+What is the need of interface or abstraction:
+    Loose Coupling and Reusability of Code:
+
+This is an example of multiple payment class methods
+which are used to make payment through Cart class
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Now for 2 payment methods we needed to create 2 doPayment methods
+This is known as tight Coupling
+If we in future have to have 2 more payment methods
+Then we have to change the Cart class do right which have nothing to with Payemnt methods classes
+With Interface you can remove this tight coupling
+
+Ex:
+
+Shopping Cart:
+public class Cart {
+
+    void doPayment(CreditCard creditCard){
+        creditCard.pay();
+    }
+
+    void doPayment(UPI upi){
+        upi.pay();
+    }
+    
+}
+
+public class CreditCard{
+    public void pay() {
+        System.out.println("Payment is done by creditCard");
+    }
+}
+
+public class UPI{
+    public void pay() {
+        System.out.println("Payment is done by UPI Id");
+    }
+}
+
+Main:
+public static void main(String[] args) {
+    
+    CreditCard c1 = new CreditCard();
+    UPI u1 = new UPI();
+    
+    Cart cart1 = new Cart();
+    cart1.doPayment(c1);
+    cart1.doPayment(u1);
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+In Cart Method there is only 1 method for payment method now due to interface
+Now this doPayment method is dependent on interface not all the classes implementing the interface
+So If in future we have to add new payment methods we can create it and implement the interface
+No need to change anything in the Cart class
+
+
+public class Cart {
+    void doPayment(PaymentMethod paymentMethod){
+        paymentMethod.pay();
+    }
+}
+
+public interface PaymentMethod {
+    void pay();
+}
+
+public class CreditCard implements PaymentMethod{
+    @Override
+    public void pay() {
+        System.out.println("Payment is done by creditCard");
+    }
+}
+
+public class UPI implements PaymentMethod{
+    @Override
+    public void pay() {
+        System.out.println("Payment is done by UPI Id");
+    }
+}
+
+
+Main:
+
+public class HelloApplication {
+	public static void main(String[] args) {
+
+		CreditCard c1 = new CreditCard();
+		UPI u1 = new UPI();
+		
+		Cart cart1 = new Cart();
+		cart1.doPayment(c1);
+		cart1.doPayment(u1);
+	
+	}
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Note:
+The best practice to add payment method is to add like dependency Injection in constructor
+So you dont need to provide the payment method everytime you have to do something
+Lets say you have to use payment method in different functions too then you have to provide the payment method there too
+Instead you can define it once and use anywhere in the class
+
+Ex:
+
+public class Cart {
+
+    PaymentMethod paymentMethod;
+
+    Cart(PaymentMethod paymentMethod){
+        this.paymentMethod = paymentMethod
+    }
+
+    void doPayment(){
+        paymentMethod.pay();
+    }
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------
