@@ -1,3 +1,42 @@
+-----------------------------------------------------------------------------------------------------------------------------------------
+Stack:
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+It is a Last In First Out 
+It is a class
+Stack<Integer> stack = new Stack<>();
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Important Methods
+
+push(E item)            → Add element on top
+pop()                   → Remove and return top element
+peek()                  → Return top element (without removing)
+isEmpty()               → Check if stack is empty
+search(Object o)        → Returns 1-based position from the top
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Code:
+
+Stack<Integer> stack = new Stack<>();
+
+stack.push(1);
+stack.push(2);
+stack.push(3);
+
+System.out.println(stack.pop());
+System.out.println(stack.pop());
+System.out.println(stack.pop());
+
+System.out.println(stack.pop());	//This gives exception because popping from empty stack gives exception
+
+stack.push(1);
+stack.push(2);
+stack.push(3);
+
+int top = stack.peek();				//Gives the top element
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 Queue:
@@ -10,13 +49,22 @@ Since it is an interface we cant make an object of it.
 
 Syntax:
     Queue<Integer> q = new LinkedList<>();
+
+Important Methods of Queue
+
+add(e)	        Inserts element, throws exception if capacity full.
+offer(e)	    Inserts element, returns false if capacity full (better than add).
+remove()	    Removes and returns head, throws exception if empty.
+poll()	        Removes and returns head, returns null if empty (safer than remove).
+element()	    Returns head without removing, throws exception if empty.
+peek()	        Returns head without removing, returns null if empty.
+
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Types of Queues:
     LinkedList()
     PriorityQueue()
     ArrayDeque()
-    BlockingQueue()
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -63,21 +111,6 @@ System.out.println(pq.poll()); // 50 (largest first)
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-3: BlockingQueue (Thread-Safe Queue)
-Used in multi-threading
-Automatically waits when empty/full
-Commonly used for producer-consumer problems
-
-Code:
-
-BlockingQueue<Integer> bq = new ArrayBlockingQueue<>(3);
-bq.put(10);
-bq.put(20);
-bq.put(30);
-System.out.println(bq.take()); // Removes 10
-
------------------------------------------------------------------------------------------------------------------------------------------
-
 Deque in Java:
 
 What is a Deque?
@@ -115,5 +148,22 @@ Deque<Integer> deque = new ArrayDeque<>(List.of(10, 20, 30));
 System.out.println(deque.pollFirst()); // 10 (removes first element)
 System.out.println(deque.pollLast());  // 30 (removes last element)
 System.out.println(deque); // [20]
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+BlockingQueue (Thread-Safe Queue):
+    It is a Queue that is thread safe
+    It is used in multi-threading
+    Automatically waits when empty/full
+    Commonly used for producer-consumer problems
+
+Code:
+
+BlockingQueue<Integer> bq = new ArrayBlockingQueue<>(3);
+bq.put(10);
+bq.put(20);
+bq.put(30);
+System.out.println(bq.take()); // Removes 10
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------

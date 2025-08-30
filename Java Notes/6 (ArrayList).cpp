@@ -2,7 +2,7 @@
 Array List:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-It is used to store the collection of data.
+It is used to store collection of data.
 Default Capacity : 10 elements
 When elements increased more than the capacity it creates a new array with bigger size and 
 copy the elements to the new array
@@ -95,20 +95,20 @@ Methods of ArrayList:
 
 1: add():
 Syntax:
-    add( Index, Element ) = Will add element at the given index.
-    add( Element ) = Will add element at the last.
+    add( Index, Element ) = add element at the given index.
+    add( Element ) = add element at the last.
 
 2: get():
 Syntax:
-    get( Index ) = will get the element at the given index.
+    get( Index ) = get the element at the given index.
 
 3: remove():
 Syntax:
-    remove( Index ) = will remove the element of the given index.
+    remove( Index ) = remove the element of the given index.
 
 4: set():
 Syntax:
-    set( Index, Element ) = will replace the element at the given index with the given element.
+    set( Index, Element ) = replace the element at the given index with the given element.
 
 5: Sort():
 Syntax: 

@@ -141,3 +141,35 @@ public class Main {
 }
 
 -------------------------------------------------------------------------------------------------------------------------------
+
+Final Keyword:
+
+1: Variables -> These can be defined while declaring or in the constructor.
+Final variable can be defined only once you can either define it while declareing or in the
+constructor later.  
+Ex - final int a=5;
+Ex- class hello(final int a){
+    a = 5;
+}
+
+2: Functions : Final functions cannot be overriden in the child classes.
+Ex - public final void hello(){
+}
+
+3: Classes: Final classes cannot be inherited by the child class.
+Every function in the final class are automatically final since final class cannot be
+inherited there is not way to override the function in the final class.
+Ex - public final class Person{
+}
+
+4: Objects:
+You can change the value of the final objects
+But You cannot reassign the final object 
+
+Ex: 
+Student s1 = new Studene("varun")
+s1.setName = "new name";                    //Allowed
+s1 = new Student("New name")                //Not Allowed
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------

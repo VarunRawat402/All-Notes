@@ -82,7 +82,24 @@ Naming Variables:
 
 -------------------------------------------------------------------------------------------------------------------------------
 
+Cloneable:
+    It is an interface which is used to clone the objects
+    clone() method is used to clone the objects
+    By default it does shallow copy
+    To Deep copy you need to override the method and do the manually cloning
 
+Shallow Copy vs Deep copy:
 
+In shallow copy when we clone p1 into p2
+p2 has same values and p2 points to the same address of the objects, as p1 pointing
+Means, If p2 changes the value of the object, p1 value gets also changed 
 
+In Deep copy:
+P2 copies the whole thing again but it creates the new address for the object
+So, the values of object will be same but they will be pointing to the different address
+Means, changes in p2 does not affect the p1
 
+Note:
+    It only works with objects not primitive datatypes
+
+-------------------------------------------------------------------------------------------------------------------------------

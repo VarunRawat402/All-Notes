@@ -2,8 +2,8 @@
 Set ( Collection ):
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-It is a collection that does not allow duplicate elements and can be unordered
-or sorted based on the implementation.
+It is a collection that does not allow duplicate elements and can be unorderedor sorted based on the implementation.
+There is no index in set, So you cannot get or access randome elements in the set
 
 Syntax:
     Set<Integer> s1 = new HashSet<>();

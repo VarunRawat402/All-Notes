@@ -168,45 +168,8 @@ System.out.println("Main");
 Multiple Ways of Creating a Thread:
 
 -------------------------------------------------------------------------------------------------------------------------------
-Wallet Class:
-
-//Create Threads to run withDraw()
-public class Wallet {
-
-    private int balance = 100;
-    private final Lock lock = new ReentrantLock();
-
-    public synchronized void withDraw(int amount){
-
-        //lock.lock();
-        System.out.println(Thread.currentThread().getName() + " Attempting to withdraw money ");
-
-        if(amount<=balance) {
-
-            try {
-                System.out.println(Thread.currentThread().getName() + " Money is being processed");
-                Thread.sleep(3000);
-                balance-=amount;
-                System.out.println(Thread.currentThread().getName()  + " Balance left is " + balance);
-            }catch (Exception e){
-            }finally {
-                //lock.unlock();
-            }
-        }
-        else{
-            System.out.println(Thread.currentThread().getName() + " Insufficient Balance");
-        }
-    }
-} 
-
--------------------------------------------------------------------------------------------------------------------------------
 
 1: Creating a class:
-    Create Admin class and implement Runnable Interface
-    Run the wallet method in @Override run method
-    Create the object of Admin
-    Create a thread and initialize the thread using Admin object
-    Start the thread
 
 Code:
     Admin admin = new Admin();
@@ -217,10 +180,6 @@ Code:
 
 2: Anonymous class ( One Step Less ):
 {No Class Initialization}
-Create Anonymous class object using Lambda Function
-Initialize @Override run method in the Anonymous object
-Create a thread and initialize the thread using Anonymous class object
-Start the thread
 
 Code:
 Runnable task1 = new Runnable() {

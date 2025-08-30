@@ -13,9 +13,8 @@ Fast Lookup 🔍 : Quickly find values using keys.
 No Duplicate Keys 🚫 : Each key must be unique.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
-Syntax:
-    Map<Integer,String> m1 = new HashMap<>();
------------------------------------------------------------------------------------------------------------------------------------------
+
+Types of Maps:
 
 Map<Integer,String> m1 = new HashMap<>();
     Random ordering of elements , Fastest
@@ -159,6 +158,27 @@ immutableMap.put("Charlie", 35); // ❌ Throws UnsupportedOperationException
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 
+Internal working of HashMaps:
 
+It converts the key into the hashcode using some formula
+Hashcode is a unique number 
 
+Insert the entry into the map, put(key,value)
+Convert the key into hashcode, key.hashCode()
+Apply the hashing function to get the bucket index and then store in the bucket
+
+get(key)
+Convert the key into hashcode, key.hashCode()
+Compute the bucket index, 
+If one entry return value
+If multiple entries, Collision, It uses equals() to check the key and match the given key to all the entries in that bucket
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Concurrent Hashmap:
+    It is same as HashMap
+    It is Thread-safe
+    No null keys and values
+
+-----------------------------------------------------------------------------------------------------------------------------------------
 

@@ -107,6 +107,8 @@ public class Main {
 2:  Functional Interfaces (@FunctionalInterface)
 
 A functional interface is an interface with only one abstract method.
+It can have any number of static and default method, but abstract method should be 1 only
+
 Example: Runnable, Comparator, Callable.
 
 🔹 Benefits:

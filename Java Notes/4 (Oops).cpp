@@ -67,6 +67,11 @@ class Student{
         this.age = age;
     }
 
+    //Constructor Overloading
+    Student(String name){
+        this.name = name;
+    }
+
     //Copy Constructor
     Student(Student original){
         this.name = original.name;
@@ -103,7 +108,7 @@ Objects are passed by reference in the function, changes in the function will af
 Access Modifiers:
 
 1: Public:
-    If any variable/methods is public then any class can access that in same package and different package too.
+    If any variable/methods is public then any class can access that in any package
 
 2: Protected:
     If any variable/methods is protected then any class can acess that in same package but in order to access that in different pacakge it needs to be
@@ -125,8 +130,7 @@ Ex:
     class Student{
 
         public String name;
-        //No one can access pass directly
-        private String pass;
+        private String pass;                //No one can access pass directly
 
         //we made a func to get the pass so user can use this function to get the pass the way i am allowing it
         public String getPass(){
@@ -149,38 +153,6 @@ Ex:
             System.out.println(pass);
         }
     }
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Final Keyword:
-
-1: Variables -> These can be defined while declaring or in the constructor.
-Final variable can be defined only once you can either define it while declareing or in the
-constructor later.  
-Ex - final int a=5;
-Ex- class hello(final int a){
-    a = 5;
-}
-
-2: Functions : Final functions cannot be overriden in the child classes.
-Ex - public final void hello(){
-}
-
-3: Classes: Final classes cannot be inherited by the child class.
-Every function in the final class are automatically final since final class cannot be
-inherited there is not way to override the function in the final class.
-Ex - public final class Person{
-}
-
-4: Objects:
-You can change the value of the final objects
-But You cannot reassign the final object 
-
-Ex: 
-Student s1 = new Studene("varun")
-s1.setName = "new name";                    //Allowed
-s1 = new Student("New name")                //Not Allowed
-
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -358,7 +330,7 @@ Why use private vairables in the class when you provide getters and setters to c
 
 Super():
     It is used to call the constructor of the parent class
-    You cannot access instance vairables of parent class if they are private then how you gonna initialize them
+    You cannot access instance variables of parent class if they are private then how you gonna initialize them
     You can use Super() to call the constructor of the parent class to initialize it 
     You can access parent class variables using it, Ex: super.name, will give you parent name
 
@@ -373,129 +345,49 @@ You cannot access child methods
 You cannot access child vairables
 If parent methods are overriden then overriden methods will get executed ( run time polymorphism )
 
------------------------------------------------------------------------------------------------------------------------------------------
-
-What is the need of interface or abstraction:
-    Loose Coupling and Reusability of Code:
-
-This is an example of multiple payment class methods
-which are used to make payment through Cart class
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Now for 2 payment methods we needed to create 2 doPayment methods
-This is known as tight Coupling
-If we in future have to have 2 more payment methods
-Then we have to change the Cart class do right which have nothing to with Payemnt methods classes
-With Interface you can remove this tight coupling
-
-Ex:
-
-Shopping Cart:
-public class Cart {
-
-    void doPayment(CreditCard creditCard){
-        creditCard.pay();
-    }
-
-    void doPayment(UPI upi){
-        upi.pay();
-    }
-    
-}
-
-public class CreditCard{
-    public void pay() {
-        System.out.println("Payment is done by creditCard");
-    }
-}
-
-public class UPI{
-    public void pay() {
-        System.out.println("Payment is done by UPI Id");
-    }
-}
-
-Main:
-public static void main(String[] args) {
-    
-    CreditCard c1 = new CreditCard();
-    UPI u1 = new UPI();
-    
-    Cart cart1 = new Cart();
-    cart1.doPayment(c1);
-    cart1.doPayment(u1);
-}
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-In Cart Method there is only 1 method for payment method now due to interface
-Now this doPayment method is dependent on interface not all the classes implementing the interface
-So If in future we have to add new payment methods we can create it and implement the interface
-No need to change anything in the Cart class
-
-
-public class Cart {
-    void doPayment(PaymentMethod paymentMethod){
-        paymentMethod.pay();
-    }
-}
-
-public interface PaymentMethod {
-    void pay();
-}
-
-public class CreditCard implements PaymentMethod{
-    @Override
-    public void pay() {
-        System.out.println("Payment is done by creditCard");
-    }
-}
-
-public class UPI implements PaymentMethod{
-    @Override
-    public void pay() {
-        System.out.println("Payment is done by UPI Id");
-    }
-}
-
-
-Main:
-
-public class HelloApplication {
-	public static void main(String[] args) {
-
-		CreditCard c1 = new CreditCard();
-		UPI u1 = new UPI();
-		
-		Cart cart1 = new Cart();
-		cart1.doPayment(c1);
-		cart1.doPayment(u1);
-	
-	}
-}
-
------------------------------------------------------------------------------------------------------------------------------------------
-
 Note:
-The best practice to add payment method is to add like dependency Injection in constructor
-So you dont need to provide the payment method everytime you have to do something
-Lets say you have to use payment method in different functions too then you have to provide the payment method there too
-Instead you can define it once and use anywhere in the class
+    What you can access depends on the reference
+    What is going to be executed depends on the object
 
-Ex:
+-----------------------------------------------------------------------------------------------------------------------------------------
 
-public class Cart {
+Object Class:
+    It is the root class of all the classes
 
-    PaymentMethod paymentMethod;
+hashCode():
+    Returns a unique integer value of the object
+    used in HashMap, HashTable, HashSet
+    Unique value is not guranteed, coz some objects can have same hashCode due to hash collisions
+    If a.equals(b) is true then Hashcode of a and b should be same
+    If equals() methods is overriden the hashcode methods should also be written to make it equal 
 
-    Cart(PaymentMethod paymentMethod){
-        this.paymentMethod = paymentMethod
-    }
+equals():
+    If used with object it checks the reference of the objects
+    Overriden in String, Integer class to check the values not reference
 
-    void doPayment(){
-        paymentMethod.pay();
-    }
-}
+toString():
+    It is used to return the String representation of Object
+
+
+Finalize():
+    It is called automatically by the GC when object is destroyed
+    It is used for cleanup Functions
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Difference betweem == and .equals():
+
+==:
+    It is a comparator
+    It is used with both primitives and Objects
+    It checks value with primitives
+    It checks the reference of the object with objects
+
+equals():
+    It is a method in object class
+    It is not used with primitives only with objects
+    It can be overriden to have custom logic of checking equality
+    It checks reference like == with objects 
+    It checks value with String, Integer like classes because it is overriden in those classes that way
 
 -----------------------------------------------------------------------------------------------------------------------------------------

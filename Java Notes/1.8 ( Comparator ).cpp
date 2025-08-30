@@ -2,7 +2,7 @@
 Comparator
 -------------------------------------------------------------------------------------------------------------------------------
 
-A Comparator is used in Java to define custom sorting logic for objects.
+A Comparator is an Interface used to define custom sorting logic for objects:
 
 Why Use Comparator?
 🔹 The default sorting (Collections.sort()) doesnt know how to compare objects 

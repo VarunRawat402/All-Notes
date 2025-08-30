@@ -4,8 +4,8 @@ Synchronization:
 
 synchronized keyword:
 
-The synchronized keyword in Java is used to control access to a block of code or a method by multiple threads, 
-ensuring that only one thread can execute it at a time for a given object or class.
+The synchronized keyword is used to control access of object by multiple threads
+With synchronized, only one thread can access the object at one time
 
 synchronized Methods
 synchronized blocks
