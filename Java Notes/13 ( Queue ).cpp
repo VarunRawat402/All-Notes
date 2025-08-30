@@ -88,6 +88,7 @@ Orders elements based on priority (default: ascending order)
 Does NOT allow null values
 Elements are NOT retrieved in insertion order
 Useful for job/task scheduling
+Implemented based on a binary min heap  
 
 Code:
 Queue<Integer> pq = new PriorityQueue<>();
@@ -113,14 +114,12 @@ System.out.println(pq.poll()); // 50 (largest first)
 
 Deque in Java:
 
-What is a Deque?
-A Deque (Double-Ended Queue) is a special queue that allows:
-✅ Insertion & removal from both ends (front & rear)
-✅ Can work as both a Queue (FIFO) and a Stack (LIFO)
-✅ Supports insertion/removal from both ends
-✅ Can work as both a Queue (FIFO) and a Stack (LIFO)
-✅ Faster than LinkedList for queue operations
-✅ More flexible than PriorityQueue (supports both ends, priority queue doesn’t)
+A Deque is an Interface
+    Insertion & removal from both ends (front & rear)
+    Can work as both a Queue (FIFO) and a Stack (LIFO)
+    Supports insertion/removal from both ends
+    Faster than LinkedList for queue operations
+    flexible than PriorityQueue (supports both ends, priority queue doesnt)
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
