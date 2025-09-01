@@ -56,7 +56,6 @@ Username & password of mysql:
 
 To manage how DB operates on startup:
     It has 4 modes : create, update, validate, create-drop
-    spring.jpa.hibernate.ddl-auto = update
 
 Note:
 Dialect: A dialect is used to tell the hibernate/jpa how to generate SQL queries as different databases uses different dialects

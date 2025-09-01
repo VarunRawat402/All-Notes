@@ -14,20 +14,25 @@ Multiple Verification level of Repository:
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-SpringBootTest:
+@SpringBootTest:
 
-It is used to load the spring application context, Without it no bean will be Initialized and no server will be started
-Tests the ENTIRE application
+This annotation tells Spring Boot to start the full application context for the test.
+It loads everything: configuration, beans, services, repositories, controllers, etc.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-DataJpaTest:
+@DataJpaTest:
 
-It is same as @SpringBootTest but it is used to test the Jpa Repository without loading the entire application context
-Tests ONLY JPA components
-Uses embedded DB (H2 by default)	
+This annotation is specialized for JPA tests.
+It only loads: @Entity classes, Spring Data JPA repositories.
+It does not load controllers, services, security, etc.
+By default, it uses an in-memory database (H2)
 
-Annotation:
+
+@AutoConfigureTestDatabase:
+Used with @DataJpaTest to control what database gets used.
+By default, Spring uses inMemory H2 Database
+With this annotation you can tell spring to use the configured DB
 
 @DataJpaTest        //Uses Real DB
 @AutoConfigureTestDatabase(replace = Replace.NONE)

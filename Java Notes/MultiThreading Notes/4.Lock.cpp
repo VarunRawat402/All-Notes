@@ -24,13 +24,37 @@ Syntax:
 
 -------------------------------------------------------------------------------------------------------------------------------
 
+lock.lock() : 
+    This locks the current object and other threads will wait until locked object is unlocked 
+
+Code:
+public class LockExample {
+    private final Lock lock = new ReentrantLock();
+
+    public void access() {
+        lock.lock(); // blocks until acquired
+        try {
+            System.out.println(Thread.currentThread().getName() + " got the lock.");
+            Thread.sleep(1000); // simulate some work
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
+        }
+    }
+}    
+
+-------------------------------------------------------------------------------------------------------------------------------
+
 ReentrantLock():
     This lock prevents the self locking and deadlock
     Relocking happens only on same threads
 
-//Usually Thread 1 will acquire lock in Method 1 and In Method 2 it will wait for itself to get unlocked 
-//which is impossible resulting in deadlock
-//In ReentrantLock a thread can relock itself again
+//Thread 1 lock the object in method 1 and prints statement, Then runs method2()
+//In method2() it tries to lock the object again but its already locked right, resulting in deadlock
+//but its Reentrantlock and its same thread which is trying to lock again, so it allows it
+//so now thread 1 has 2 lock, then it prints statement and method2 unlock the method1 unlock
+//If another thread tried to lock the method2 lock then it wont
 Code:
 public class ReentrantExample {
     private final ReentrantLock lock = new ReentrantLock();
@@ -55,27 +79,6 @@ public class ReentrantExample {
     }
 }
 
--------------------------------------------------------------------------------------------------------------------------------
-
-lock.lock() : 
-    This locks the current thread and other threads will wait until locked thread is unlocked 
-
-Code:
-public class LockExample {
-    private final Lock lock = new ReentrantLock();
-
-    public void access() {
-        lock.lock(); // blocks until acquired
-        try {
-            System.out.println(Thread.currentThread().getName() + " got the lock.");
-            Thread.sleep(1000); // simulate some work
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
-        }
-    }
-}    
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -240,7 +243,6 @@ Unfair lock gives better performance, but some threads might get starved if othe
 
 //This creates 5 Threads and starts it and 5 threads called lock method So, 5 Threads are now in queue in Scheduler to run
 //Any Thread can run and first, It Depends on scheduler
-
 //If you use Fair Lock Then which Thread gets in queue of lock first will run first 
 Code:
 

@@ -60,9 +60,14 @@ public class JDBCRespository {
 ---------------------------------------------------------------------------------------------------------------
 
 JPA:
-JPA (Java Persistence API) is a Java specification for managing relational database interactions using ORM (Object-Relational Mapping).
-It abstracts JDBC and allows developers to work with Java objects instead of SQL queries.
-In JPA you dont have to write manual sql queries like in JDBC but have to write functions
+It is a specification or interface that defines how java objects can be stored, retrieved and managed in relational DB
+Its a set of rules, Does not provide implementation
+
+Hibernate:
+It is an ORM, object relational mapping which implements the JPA Interface
+Converts java objects to tables automatically, removes JDBC boiler plate code		
+Supports advanced features like lazy loading, caching, criteria queries, transaction management.		
+
 
 Code:
 @Repository

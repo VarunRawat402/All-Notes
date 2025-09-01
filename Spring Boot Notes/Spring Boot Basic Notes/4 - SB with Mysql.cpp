@@ -259,6 +259,10 @@ common framework.
 2: Relational - In this you need Hibernate/JPA and DB Driver to use database because in this the data
 is stored in tables and rows and structure is Relational and common in every DB so we have common framework to use.
 
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Pagination and Sorting:
+
 Lets say we have a instagram page and we see 5 post and then we scroll and it loads and see next 5 post and this is 
 like infinite scrolling so how to do it?
 
@@ -282,3 +286,4 @@ Next page number will be 1 so offset value will be 1*5 = 5 so it will skip first
 and so on and so on.
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+

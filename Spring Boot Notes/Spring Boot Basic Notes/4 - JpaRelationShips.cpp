@@ -80,9 +80,9 @@ CascadeType.DETACH	:   Detaches child entities from persistence context.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Fetching:
-When working with JPA/Hibernate, relationships (@OneToOne, @OneToMany, @ManyToOne, @ManyToMany) can be fetched in two ways:
-Lazy Fetching (FetchType.LAZY) – Data is loaded only when needed (on demand).
-Eager Fetching (FetchType.EAGER) – Data is always loaded immediately (at query time).
+When working with JPA relationships data can be fetched in two ways:
+Lazy Fetching (FetchType.LAZY) - Data is loaded only when needed (on demand).
+Eager Fetching (FetchType.EAGER) - Data is always loaded immediately (at query time).
 
 
 Lazy Fetching:
@@ -90,18 +90,18 @@ Lazy Fetching:
 
 Code:
     Department dept = entityManager.find(Department.class, 1L);
-    System.out.println(dept.getName()); // ✅ Only Department data is fetched.
 
-    System.out.println(dept.getStudents()); // ❌ Students are NOT loaded yet.
-    // Now Hibernate fetches students from the database.
+    System.out.println(dept.getName()); // ✅ Only Department data is fetched. ❌ Students are NOT loaded yet.
+    System.out.println(dept.getStudents());      // Now Hibernate fetches students from the database.
+
 
 Eager Fetching:
-ID Card is automatically loaded with the Student.
+    ID Card is automatically loaded with the Student.
 
 Code:
     Student student = entityManager.find(Student.class, 1L);
-    System.out.println(student.getName()); // ✅ Student data is fetched.
 
+    System.out.println(student.getName()); // ✅ Student data is fetched and ID Card is also fetched automatically.
     System.out.println(student.getIdCard()); // ✅ ID Card is already fetched.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

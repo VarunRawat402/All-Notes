@@ -9,7 +9,6 @@ public class StudentServiceTest {
     private StudentRepository studentRepositoryMock;
 
     @InjectMocks            //Injecting the Mock Repository in Service-+
-
     private StudentService studentService;
 
     //Initializing the mock students here so every function can use it
@@ -30,23 +29,6 @@ public class StudentServiceTest {
                 .course("Taxation")
                 .age(24)
                 .build();
-
-        studentRepositoryMock.save(varun);
-        studentRepositoryMock.save(nandini);
-    }
-
-    //Check Addition
-    @Test
-    public void checkAddition(){
-        int answer = studentService.addition(1,2);
-        assertThat(answer).isEqualTo(3);
-    }
-
-    //Check Multiplication
-    @Test
-    public void checkMultplication(){
-        int answer = studentService.mult(10,25);
-        assertEquals(250,answer);
     }
 
     //Check if student is getting fetched or not using ID

@@ -6,6 +6,12 @@ Swagger is a tool/framework for documenting RESTful APIs.
 Used Swagger to create clear, interactive documentation for the APIs you developed.
 This documentation allows other developers to easily understand how to use the API
 
+Open API automatically generates the API Documentation for all the APIs of the application
+and we can see them on the swagger ui URL.
+
+Swagger UI : Swagger tool to visualize and interact with your rest API
+    ( URL : localhost:8080/swagger-ui.html)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------
 Open API Annotations:
 ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -173,5 +179,61 @@ public class StudentController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(students);
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Advanteages of OpenAPI over swagger:
+
+They are more standardized and widely adopted.
+They support a broader range of tools and integrations.
+OpenAPI is the evolution of Swagger, providing a more comprehensive and flexible specification for defining APIs.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+@ApiOperation(value = "Create a user")
+@PostMapping("/")
+public User createUser(@RequestBody User user) {
+    return user;
+}
+
+@Operation(summary = "Create a user",
+    requestBody = @RequestBody(
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = User.class),
+            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                value = "{\"name\":\"John\",\"email\":\"john@example.com\"}"
+            )
+        )
+    ),
+    responses = {
+        @ApiResponse(responseCode = "201", description = "User created"),
+        @ApiResponse(responseCode = "400", description = "Invalid input")
+    }
+)
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+@PostMapping("/")
+public User createUser(@RequestBody User user) {
+    return user;
+}
+
+@SecurityScheme(
+    name = "bearerAuth",
+    type = SecuritySchemeType.HTTP,
+    scheme = "bearer",
+    bearerFormat = "JWT"
+)
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @Operation(summary = "Get user by ID", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return new User(id, "John Doe");
     }
 }

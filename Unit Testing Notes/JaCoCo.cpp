@@ -2,7 +2,12 @@
 JaCOCO:
 --------------------------------------------------------------------------------------------------------------------------------
 
-To use this we need to add plugin in the pom.xml
+Implementation:
+
+Add jacoco dependencies
+Add jacoco plugin
+
+--------------------------------------------------------------------------------------------------------------------------------
 
 PLUGIN:
 
@@ -31,11 +36,8 @@ PLUGIN:
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Other JaCoCo Counters
+Counter	Measures:
 
-You can also use these metrics:
-
-Counter	Measures
 LINE	% of executable lines covered (most common).
 BRANCH	% of decision branches (e.g., if/else, switch) covered.
 METHOD	% of methods executed.
@@ -45,22 +47,29 @@ CLASS	% of classes loaded during tests.
 
 mvn clean spring-boot:run
 
-Compiles the code
-Starts the Spring Boot application
-You dont need to manually run the main() method — Spring Boot handles it
+What it does:
+
+Deletes the target folder.
+Compiles your applications source code.
+Starts the embedded web server (Tomcat, Jetty, or Undertow).
+Runs your full Spring Boot application so you can interact with it, e.g., access http://localhost:8080.
+The process keeps running until you manually stop it with Ctrl+C.
+
+It typically does not run your unit tests (src/test/java) by default. Its primary job is to run the application.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-mvn clean test
+mvn clean test:
 
-Compiles both:
+What it does:
 
-src/main/java (your main app code)
-src/test/java (your test classes)
+Deletes the target folder.
+Compiles your applications source code (src/main/java).
+Compiles your test code (src/test/java).
+Runs all the tests found in src/test/java.
+Stops the process after running the tests. It does not package your application or run it.
 
-Runs all tests using the maven-surefire-plugin.
-Does not create a .jar or run the app — its focused purely on testing.
-Just compile and test the code, without packaging it.
+You will see the test results in the console (pass/fail) and detailed reports (like from JaCoCo or Surefire) will be generated in the target directory.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -77,3 +86,5 @@ Run integration tests (if configured)
 
 Imp:
 Learn testing exceptions and errors using assertThrows
+
+--------------------------------------------------------------------------------------------------------------------------------

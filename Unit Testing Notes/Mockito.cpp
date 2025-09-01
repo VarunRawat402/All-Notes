@@ -122,3 +122,42 @@ public class StudentServiceTest {
 }
 
 --------------------------------------------------------------------------------------------------------------------------------
+
+Testing Controller Layer APIS:
+
+@AutoConfigureMockMvc:
+    Automatically configures a MockMvc instance for testing web layers
+    Integration testing of controllers without the overhead of a real server
+
+private MockMvc mockMvc
+    Main testing utility for Spring MVC
+    Send HTTP requests (GET, POST, PUT, DELETE)
+    Verify responses (status, content, headers)
+    Test JSON serialization/deserialization
+    Validate controller behavior
+
+@MockitoBean:
+    Allows you to mock dependencies and define their behavior during tests
+
+Code:
+
+@Test
+public void testGetStudent() throws Exception {
+    // Arrange - set up mock behavior
+    when(studentService.getStudentById(1L))
+        .thenReturn(new Student(1L, "John Doe"));
+    
+    // Act & Assert - perform HTTP request and verify
+    mockMvc.perform(get("/students/1"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.name").value("John Doe"));
+    
+    // Verify mock interaction
+    verify(studentService).getStudentById(1L);
+}
+
+verify():
+    It is used to check weather this function gets called or not with given parameters
+
+--------------------------------------------------------------------------------------------------------------------------------
+
