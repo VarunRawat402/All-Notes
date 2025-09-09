@@ -21,19 +21,6 @@ Multi-threaded (Supports concurrent operations)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-What is type casting? Difference between upcasting and downcasting.
-
-It is a process to convert an object to one data type to another
-
-Upcasting: Converting a child class object to parent class object
-    Animal animal = new Dog(); // Implicit upcasting
-
-Downcasting: Converting a parent class to child class
-    Animal animal = new Dog();
-    Dog dog = (Dog) animal; // Explicit downcasting
-
--------------------------------------------------------------------------------------------------------------------------------
-
 What is encapsulation and how do you achieve it in Java?
 
 Binding of data and methods into a class is known as encapsulation:
