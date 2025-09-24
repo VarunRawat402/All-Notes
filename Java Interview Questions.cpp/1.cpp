@@ -10,28 +10,6 @@ JDK : JRE + tools, tools to develop the java applications like compiler, debugge
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-What are the main features of Java?
-    
-Platform Independent (Write Once, Run Anywhere)
-Object-Oriented (Based on objects and classes)
-Simple (Easy to learn and use)
-Robust (Strong memory management, exception handling)
-High Performance (Uses Just-In-Time compiler)
-Multi-threaded (Supports concurrent operations)
-
--------------------------------------------------------------------------------------------------------------------------------
-
-What is encapsulation and how do you achieve it in Java?
-
-Binding of data and methods into a class is known as encapsulation:
-Ex: 
-class Student{
-    private int id;
-    private String name;
-}
-
--------------------------------------------------------------------------------------------------------------------------------
-
 What is abstraction? Difference between abstraction and encapsulation.
 
 abstraction:
@@ -111,6 +89,7 @@ RUNNING:
 
 BLOCKED:
     Thread is blocked because another thread has the lock
+
 WAITING:
     waiting for other thread to release the lock
 
@@ -120,11 +99,8 @@ TERMINTED:
 -------------------------------------------------------------------------------------------------------------------------------
 
 Difference between wait(), notify(), and notifyAll().
-
 Difference between ExecutorService and ThreadPool.
-
 Difference between Callable and Runnable.
-
 Difference between ReentrantLock and synchronized.
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -137,7 +113,7 @@ String name = null;
 
 Optional
 Designed to avoid null checks and make the absence of a value more explicit.
-Its basically a container that may or may not hold a non-null value.
+It basically a container that may or may not hold a non-null value.
 
 Optional<String> name = Optional.ofNullable(null);
 System.out.println(name.isPresent()); // false
@@ -161,9 +137,7 @@ Lets you look at each element in the stream as it flows, but does not change it.
 Its an intermediate operation (like map), but returns the same elements unmodified.
 Mostly used for logging/debugging.
 
-
-List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
-
+Ex:
 List<String> result = names.stream()
         .peek(n -> System.out.println("Before map: " + n))
         .map(String::toUpperCase)
@@ -184,7 +158,6 @@ names.forEach(s -> System.out.println(s));
 names.forEach(System.out::println);
 
 -------------------------------------------------------------------------------------------------------------------------------
-
 
 What are classloaders in Java?
 

@@ -1,203 +1,178 @@
 ----------------------------------------------------------------------------------------------------------------------------------------
-Spring Security:
+Spring Security: Key Concepts and Explanations
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Basic Authentication:
-    Basic Authentication is a simple authentication mechanism where the client sends 
-    the username and password in the Authorization header of every HTTP request.
-
-Disadvantages:
-The username and password are sent with every HTTP request.
-Increases the risk of exposure if HTTPS is not used.
-
-----------------------------------------------------------------------------------------------------------------------------------------
-
-Note:
-Basic Authentication is vulnerable to MITM (Man-in-the-Middle) attacks if sent over HTTP.
-The credentials are just Base64 encoded, not encrypted.
-Since Basic Authentication relies only on username and password, adding OTPs or security tokens is difficult.
+1. Basic Authentication:
+    - Mechanism: Client sends username and password in the Authorization header of every HTTP request.
+    - Disadvantages:
+      • Credentials are sent with every request, increasing exposure risk if HTTPS is not used.
+      • Vulnerable to MITM (Man-in-the-Middle) attacks over HTTP.
+      • Credentials are only Base64 encoded (not encrypted).
+      • Difficult to add extra security (like OTPs or tokens).
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-MITM (Man in the middle):
-
-How MITM Attacks Work?
-    The attacker positions themselves between the user and the target server.
-    They capture the data exchanged between the two parties.
-    The attacker can read sensitive information such as login credentials, credit card details, or personal data
-    The attacker can modify the communication to redirect users, send fake responses, or install malware.
+2. MITM (Man-in-the-Middle) Attacks:
+    - How it works:
+      • Attacker intercepts communication between user and server.
+      • Can read sensitive data (login credentials, credit card info, etc.).
+      • May modify communication (redirect, send fake responses, install malware).
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-CSRF (Cross-Site Request Forgery):
+3. CSRF (Cross-Site Request Forgery):
+    - How CSRF Attacks Work:
+      • User logs into a site and stays authenticated.
+      • Attacker tricks user into making a request (via email/link) while logged in.
+      • Browser includes session cookie, making the request valid.
+      • Server processes the request as if made by the user.
 
-How CSRF attacks Works?
-    The user logs into a website (e.g., a banking site) and remains authenticated (session is active).
-    The attacker sends an email or posts a link:
-    If the user clicks the link while logged into the bank site, the browser automatically includes the session cookie, making the request valid.
-    The bank server processes the request, assuming it was made by the user.
-    Since the user is already authenticated, the request is executed with their credentials.
+    - CSRF Token Validation:
+      • Spring Security generates a CSRF token per session.
+      • HTML forms: Token added as hidden field.
+      • JavaScript/AJAX: Token read from cookies and sent in headers.
+      • Server validates token before processing.
+      • Missing/incorrect token blocks the request.
 
-How CSRF Token validation works:
-    Spring Security generates a CSRF token when the session starts.
-    For HTML forms, Spring automatically adds a hidden CSRF token field.
-    For JavaScript/AJAX, the frontend reads the CSRF token from cookies and includes it in headers.
-    The server validates the CSRF token before processing requests.
-    If the CSRF token is missing or incorrect, the request is blocked.
-
-Note:
-Used when you send the authentication credentials in cookies to protect csrf attacks
-Jwt token is sent in custom headers so csrf is not needed ( Disable csrf ).
+    - Note:
+      • CSRF protection is needed when authentication uses cookies.
+      • JWT tokens are sent in custom headers, so CSRF is usually disabled.
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-CORS (Cross-Origin Resource Sharing):
-It is a security rule in web browsers.
-It blocks requests from a different domain to protect your data.
-Browsers by default dont allow a website to request data from another websites server.
-So Inorder to resource sharing we need to implements CORS.
+4. CORS (Cross-Origin Resource Sharing):
+    - Purpose: Browser security feature that blocks requests from different domains.
+    - To allow sharing, CORS must be configured.
 
-Local Configuration:
-
-@CrossOrigin(origins = "http://frontend.com") 
-@RestController
-public class MyController {
-    @GetMapping("/data")
-    public String getData() {
-        return "Hello, CORS!";
-    }
-}
-
-Global Configuration:
-
-@Configuration
-public class CorsConfig {
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Allow all URLs
-                        .allowedOrigins("http://example.com") // Allow only example.com
-                        .allowedMethods("GET", "POST"); // Allow GET & POST
+    - Local Configuration Example:
+      @CrossOrigin(origins = "http://frontend.com")
+      @RestController
+      public class MyController {
+            @GetMapping("/data")
+            public String getData() {
+                return "Hello, CORS!";
             }
-        };
-    }
-}
+      }
+
+    - Global Configuration Example:
+      @Configuration
+      public class CorsConfig {
+            @Bean
+            public WebMvcConfigurer corsConfigurer() {
+                 return new WebMvcConfigurer() {
+                      @Override
+                      public void addCorsMappings(CorsRegistry registry) {
+                            registry.addMapping("/**")
+                                      .allowedOrigins("http://example.com")
+                                      .allowedMethods("GET", "POST");
+                      }
+                 };
+            }
+      }
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Encoding:
-    Convert data from one form to another
-    Does not need key or password
-    Not used for security
-    Is reversible
-    Usecase : Streaming or compression of data
+5. Encoding vs Hashing vs Encryption:
+    - Encoding:
+      • Converts data to another format (not for security).
+      • No key/password needed; reversible.
+      • Use case: Data streaming, compression.
 
-Hashing:
-    Convert data into hash ( string )
-    Not reversible
-    Usecase : Security
-    You created a password it was hashed and stored
-    You verify the password by hashing it again and matching the stored hash
+    - Hashing:
+      • Converts data to a hash string; not reversible.
+      • Use case: Security (e.g., storing passwords).
+      • Passwords are hashed and stored; verification by hashing input and comparing.
 
-Encryption:
-    Encoding data using key or password
-    Need key or password to decrypt
-    Ex : RSA
-    You used a key and encryption to encrypt the text
-    You used same key and decryption to decrypt the text
+    - Encryption:
+      • Uses a key/password to encode data; requires key to decrypt.
+      • Use case: Secure communication (e.g., RSA).
+      • Data is encrypted with a key and decrypted with the same or another key.
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-JWT ( Json Web Token ):
-JWT (JSON Web Token) is used for secure authentication in Spring Boot applications. 
-It is a token that holds user information and is used to verify identity without storing session data on the server.
-
-How JWT Works in Spring Boot?
-User Logs In → Sends username & password
-If valid, it generates a JWT token and sends it back to the client.
-Client Stores JWT → Usually in local storage or cookies ( cookies more secure )
-Client Sends JWT on Every Request → Sent in Authorization: Bearer <token> header
-Server Validates JWT → Extracts user info & grants access
+6. JWT (JSON Web Token):
+    - Used for secure authentication in Spring Boot.
+    - How it works:
+      • User logs in with credentials.
+      • Server validates and generates JWT token, sends to client.
+      • Client stores JWT (local storage/cookies).
+      • Client sends JWT in Authorization: Bearer <token> header on each request.
+      • Server validates JWT and grants access.
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Symmetric Encryption:
-Uses one secret key for both encryption and decryption.
-If someone gets the key, they can decrypt the data.
-Fast but less secure because the same key is shared.
+7. Symmetric vs Asymmetric Encryption:
+    - Symmetric Encryption:
+      • One secret key for both encryption and decryption.
+      • Fast, but less secure if key is leaked.
 
-Asymmetric Encryption:
-Uses two keys:
-    Public key → Encrypts data
-    Private key → Decrypts data
-Even if someone gets the public key, they cannot decrypt without the private key.
-More secure but slower than symmetric encryption.
+    - Asymmetric Encryption:
+      • Uses public key (for encryption) and private key (for decryption).
+      • More secure (public key can be shared, private key kept secret).
+      • Slower than symmetric encryption.
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-SaveAll():
-    User1 and User3 have same email address so user1 and user2 will get saved but when it will try
-	to save User3 it will fail and rollback other saved users too due to its Transactional behavior
+8. saveAll() vs save() in Spring Data JPA:
+    - saveAll():
+      • Saves a list of users in a single transaction.
+      • If any user fails (e.g., duplicate email), the entire operation rolls back.
+      • Example:
+         User1 and User2 saved, User3 fails (duplicate email) → all rolled back.
 
-Code:
-	@Override
-	public void run(String... args) throws Exception {
+      Example Code:
+            @Override
+            public void run(String... args) throws Exception {
+                 User user1 = User.builder()
+                            .email("varun@gmail.com")
+                            .password(passwordEncoder.encode("varun123"))
+                            .build();
 
-		User user1 = User.builder()
-				.email("varun@gmail.com")
-				.password(passwordEncoder.encode("varun123"))
-				.build();
+                 User user2 = User.builder()
+                            .email("arun@gmail.com")
+                            .password(passwordEncoder.encode("arun123"))
+                            .build();
 
-		User user2 = User.builder()
-				.email("arun@gmail.com")
-				.password(passwordEncoder.encode("arun123"))
-				.build();
+                 User user3 = User.builder()
+                            .email("varun@gmail.com")
+                            .password(passwordEncoder.encode("varun123"))
+                            .build();
 
-		User user3 = User.builder()
-				.email("varun@gmail.com")
-				.password(passwordEncoder.encode("varun123"))
-				.build();
+                 userRepository.saveAll(Arrays.asList(user1, user2, user3));
+            }
 
-		userRepository.saveAll(Arrays.asList(user1,user2,user3));
-	}
+    - save():
+      • Saves users one by one.
+      • If a user fails, previous users remain saved.
+      • Use try-catch to handle exceptions for individual saves.
 
-----------------------------------------------------------------------------------------------------------------------------------------
+      Example Code:
+            @Override
+            public void run(String... args) throws Exception {
+                 User user1 = User.builder()
+                            .name("varun")
+                            .email("varun@gmail.com")
+                            .password(passwordEncoder.encode("varun123"))
+                            .authority("dev")
+                            .build();
 
-Save():
-	We are saving users one by one so user1 and user2 will get saved and 
-	user3 will give error due to which application wont start, so you can
-	use try catch to handle the Exception.
-	
-Code:
-	@Override
-	public void run(String... args) throws Exception {
+                 User user2 = User.builder()
+                            .name("arun")
+                            .email("arun@gmail.com")
+                            .password(passwordEncoder.encode("arun123"))
+                            .authority("qa")
+                            .build();
 
-		User user1 = User.builder()
-				.name("varun")
-				.email("varun@gmail.com")
-				.password(passwordEncoder.encode("varun123"))
-				.authority("dev")
-				.build();
+                 User user3 = User.builder()
+                            .name("varun")
+                            .email("varun@gmail.com")
+                            .password(passwordEncoder.encode("varun123"))
+                            .authority("dev")
+                            .build();
 
-		User user2 = User.builder()
-				.name("arun")
-				.email("arun@gmail.com")
-				.password(passwordEncoder.encode("arun123"))
-				.authority("qa")
-				.build();
+                 userRepository.save(user1);
+                 userRepository.save(user2);
+                 userRepository.save(user3);
+            }
 
-		User user3 = User.builder()
-				.name("varun")
-				.email("varun@gmail.com")
-				.password(passwordEncoder.encode("varun123"))
-				.authority("dev")
-				.build();
-
-		userRepository.save(user1);
-        userRepository.save(user2);
-        userRepository.save(user3);
-	}
-
-----------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------

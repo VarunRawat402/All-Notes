@@ -1,135 +1,177 @@
----------------------------------------------------------------------------------------------------------------------------------------------
-Git Notes:
-Its a version control system (VCS) that helps developers track changes in their code
----------------------------------------------------------------------------------------------------------------------------------------------
 
-Repository:
-It stores all the files and track all the changes
+------------------------------------------------------------------------------------------------------------------------
+Git Notes - Comprehensive Guide
 
-Local Repository:
-Stored in the computer
+Git is a distributed version control system (VCS) that enables developers to efficiently track, manage, and collaborate 
+on code changes. It provides mechanisms for maintaining a complete history of project modifications, facilitating 
+collaboration, and supporting workflows for both individuals and teams.
 
-Remote Repository:
-Hosted on a server ( github, gitlab )
-Used for backup and team collaboration
+------------------------------------------------------------------------------------------------------------------------
+Key Concepts:
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- Repository: 
+    A repository is a storage location for your project files and the entire history of their changes. 
+    It can be local (on your computer) or remote (hosted on platforms like GitHub or GitLab).
 
-WorkFlow:
-Create a new repo -> Add files to staging -> Do Commit -> Push to GitHub:
+- Local Repository:
+    The version of the repository stored on your local machine. You can make changes, commit, and review history locally.
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- Remote Repository:
+    A repository hosted on a server, typically used for backup, collaboration, and sharing code with others.
 
-Basic Commands:
+------------------------------------------------------------------------------------------------------------------------
+Basic Workflow:
 
-Create a Repo:
-    git init
+1. Create a new repository.
+2. Add files to the staging area (index).
+3. Commit changes to the local repository.
+4. Push commits to a remote repository for sharing and backup.
 
-Add file to staging area:
-    git add name.txt
+------------------------------------------------------------------------------------------------------------------------
+Essential Git Commands:
 
-Remove File from staging area:
-    git restore --staged name.txt
+- Initialize a repository: 
+    `git init` - Sets up a new Git repository in your project directory.
 
-Commit the changes:
-    git commit -m "Message related to changes"
+- Add files to staging area: 
+    `git add <filename>` - Stages changes for the next commit.
 
-To see the status:
-    git status
+- Remove files from staging area: 
+    `git restore --staged <filename>` - Unstages files without discarding changes.
 
-To see the commit logs
-    git log
+- Commit changes: 
+    `git commit -m "commit message"` - Saves staged changes to the repository with a descriptive message.
 
-Stop tracking a file 
-    git rm --cached name.txt
+- View status: 
+    `git status` - Shows the current state of the working directory and staging area.
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- View commit history: 
+    `git log` - Displays a log of all commits in the repository.
 
-How to Reset Git Repository: ( Going back to prev version ):
+- Stop tracking a file: 
+    `git rm --cached <filename>` - Removes a file from version control but keeps it in your working directory.
 
-1: Soft Reset:
-    git reset --soft 1fc0d7fed09230bb1dd8f8d71ab9f59ed830c87b
-Remove all the commits upto the commit id
-All the files will be in staging area
+------------------------------------------------------------------------------------------------------------------------
+Resetting and Reverting Changes:
 
-2: Reset:
-    git reset 1fc0d7fed09230bb1dd8f8d71ab9f59ed830c87b
-Remove all the commits upto the commit id
-All the files will be unstaged
+- Soft Reset: 
+    `git reset --soft <commit-hash>` - Moves HEAD to the specified commit, keeping changes staged.
 
-3: Hard Reset:
-    git reset --hard 1fc0d7fed09230bb1dd8f8d71ab9f59ed830c87b
-Remove all the commits upto the commit id
-Delete all the files completely
+- Mixed Reset (default): 
+    `git reset <commit-hash>` - Moves HEAD to the specified commit, unstaging changes but keeping them in the working directory.
 
-4: Revert ( Best Approach ):
-    git revert 23c938d68ba1ab17f814acb44b58c99d50bcbd1a
-Give the hashcode of the commit you want to remove
-Delete all the files after this commit ( including this commit )
-But tracks the log and stays in history
-So, you can revert the revert 
+- Hard Reset: 
+    `git reset --hard <commit-hash>` - Moves HEAD to the specified commit and discards all changes after that commit.
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- Revert: 
+    `git revert <commit-hash>` - Creates a new commit that undoes the changes from the specified commit, preserving history.
 
-Branches:
-Branches allow you to work on different versions of your code simultaneously without affecting the main code
+Note: Revert is generally safer for undoing changes in shared repositories, as it maintains the commit history.
 
-Command:
-git branch	                                    : List all branches
-git branch <name>	                            : Create a new branch 
-git switch <branch>	                            : Switch to an existing branch.
-git switch -c <new-branch>	                    : Create & switch to a new branch.
-git branch -d <branch>	                        : Delete a branch (safe, checks for unmerged changes).
-git branch -D <branch>	                        : Force delete (even if unmerged).
-git branch -m <new branch name>                 : Rename the current branch
-git branch -m <old branch> <new branch name>    : Rename any branch
+------------------------------------------------------------------------------------------------------------------------
+Branching:
 
----------------------------------------------------------------------------------------------------------------------------------------------
+Branches allow parallel development by creating independent lines of work. This enables features, bug fixes, and experiments 
+without affecting the main codebase.
 
-Push / Pull Commands:
+- List branches: 
+    `git branch`
 
-git push origin <branch>	            : Push a local branch to remote.
-git pull origin <branch>	            : Pull latest changes from a remote branch.
-git fetch --all	                        : Fetch all remote branches.
-git push origin --delete <branch>	    : Delete a remote branch.
+- Create a new branch: 
+    `git branch <branch-name>`
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- Switch branches: 
+    `git switch <branch-name>`
 
-Merging:
-git switch main             : Switch to target branch
-git merge feature/login     : Merge feature into main
+- Create and switch to a new branch: 
+    `git switch -c <branch-name>`
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- Delete a branch: 
+    `git branch -d <branch-name>` (safe, checks for unmerged changes)
+    `git branch -D <branch-name>` (force delete)
 
-Rebase:
-git switch feature/login    : Switch to target branch
-git rebase main             : Replay commits on top of main
+- Rename branches: 
+    `git branch -m <new-name>` (current branch)
+    `git branch -m <old-name> <new-name>` (any branch)
 
----------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Remote Operations:
 
-WorkFlow:
-Create a new Branch -> add and commit new files -> push to remote -> Merge to main -> Delete temp branch
+- Push local branch to remote: 
+    `git push origin <branch-name>`
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- Pull latest changes from remote: 
+    `git pull origin <branch-name>`
 
+- Fetch all remote branches: 
+    `git fetch --all`
+
+- Delete a remote branch: 
+    `git push origin --delete <branch-name>`
+
+------------------------------------------------------------------------------------------------------------------------
+Merging and Rebasing:
+
+- Merging: 
+    Combines changes from one branch into another. Typically, switch to the target branch and merge the feature branch.
+
+    Example:
+        `git switch main`
+        `git merge feature/login`
+
+- Rebasing: 
+    Moves or reapplies commits from one branch onto another, creating a linear history.
+
+    Example:
+        `git switch feature/login`
+        `git rebase main`
+
+------------------------------------------------------------------------------------------------------------------------
+Typical Branch Workflow:
+
+1. Create a new branch for your feature or fix.
+2. Add and commit changes.
+3. Push the branch to the remote repository.
+4. Merge the branch into the main branch.
+5. Delete the temporary branch after merging.
+
+------------------------------------------------------------------------------------------------------------------------
 Git Stash:
-Git stash is used to save changes in your working directory so you can switch branches without committing incomplete work.
 
-git stash                                       :   stash changes
-git stash save "file1"                          :   name the stash
-git stash list                                  :   list all the stash
-git stash apply                                 :   apply all the stash 
-git stash apply stash@{0}                       :   apply specific stash
-git stash pop                                   :   apply the stash and delete it from stash list
-git stash drop                                  :   delete latest stash or specific stash
-git stash apply stash@{0} <branch-name>         :   apply specific stash to specific branch
-git stash clear                                 :   delete all the stash
-git fsck                                        :   locate the deleted stash and their hashcode
-git stash store <stash hash>                    :   recover the stash to stash location
+Git stash temporarily shelves (or stashes) changes in your working directory so you can work on something else, 
+then come back and re-apply them later.
 
----------------------------------------------------------------------------------------------------------------------------------------------
+- Stash changes: 
+    `git stash` or `git stash save "description"`
 
+- List stashes: 
+    `git stash list`
 
+- Apply stashed changes: 
+    `git stash apply` (latest) or `git stash apply stash@{n}` (specific)
 
-git remote add origin <https key>
-git push --force origin main
+- Apply and remove stash: 
+    `git stash pop`
+
+- Delete a stash: 
+    `git stash drop` (latest) or `git stash drop stash@{n}` (specific)
+
+- Apply stash to a specific branch: 
+    `git stash apply stash@{n} <branch-name>`
+
+- Clear all stashes: 
+    `git stash clear`
+
+- Recover deleted stashes: 
+    `git fsck` (find stash hash), `git stash store <stash-hash>`
+
+------------------------------------------------------------------------------------------------------------------------
+Remote Setup and Force Push:
+
+- Add a remote repository: 
+    `git remote add origin <repository-url>`
+
+- Force push to remote (use with caution): 
+    `git push --force origin main`
+
+------------------------------------------------------------------------------------------------------------------------
