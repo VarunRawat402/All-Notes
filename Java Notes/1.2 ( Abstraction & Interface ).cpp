@@ -10,14 +10,14 @@ How to Achieve Abstraction in Java?
 
 1: Abstract Classes (abstract keyword) :
 
-    Can have abstract, normal, static methods
-    Can have instance, static variables
+    Can have abstract + normal + static methods
+    Can have instance + static variables
     Can have a constructor
     Multiple Inheritance Not supported
 
 2: Interfaces (interface keyword) :
 
-    Can only have abstract methods (before Java 8), but can have default and static methods from Java 8+.
+    Can have abstract + default + static methods 
     Only public static final (constants)
     Cannot have a constructor
     Multiple Inheritance Supported (A class can implement multiple interfaces)
@@ -28,26 +28,20 @@ Abstract Class Code:
 
 abstract class Animal {
 
-    //Instance variable in abstract class
     String name;
     static int price = 1000;
 
-    //Constructor
-    Animal(String name){
+    Animal(String name){    //Constructor
         this.name=name;
     }
 
-    //abstract method
-    abstract void eat(){
-    }
+    abstract void eat()     //abstract method
 
-    //normal method
-    void run(){
+    void run(){             //Normal method
         System.out.println("I am running");
     }
 
-    //static method
-    static void fly(){
+    static void fly(){      //static method
         System.out.println("I am flying");
     }
 
@@ -55,28 +49,26 @@ abstract class Animal {
 
 public class Dog extends Animal{
 
-    //Dog instance variables
     String breed;
-    int age;
 
-    //Passing values of name, breed and age of dog
     //using super to call the constructor to initialize the name 
-    Dog(String name,String breed, int age) {
+    Dog(String name,String breed) {
         super(name);
         this.breed=breed;
         this.age=age;
     }
 
-    //Implemented the method from abstract class
+    //Override the eat method of abstract class
+    @Override
     void eat(){
         System.out.println( name + " is barking");
     }
 }
     
-Dog dog = new Dog("PetDog", "Golden Retreiver" ,3);
+Dog dog = new Dog("PetDog", "Golden Retreiver");
 dog.eat()           //Dog is barking
-dog.run();
-Animal.fly();
+dog.run();          //I am running
+Animal.fly();       //I am flying
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -84,15 +76,15 @@ Interface Code:
 
 interface Vehicle {
 
-    // Abstract method
+    //abstract method
     void start(); 
 
-    // Default method (has implementation)
+    //default method (has implementation)
     default void stop() {
         System.out.println("Vehicle is stopping");
     }
 
-    // Static method (called using interface name)
+    //static method
     static void service() {
         System.out.println("Vehicle is being serviced");
     }
@@ -129,9 +121,9 @@ Use an interface when:
 -------------------------------------------------------------------------------------------------------------------------------
 
 Note:
-If B interface is extending A Interface
-A has fun() method, B has greet() method
-Class Student implementing B interface have to override both fun() and greet() methods
+Interface A has one abstract method fun()
+Interface B has one abstract method greet() and extends interface A
+Student class implements interface B need to implement both fun() and greet() methods
 
 interface A{
     void fun();
@@ -142,44 +134,32 @@ interface B extends A{
 }
 
 class Student implements B{
-    fun(){
 
+    fun(){
+        //Implementation of fun
     }
+
     greet(){
-        
+        //Implementation of greet
     }
 }
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-What is the need of interface or abstraction:
-    Loose Coupling and Reusability of Code:
-
-This is an example of multiple payment class methods
-which are used to make payment through Cart class
+Example of Loose and Tight Coupling using Interface:
+In this example we have 2 payment methods CreditCard and UPI
+Cart class is responsible for doing payment using these payment methods
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Now for 2 payment methods we needed to create 2 doPayment methods
-This is known as tight Coupling
-If we in future have to have 2 more payment methods
-Then we have to change the Cart class do right which have nothing to with Payemnt methods classes
-With Interface you can remove this tight coupling
+Without Interface:
+
+In Cart class we had to make 2 doPayment() method for 2 payment types.
+Now if we have 10 payment types we will have to make 10 doPayment() methods beacause cart class is dependent on all the payment types
+Everytime we add a new payment type we have to change the Cart class which is not good practice
+This is known as Tight Coupling
 
 Ex:
-
-Shopping Cart:
-public class Cart {
-
-    void doPayment(CreditCard creditCard){
-        creditCard.pay();
-    }
-
-    void doPayment(UPI upi){
-        upi.pay();
-    }
-    
-}
 
 public class CreditCard{
     public void pay() {
@@ -190,6 +170,17 @@ public class CreditCard{
 public class UPI{
     public void pay() {
         System.out.println("Payment is done by UPI Id");
+    }
+}
+
+public class Cart {
+
+    void doPayment(CreditCard creditCard){
+        creditCard.pay();
+    }
+
+    void doPayment(UPI upi){
+        upi.pay();
     }
 }
 
@@ -206,17 +197,13 @@ public static void main(String[] args) {
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-In Cart Method there is only 1 method for payment method now due to interface
-Now this doPayment method is dependent on interface not all the classes implementing the interface
-So If in future we have to add new payment methods we can create it and implement the interface
-No need to change anything in the Cart class
+With Interface:
 
-
-public class Cart {
-    void doPayment(PaymentMethod paymentMethod){
-        paymentMethod.pay();
-    }
-}
+Every payment type implements singe interface PaymentMethod
+Cart class takes PaymentMethod interface in the doPayment method
+This makes Cart class dependent on PaymentMethod interface not all the payment types
+This is known as Loose Coupling
+Now If we have to add new payment types we dont need to change anything in the Cart class
 
 public interface PaymentMethod {
     void pay();
@@ -233,6 +220,13 @@ public class UPI implements PaymentMethod{
     @Override
     public void pay() {
         System.out.println("Payment is done by UPI Id");
+    }
+}
+
+public class Cart {
+
+    void doPayment(PaymentMethod paymentMethod){
+        paymentMethod.pay();
     }
 }
 
@@ -255,10 +249,14 @@ public class HelloApplication {
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Note:
-The best practice to add payment method is to add like dependency Injection in constructor
-So you dont need to provide the payment method everytime you have to do something
-Lets say you have to use payment method in different functions too then you have to provide the payment method there too
-Instead you can define it once and use anywhere in the class
+The best practice is to add payment method in the constructor of the Cart class
+So, we dont need to pass the payment method for every cart function
+Ex: If cart had 5 function with payment we had to :
+c1.doPayment(c1);
+c1.doPlaceOrder(c1);
+c1.doCancelOrder(c1);
+
+with constructor we can pass the payment method once while creating cart object.
 
 Ex:
 

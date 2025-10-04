@@ -2,15 +2,18 @@
 Map:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-It stores key-value pairs and allows you to retrieve a value based on its associated key.
-Key should always be unique
-If you store the key which is already been stored then the value will be replaced by the latest value.
+Stores key-value pairs
+Keys must be unique (duplicate keys overwrite existing values)
+Values can be duplicated
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Why Use Map?
-Fast Lookup 🔍 : Quickly find values using keys.
-No Duplicate Keys 🚫 : Each key must be unique.
+
+O(1) average time complexity for HashMap
+No Duplicate Keys
+Logical grouping of related data
+Direct access of value using keys instead of searching
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -22,8 +25,8 @@ Map<Integer,String> m1 = new HashMap<>();
 Map<Integer,String> m2 = new LinkedHashMap<>();
     Ordering maintains, slower
 
-Map<Integer,String> m3 = new TreeMap<>();           //Or Sorted Map
-    Sort the elements based on keys, 
+Map<Integer,String> m3 = new TreeMap<>();               
+    Sort the elements based on keys
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -70,12 +73,33 @@ for(Map.Entry<Integer,String> i:m.entrySet()){
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Classes:
+Types of Maps:
+
 1: HashMap<>();
+    No ordering guarantees
+    Fastest operations
+    Allows one null key and multiple null values
+    Not thread-safe
+
 2: LinkedHashMap<>();
-3: SortedMap<>();
-4: HashTable<>();
+    Maintains insertion order
+    Slightly slower than HashMap
+    Predictable iteration order
+
 5: TreeMap<>();
+    Sorted by keys (natural ordering or custom comparator)
+    Implements SortedMap interface
+    Slower than HashMap but provides ordering
+
+4: HashTable<>();
+    Legacy class, thread-safe
+    Does not allow null keys or values
+    Slower due to synchronization
+
+5: ConcurrentHashMap<>();
+    Thread-safe and high-performance
+    Better than HashTable for concurrent access
+    No null keys or values
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -91,33 +115,31 @@ Methods:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Enum Map:
-
-What is EnumMap?
-✅ EnumMap<K, V> is a specialized Map designed only for Enums as keys.
-✅ It is faster and more memory-efficient than HashMap.
-✅ Keys are stored internally as an array, making lookups very fast (O(1)).
+    Keys should be enum
+    Faster and more memory-efficient than HashMap
+    Keys are automatically sorted in Enums natural order
+    No null keys allowed
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Code:
 
-enum Day { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY }
+enum Day { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }
 
-public class Main {
+public class EnumMapExample {
     public static void main(String[] args) {
+
         EnumMap<Day, String> schedule = new EnumMap<>(Day.class);
-
-        schedule.put(Day.MONDAY, "Gym");
-        schedule.put(Day.WEDNESDAY, "Meeting");
-        schedule.put(Day.FRIDAY, "Movie Night");
-
-        System.out.println(schedule); // {MONDAY=Gym, WEDNESDAY=Meeting, FRIDAY=Movie Night}
+        
+        schedule.put(Day.MONDAY, "Work from office");
+        schedule.put(Day.WEDNESDAY, "Team meeting");
+        schedule.put(Day.FRIDAY, "Casual Friday");
+        schedule.put(Day.SATURDAY, "Weekend plans");
+        
+        System.out.println(schedule);
+        System.out.println(schedule.get(Day.MONDAY)); // Work from office
     }
 }
-
-✔ Only works with Enums.
-✔ Keys are automatically sorted in Enums natural order (MONDAY → WEDNESDAY → FRIDAY).
-✔ Faster than HashMap<Enum, V> because it uses an array internally.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -131,20 +153,23 @@ What is an Immutable Map?
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Map.of() ( java 9+ ) ;
-✔ Immutable directly (no need for Collections.unmodifiableMap()).
-✔ Fastest & most memory-efficient way to create a small immutable map.
+Immutable directly
+Fastest & most memory-efficient way to create a small immutable map.
+Does not allow null keys or values.
+Cannot add, remove or modify entries after creation.
 
-Code: 
-Map<String, Integer> immutableMap = Map.of("Alice", 25, "Bob", 30);
-System.out.println(immutableMap); // {Alice=25, Bob=30}
+Map<String, Integer> immutableMap = Map.of("Alice", 25,
+    "Bob", 30,
+    "Charlie", 35
+);
 
-immutableMap.put("Charlie", 35); // ❌ Throws UnsupportedOperationException
+System.out.println(immutableMap); // {Alice=25, Bob=30, Charlie=35}
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Map.copyOf() (Java 10+):
-✔ Unlike Collections.unmodifiableMap(), original map changes wont affect this one.
-✔ Best for creating an immutable snapshot of an existing map.
+    Unlike Collections.unmodifiableMap(), original map changes wont affect this one.
+    Best for creating an immutable snapshot of an existing map.
 
 Code:
 Map<String, Integer> mutableMap = new HashMap<>();
@@ -157,28 +182,24 @@ immutableMap.put("Charlie", 35); // ❌ Throws UnsupportedOperationException
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-
 Internal working of HashMaps:
 
-It converts the key into the hashcode using some formula
-Hashcode is a unique number 
+Put Operation:
 
-Insert the entry into the map, put(key,value)
 Convert the key into hashcode, key.hashCode()
-Apply the hashing function to get the bucket index and then store in the bucket
+Get the bucket Index, hashCode % arraySize (bucket index)
+Store in Bucket:
+    If bucket empty → create new entry
+    If bucket occupied (collision) →
+        Java 7: Store in linked list
+        Java 8+: Use balanced tree if list grows large
 
-get(key)
+Get Operation:
+
 Convert the key into hashcode, key.hashCode()
-Compute the bucket index, 
-If one entry return value
-If multiple entries, Collision, It uses equals() to check the key and match the given key to all the entries in that bucket
+Find Bucket: hashCode % arraySize
+Search in Bucket:
+    Single entry → return value
+    Multiple entries, Collision → use equals() to find exact match
 
 -----------------------------------------------------------------------------------------------------------------------------------------
-
-Concurrent Hashmap:
-    It is same as HashMap
-    It is Thread-safe
-    No null keys and values
-
------------------------------------------------------------------------------------------------------------------------------------------
-

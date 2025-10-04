@@ -2,54 +2,47 @@
 Enums:
 -------------------------------------------------------------------------------------------------------------------------------
 
-A special class in Java used to define constants (fixed values).
-
-📌 Instead of using final static variables, we use enum.
-📌 Each value inside an enum is a constant.
-📌 Enum can have variables and getters and setters
-📌 Enum can have constructors
+enum is a special class in Java used to define a collection of constants (fixed values).
+Alternative to using public static final constants.
+Enums improve readability, maintainability, and type safety.
+You cannot create new enum objects using new keyword.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-We can define constants like this but its more syntax like this 
-public class constants{
-    private final static user = "USER";
-    private final static student = "STUDENT";
-    private final static admin = "ADMIN";
+// Without enum (harder to manage, less readable)
+public class Constants {
+    public static final String USER = "USER";
+    public static final String STUDENT = "STUDENT";
+    public static final String ADMIN = "ADMIN";
 }
 
-//Readable, Less code
-public enum constants{
-    USER,STUDENT,ADMIN
+// With enum (cleaner, safer, less code)
+public enum Constants {
+    USER, STUDENT, ADMIN
 }
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Enum with Methods and Constructor
-Enums can have fields, constructors, and methods like normal classes.
-
-You have to initialize variables inside the class,
-You cannot add values on the time of creation of object because they are constants and need
-to be initialize at the compile time
+Enums can have:
+    Variables
+    Constructors
+    Methods (getters, setters, custom methods)
 
 Code:
 
 enum Size {
 
-    // Enum values with sizes
     SMALL(10), MEDIUM(20), LARGE(30); 
 
-    private int value; // Variable inside enum
+    private int value;      //This is 10,20,30 for small,medium,large
 
-    // Constructor
     Size(int value) {
         this.value = value;
     }
 
-        // Method to get value
-        public int getValue() {
-            return value;
-        }
+    public int getValue() {
+        return value;
+    }
 }
 
 public class Main {

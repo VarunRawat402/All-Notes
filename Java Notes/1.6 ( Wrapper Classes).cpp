@@ -5,8 +5,8 @@ Integer, String , Byte, Short are wrapper classes
 -------------------------------------------------------------------------------------------------------------------------------
 
 Wrapper classes convert primitive data types into objects.
-Primitive   : int , short, char, long
-Object      : Integer, String
+Primitive   : int , short, char, long, boolean
+Wrapper    :  Integer, Short, Character, Long, Boolean
 
 Primitive Data Types : Stored in stack
 Wrapper Object : Stored in Heap
@@ -18,7 +18,7 @@ Integer num2 = Integer.valueOf(10);
 
 Auto-Boxing & Unboxing
 📌 Auto-Boxing → Converts primitive to object automatically.
-📌 Unboxing → Converts object back to primitive automatically.
+📌 Unboxing    → Converts object back to primitive automatically.
 
 // Auto-boxing: Primitive → Object
 Integer num = 10; // Compiler converts: Integer.valueOf(10)

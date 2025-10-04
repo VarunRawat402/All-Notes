@@ -24,7 +24,7 @@ File paths (C:/Users/...)
 Class loading (Class.forName("com.example.MyClass"))
 🔹 If String was mutable, an attacker could change values during execution, leading to serious security risks.
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------x`
 
 2: String Pool Optimization (Memory Efficiency)
 Java stores String literals in the String Pool for reusability.

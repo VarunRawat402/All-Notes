@@ -23,7 +23,7 @@ FileNotFoundException = path of file doesnt exist
 2: Unchecked Exception : 
 Occurs at Run time 
 No need to handle them explicitly
-But should handle them otherwise runTimeException will come and application will break down
+But should handle them otherwise runTimeException will come and application will crash
 
 Ex:
 int a = 1/0;
@@ -35,6 +35,7 @@ ArithmeticException = illegal arithmetic expression
 -------------------------------------------------------------------------------------------------------------------------------
 
 Exception Handling:
+Handling the exception so that the application does not crash
 
 1. Try-Catch Block:
 
@@ -70,7 +71,7 @@ public class Main {
 
 2: Finally block :
 It will get executed no matter what
-Weather you get exception or you code runs without exception
+Weather you get an exception or your code runs without exception
 Even if you return something in the try block it will still
 get executed.
 
@@ -116,8 +117,9 @@ public class Main {
 -------------------------------------------------------------------------------------------------------------------------------
 
 4: Throws Keyword:
-The throws keyword in Java is used in method signatures to declare exceptions that a method might throw during execution.
+The throws keyword in Java is used to declares what exceptions a method can throw.
 It tells the caller of the method that they need to handle the exception.
+You can either handle the exception in the method using try catch block or throw it to the back function using throws keyword.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -136,11 +138,7 @@ public  static void hello(){
     }
 }
 
-In this Example I didnt handled the exception in the method instead
-I throwed the exception to the back function due to this I had to use
-Throws IOException in the method declaration and In the back function
-I handled the function using try catch block So I didnt needed to
-use the throws IOException in the main method:
+In this example I didnt handle the exception in the hello() so i have to throw it to the back function 
 
 public static void main(String[] args) {
     try{
@@ -186,5 +184,16 @@ public class Main {
         }
     }
 }
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Key Takeaways (for interviews & exams)
+
+Checked exceptions = compile-time errors → must handle.
+Unchecked exceptions = runtime errors → may crash app if not handled.
+finally always executes → best for closing resources.
+throw → to actually throw an exception.
+throws → to declare potential exceptions in method.
+You can create custom exceptions by extending Exception.
 
 -------------------------------------------------------------------------------------------------------------------------------

@@ -2,19 +2,14 @@
 Set ( Collection ):
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-It is a collection that does not allow duplicate elements and can be unorderedor sorted based on the implementation.
-There is no index in set, So you cannot get or access randome elements in the set
+Collection that stores unique elements only
+No Duplicate
+No indexing - cannot access elements by index
 
 Syntax:
-    Set<Integer> s1 = new HashSet<>();
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Types of Set:
-1: HashSet<>();
-2: LinkedHashSet<>();
-3: SortedSet<>();
-4: TreeSet<>();
+    Set<Integer> set1 = new HashSet<>();
+    Set<String> set2 = new LinkedHashSet<>();
+    Set<Double> set3 = new TreeSet<>();
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,24 +24,26 @@ clear()	        : Removes all elements.
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 1: HashSet : Fastest, No Order
-Uses hashing for fast lookup (O(1))
+Fastest operations O(1)
 No order is maintained
-Best for quick operations (adding, removing, checking for an element)
+Not thread-safe
+Allows one null element
 
 Ex:
-Set<Integer> set = new HashSet<>();
-set.add(5);
-set.add(2);
-set.add(8);
-set.add(1);
-System.out.println(set); // Output: [1, 2, 5, 8] (Order NOT guaranteed)
+    Set<Integer> set = new HashSet<>();
+    set.add(5);
+    set.add(2);
+    set.add(8);
+    set.add(1);
+    System.out.println(set); // Output: [1, 2, 5, 8] (Order NOT guaranteed)
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 2: LinkedHashSet:
-LinkedHashSet : Maintains Insertion Order
-Preserves the order of insertion
+Maintains Insertion Order
 Slightly slower than HashSet due to ordering overhead
+Not thread-safe
+Allows one null element
 
 Ex:
 Set<Integer> set = new LinkedHashSet<>();
@@ -59,10 +56,11 @@ System.out.println(set); // Output: [5, 2, 8, 1] (Order maintained)
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 3: TreeSet:
-TreeSet : Sorted Order
-Stores elements in sorted (ascending) order
+Sorted Order
 Uses a balanced tree (Red-Black Tree)
 Slower than HashSet (O(log N))
+Not thread-safe
+No null elements allowed
 
 Ex;
 Set<Integer> set = new TreeSet<>();

@@ -88,9 +88,7 @@ class Student{
 public class Main {
     public static void main(String[] args) {
 
-        //Created s1 using parameterized constructor
         Student s1 = new Student("Varun",23);
-        //Created s2 using copy constructor
         Student s2 = new Student(s1);
         s2.printInfo();
     }
@@ -100,25 +98,26 @@ public class Main {
 
 Note:
 
-Primitive values are passed as value in the function, changes in function wont affect the real value
-Objects are passed by reference in the function, changes in the function will affect the real value
+Primitive types are passed by value → Changes in function dont affect original
+Objects are passed by reference → Changes in function affect original object
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Access Modifiers:
 
 1: Public:
-    If any variable/methods is public then any class can access that in any package
+    Any class can access that in any package
 
 2: Protected:
-    If any variable/methods is protected then any class can acess that in same package but in order to access that in different pacakge it needs to be
-    the subclass of the varaible/methods's class.
+    Any class can acess that in same package 
+    To access in diff package the class should be inherited ( subclass )
 
 3: Private:
-    If any varaible/method is private then no one can access that even in same package.
+    No one can access that even in same package.
 
 4: Default:
-    If any varaible/method is Default then any class can access that varaible in the same package but no one can access that in diff package.
+    Any class can access that varaible in the same package
+    No one can access that in diff package.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -157,15 +156,12 @@ Ex:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 POLYMORPHISM: ( Many Forms )
-When we do same thing with differnt approaches that is called polymorphism.
-
-It allows objects to be treated as instances of their parent class rather than their actual class. 
-Polymorphism is acheived through 2 types.
+Ability of objects to take many forms
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 1: Method Overloading ( Compile time Polymorphism ):
-When we create multiple functions with same name but differentiate them with no. of parameters that is called method Overloading.
+Same method name, different parameters
 
 Ex:
     public class Calculator {
@@ -298,8 +294,7 @@ Ex:
 
 ENCAPSULATION:
 
-Binding of data and methods to single unit is called Encapsulation.
-It is the practice of hiding the internal details of a class and only exposing necessary functionality.
+Binding data and methods together, hiding internal implementation.
 
 Key Concepts of Encapsulation
 

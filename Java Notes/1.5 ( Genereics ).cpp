@@ -12,9 +12,11 @@ Code Reusability (Same class works for multiple types).
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-ArrayList list = new ArrayList(); // ❌ No type safety
+ArrayList list = new ArrayList(); // ❌ Not type-safe
 list.add("Hello");
-list.add(100); // ❌ Allowed (Different type)
+list.add(100); // ❌ Allowed (different type)
+
+String s = (String) list.get(1); // ❌ Runtime error (ClassCastException)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,28 +31,38 @@ System.out.println(str);
 
 How to Create a Generic class:
 
+//Generic class which takes values and returns the list of values
+public class Custom<T> {
+    
+    List<T> l1 = new ArrayList<>();
 
-//Payment Class code
-public class Payment<T> {
-
-    private T value;
-
-    Payment(T value){
-        this.value=value;
+    public void addValue(T value){
+        l1.add(value);
     }
 
-    public T getValue(){
-        return value;
+    public List<T> getValue(){
+        return l1;
+    }
+    
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        
+        // Custom class with String type
+        Custom<String> c1 = new Custom<>();
+        c1.addValue("Hello");
+        c1.addValue("World");
+        System.out.println(c1.getValue()); // [Hello, World]
+
+        // Custom class with Integer type
+        Custom<Integer> c2 = new Custom<>();
+        c2.addValue(10);
+        c2.addValue(20);
+        System.out.println(c2.getValue()); // [10, 20]
     }
 }
 
-// Main Class Code
-//p object can only store Integer values
-Payment<Integer> p = new Payment<>(20000);
-System.out.println(p.getValue());
-
-//p1 object can only store String values
-Payment<String> p1 = new Payment<>("SBI Bank");
-System.out.println(p1.getValue());
 
 -------------------------------------------------------------------------------------------------------------------------------

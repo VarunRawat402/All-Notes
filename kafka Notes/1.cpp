@@ -5,37 +5,41 @@ KAFKA Notes:
 Apache Kafka is a distributed messaging system that allows applications to send, store
 and process real-time data streams efficiently.
 
-Ex:
-If 1 million request is coming to an API it is going to overload and less fault torence will be there
-With kafka in between those million request will get distributed between multiple servers.
+Advantages of Kafka:
+1. Capable of handling millions of messages per second.
+2. Easy to scale by adding more brokers.
+3. Messages are stored on disk and replicated across multiple brokers.
+4. Fault Tolerance: Continues to operate even if some brokers fail.
+5. Supports real-time data processing with low latency.
+6: For a specific stream of data, it guarantees that messages are read in the exact order they were sent.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Core Concepts:
 
-Producer -              Sends messages (events) to Kafka topics.
+Producer -              Sends messages to Kafka topics.
 Consumer -              Reads messages from Kafka topics.
 Topic -                 A category where messages are published.
 Partition -             A topic is divided into partitions for parallel processing.
-Broker -                A Kafka server that stores and manages message streams.
-Cluster -               A group of Kafka brokers working together.
+Broker -                A Kafka server that stores topics and handle message requests.
+Cluster -               A group of Kafka brokers working together for scalability and fault tolerance.
 Zookeeper -             Manages Kafka brokers, leader election, and metadata.
 Offset -                A unique ID assigned to each message in a partition.
-Consumer Group -        A group of consumers that share the workload of reading messages from a topic.
-Replication Factor -    The number of copies of data across brokers for fault tolerance.
+Consumer Group -        A group of consumers that consume messages from one or more topics.
+Replication Factor -    The number of copies of each partition maintained across different brokers for fault tolerance.
 Leader -                The broker responsible for handling read/write requests for a partition.
 Follower -              A replica of a partition that stays in sync with the leader.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Zookeeper:
-Zookeeper is a distributed coordination service developed by Apache.
+Zookeeper is a distributed coordination service developed by Apache.    
 
 Why is Zookeeper used in Kafka?
 Manages Kafka brokers (keeps track of which brokers are alive).
 Handles leader election for partitions.
 Stores metadata (e.g., topic configurations, ACLs).
-Ensures fault tolerance and synchronization between nodes.
+Ensures fault tolerance and synchronization between brokers.
 
 🔹 Kafka cannot work without Zookeeper (at least in older versions).
 🔹 In newer versions (Kafka 3.0+), Zookeeper is being replaced by Kafka KRaft mode.
@@ -85,9 +89,6 @@ kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic --
 
 🟢 SEND MESSAGES WITH KEYS
 
-zookeeper-server-start.bat ..\..\config\zookeeper.properties
-kafka-server-start.bat ..\..\config\server.properties
-
 kafka-topics.bat --create --topic foods --bootstrap-server localhost:9092 --replication-factor 1 --partitions 4
 kafka-console-producer.bat --broker-list localhost:9092 --topic foods --property "key.separator=-" --property "parse.key=true"
 kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic foods --from-beginning -property "key.separator=-" --property "print.key=false"
@@ -101,11 +102,11 @@ Bye-Priti
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Kafka Topic:
-It is a topic where messages are stored. Producers send messages to a topic, and consumers read from it.
+It is a category where messages are stored. 
+Producers send messages to a topic, and consumers read from it.
 
 Kafka Partition:
-A topic is divided into partition where messages are stored.
-Ex: Like Book Almirah is a topic and shelves are partition
+A topic is divided into multiple partitions for parallel processing.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -117,15 +118,6 @@ Key Bases Partitioning :
 If a producer sends a message with a key ("user"), 
 Messages with the same key always go to the same partition.
 Useful when order matters
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Consumers and Parallel Processing:
-
-1 partition can be read by only 1 consumer in a consumer group.
-1 Consumer can read multiple partition in a consumer group.
-If you have more consumers than partitions, some consumers stay idle.
-If you have fewer consumers than partitions, each consumer reads multiple partitions.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -157,22 +149,44 @@ Useful when ensuring messages are processed successfully before committing.
 
 Consumer Group:
 
-A Consumer Group is a collection of consumers working together to process a Kafka topic.
+A Consumer Group is a collection of consumers who performance same operation and work together to process a Kafka topic.
 
-1 consumer can read from 3 partition
-2 consumers can also read from 3 partition
-3 consumers can also read from 3 partitition 1 consumer for each partition ( Best )
+1 consumer can read 3 partition
+2 consumers can also read 3 partition
+3 consumers can also read 3 partitition 1 consumer for each partition ( Best )
 
 Key Point:
 Each Consumer group has its own offset Value means 
-If consumer Group A has read till 5 messages so its offset id should be 6
-But If Consumer B Starts reading fresh from same topic it will not start with 6 but with 0.
+If consumer Group A has read till 5 messages so its offset id should be 5
+But If Consumer B Starts reading fresh from same topic it will not start with 5 but with 0.
 Consumer group manages the offset not the individual consumers.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
+Consumer and Partition Relationship:
+
+1 Consumer can read multiple partition because every partition holds different messages
+1 partition can be consumed by only 1 consumer in the same consumer group
+1 partition can be consumed by different consumer groups
+
+Consumer groups are made to group consumers who do similar tasks
+Consumer groups are used to increase parrallel processing, more consumers more processing the messages
+1 partition can be consumed by different consumer groups to peform different tasks for same message
+
+Example:
+
+There are 2 consumer groups wallet and notification which perform wallet creation and notification send
+When user is created it produce message
+If 2 consumers from wallet service will consume same partition they will do same task twice for 1 message
+means 2 wallet creation for 1 user creation thats why 2 consumers cannot read same partition
+
+Both consumer group can read from same partition because both are doing different task
+means 1 user is created based on that 1 wallet is created and 1 notification send is done
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
 Commit Log:
-A commit log is an append-only file where Kafka stores messages in order.
+A commit log is an append-only file in disk where Kafka stores messages in order.
 New messages are always appended at the end.
 Messages are never modified or deleted manually
 
@@ -228,8 +242,8 @@ How to create multiple kafka brokers:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Replication Factor:
-If topic has 3 Replication factor
-It means every partition of that topic is replicated 3 times in 3 different brokers
+If topic has 2 Replication factor
+It means every partition of that topic is replicated 2 times in 2 different brokers
 Replication factor should be equal to or less than the Brokers
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -240,14 +254,14 @@ Every partition is replicated in every broker too
 So, 1 broker is leader of 1 partition 
 
 Ex:
-I created 3 brokers with different ports
-I created a topic in all 3 servers with replication factor 3 and partition factor 3
-It means topic is created on all 3 servers
-So, All 3 brokers have topic food with 3 partition
-So, Every broker is a leader of 1 partition each
-Lets say B1 is a leader of P1, B2 -> P2 and B3 -> P3
+I created 2 brokers with different ports
+I created a topic in all 2 servers with replication factor 2 and partition factor 2
+It means topic is created on all 2 servers
+So, All 2 brokers have topic food with 2 partition
+So, Each broker is a leader of 1 partition each
+Lets say B1 is a leader of P1 and B2 -> P2
 So if a message is produced in P1 partition then first it will get stored in broker1 then it 
-will get replicated in other 2
+will get replicated in other broker
 Same as if message is produced on P2 then it will get first stored on B2.
 
 Why Leaders are Important:

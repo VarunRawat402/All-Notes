@@ -1,4 +1,17 @@
+---------------------------------------------------------------------------
 Spring Security & JWT Notes
+---------------------------------------------------------------------------
+
+JWT BEST PRACTICES AND IMPLEMENTATION:
+
+1: Use Strong Signing Algorithms
+	Avoid HS256 with weak keys 
+	Recommended: RS256 or ES256 (asymmetric cryptography)
+
+2: Dont hardcode the secrets, use Environmental variables
+3: Set short expiration times
+4: NEVER log JWT tokens
+5: Dont store sensitive data in JWT payload
 
 ---------------------------------------------------------------------------
 JWT (JSON Web Token):

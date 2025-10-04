@@ -176,3 +176,61 @@ Spring Security: Key Concepts and Explanations
             }
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+HTTP vs HTTPS:
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+HTTP:
+
+HyperText Transfer Protocol
+Its the fundamental set of rules for transferring data between your browser and website ( server )
+It sends all information—your passwords, credit card numbers, messages—in plain text.
+Defaut Port : 80
+
+The Problem with HTTP:
+Because the data is not encrypted, its vulnerable to several attacks:
+
+Eavesdropping: Anyone on the same Wi-Fi network (like at a coffee shop) or your Internet Service Provider can easily see everything youre sending and receiving.
+Man-in-the-Middle (MitM) Attacks: A hacker can intercept the communication between you and the website, potentially stealing your data or even altering the information being sent (like changing a bank account number during a transfer).
+No Verification: HTTP does not verify the identity of the website you are connecting to. You might think youre on yourbank.com, but you could be on a fake site designed to look like it.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+HTTPS:
+
+HyperText Transfer Protocol Secure
+Its the secure version of HTTP. It does everything HTTP does, but it adds a critical layer of security.
+It uses encryption protocols called TLS (Transport Layer Security), formerly known as SSL, to protect the data.
+Defaut Port : 443
+
+The Three Key Pillars of HTTPS (What TLS Provides):
+
+Encryption: This scrambles the data being sent back and forth. Even if someone intercepts it, they see only a jumbled mess of random characters. 
+Only your browser and the website's server have the secret keys to encrypt and decrypt the data.
+
+Data Integrity: This ensures that the data sent is not tampered with during transit. 
+TLS provides a way to detect if any data has been altered or corrupted. 
+If a single character is changed, the connection will fail.
+
+Authentication: This proves that you are communicating with the intended website and not an imposter. 
+This is done using SSL/TLS Certificates. These are digital "passports" issued by trusted third-party companies called Certificate Authorities (CAs). 
+Your browser checks this certificate to confirm the website's identity.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+How HTTPS Works (The "Handshake" Simplified):
+
+When you connect to an HTTPS website (e.g., https://www.google.com), a secure connection is established in a quick process called a "handshake":
+Hello and Certificate: Your browser says "hello" to the server. The server responds with its SSL Certificate to prove its identity.
+Key Exchange: Your browser checks the certificate. If its valid and trusted, it uses the public key inside the certificate to agree on a new, temporary secret key with the server.
+Secure Communication: Now, both your browser and the server use that temporary secret key to encrypt and decrypt all future communication for that session.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+

@@ -2,11 +2,9 @@
 Comparator
 -------------------------------------------------------------------------------------------------------------------------------
 
-A Comparator is an Interface used to define custom sorting logic for objects:
-
-Why Use Comparator?
-🔹 The default sorting (Collections.sort()) doesnt know how to compare objects 
-🔹 Solution? Use Comparator to define sorting rules for the objects
+A Comparator is an  functional Interface used to define custom sorting logic for objects
+The default sorting (Collections.sort()) doesnt know how to compare objects 
+Use Comparator to sort objects based on different attributes or criteria
 
 Syntax:
 Collection.sort(List,Comparator)
@@ -24,20 +22,17 @@ l1.add(s1);
 l1.add(s3);
 l1.add(s2);
 
-//In Ascending Order
 Collections.sort(l1,(Student x,Student y)-> {
     return x.getAge() - y.getAge();
 });
 
 //Lambda Functions
-Collections.sort(l1,(x,y)->(x.getAge()-y.getAge()));
-Collections.sort(l1,(x,y)->(y.getAge())- x.getAge());  //Descending Order
+Collections.sort(l1,(x,y)->(x.getAge()-y.getAge()));    //In Ascending Order
+Collections.sort(l1,(x,y)->(y.getAge())- x.getAge());   //Descending Order
 
 //Modern Approach
 Collections.sort(l1,Comparator.comparingInt(Student::getAge));
-Collections.sort(l1,Comparator.comparingInt(Student::getAge).reversed());       //Descending Order
-
-System.out.println(l1);
+Collections.sort(l1,Comparator.comparingInt(Student::getAge).reversed());
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -54,20 +49,16 @@ Collections.sort(l1,Comparator.comparing(Student::getName).reversed());
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Sort first by age then by Name:
-Collections.sort(l1,
-                    Comparator.comparingInt(Student::getAge)
-                    .thenComparing(Student::getName));
+Sorting Based on multiple feilds:
+
+Collections.sort(l1,Comparator.comparingInt(Student::getAge).thenComparing(Student::getName));
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Comparator vs Comparable:
+Comparable:
 
-What is Comparable?
-
-Comparable is an interface
-It allows objects of a class to be compared and sorted using methods like Collections.sort()
-Must override the method compareTo() to tell how object should get sorted
+Comparable is an interface which is used to define the default sorting of objects of a class.
+Class needs to implement Comparable interface and override compareTo() method to define the default ordering.
 Use methods like Collections.sort() or Arrays.sort() with this.
 
 -------------------------------------------------------------------------------------------------------------------------------

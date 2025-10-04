@@ -2,20 +2,27 @@
 Create Kafka Topic in Spring Boot:
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-Topic with 1 partition and 1 replica
+// Topic with 1 partition and 1 replica
+
 @Bean
 public NewTopic paymentTopic() {
     return TopicBuilder.name("payment-topic")
     .build();
 }
 
-Topic with customized partitions and replicas
+// Topic with customized partitions and replicas
+
 @Bean
 public NewTopic shipmentTopic() {
     return TopicBuilder.name("shipment-topic")
-    .partitions(2)
-    .replicas(3)
-    .build();
+        .partitions(6)                              // ✅ Increased for throughput
+        .replicas(3)                                // ✅ High availability
+        .config("retention.ms", "604800000")        // ✅ 7 days retention
+        .config("segment.bytes", "1073741824")      // ✅ 1GB segment size
+        .config("cleanup.policy", "delete")         // ✅ Cleanup policy
+        .config("compression.type", "snappy")       // ✅ Compression
+        .config("max.message.bytes", "10485760")    // ✅ 10MB max message size
+        .build();
 }
 
 --------------------------------------------------------------------------------------------------------------------------------------------

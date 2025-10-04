@@ -2,64 +2,91 @@
 Linked List:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-It is a data structure that consist of elements where each element points towards the next element.
-It is dynamically sized data structure.
-Insert TC -> O(1)
-Search TC -> O(n)
-Linked list consists of nodes
-Each node has data & next ( data = value, next = reference of next element )
+Linear data structure where elements are stored in nodes
+Each node contains data and reference to next node
+Dynamically sized - grows/shrinks at runtime
+Does not require contiguous memory allocation
 
-There are 4 Types of LL:
-1: Singly LL
-2: Doubly LL
-3: Circular LL
-4: Doubly Circular LL
+Time Complexity:
+
+Insertion: O(1) at beginning/end, O(n) at specific position
+Deletion: O(1) at beginning, O(n) at end/specific position
+Search: O(n) - must traverse from head
+Access: O(n) - must traverse to index
+
+1. Singly Linked List:
+    Each node points only to next node
+    Can traverse only in forward direction
+
+2. Doubly Linked List:
+    Each node points to both next and previous nodes
+    Can traverse in both directions
+
+3. Circular Linked List:
+    Last node points back to first node
+    Forms a circular chain
+
+4. Doubly Circular Linked List:
+    Combination of doubly and circular
+    Last node points to first, first points to last
+
+Note: Java's LinkedList class implements Doubly Linked List
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Key Points:
-It is better for frequent insertions and deletions as it does not reqire shifting of elements
-Slow fetching access coz it has to traverse from starting to desired index
-It use more memory as it needs to store the data and the address of the next node
-There is only 1 implementation of LL in java, It is doubly Linked List
+
+✅ Better for frequent insertions/deletions - No element shifting required
+✅ Dynamic size - No pre-allocation needed
+❌ Slow random access - Must traverse from head to desired index
+❌ More memory overhead - Each node stores data + references
+✅ Efficient memory utilization - No contiguous block required
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Syntax:
     LinkedList<String> ll = new LinkedList<>();
 
-    l1.add("Orange");
-    l1.add("Banana");
-    l1.add("Apple");
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+1. Adding Elements:
+
+list.add("Apple");                   // Add at end
+list.addFirst("Orange");             // Add at beginning
+list.addLast("Banana");              // Add at end (same as add())
+list.add(1, "Mango");                // Add at specific index
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Methods:
+2. Removing Elements:
 
-1: add() & addLast():
-    Add element at the end of the linked list.
-    l1.add("Orange");
+list.remove();                       // Remove first element
+list.removeFirst();                  // Remove first element
+list.removeLast();                   // Remove last element
+list.remove("Apple");                // Remove specific element
+list.remove(2);                      // Remove element at index
+list.removeFirstOccurrence("Apple"); // Remove first occurrence
+list.removeLastOccurrence("Apple");  // Remove last occurrence
+list.clear();                        // Remove all elements
 
-2: addFirst():
-    Add element at the front of the linked list.
-    l1.addFirst("Apple");
+-----------------------------------------------------------------------------------------------------------------------------------------
 
-3: removeFirst() & removeLast():
-    Remove First element & Remove last element from the linked list.
-    l1.removeFirst();
-    l1.removeLast();
+3. Accessing Elements:
 
-4: remove():
-    Remove given element
-    l1.remove("Apple");
+String first = list.getFirst();      // Get first element
+String last = list.getLast();        // Get last element
+String element = list.get(2);        // Get element at index
+String peek = list.peek();           // Retrieve but don't remove first element
+String poll = list.poll();           // Retrieve and remove first element
+-----------------------------------------------------------------------------------------------------------------------------------------
 
-5: Contains():
-    Check if the given element is present in the linked list or not    
-    l1.contains("Orange");
+4. Searching & Checking:
 
-6: get():
-    To get the element at the given index
-    l1.get(0);
+boolean hasApple =  list.contains("Apple");          // Check if element exists
+int index =         list.indexOf("Apple");           // Find first occurrence index
+int lastIndex =     list.lastIndexOf("Apple");       // Find last occurrence index
+int size =          list.size();                     // Get number of elements
+boolean isEmpty =   list.isEmpty();                  // Check if empty
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
