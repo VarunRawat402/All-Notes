@@ -85,12 +85,6 @@ Note:
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Security Context Holder:
-
-- Storage for the Security Context.
-
-----------------------------------------------------------------------------------------------------------------------------------------
-
 Security Context:
 
 - Container holding user authentication and authorization data (e.g., Authentication object).
