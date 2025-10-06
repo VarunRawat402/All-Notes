@@ -3,9 +3,10 @@ How to Optimise your Application
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 spring.kafka.listener.concurrency=4
+    This is basically used when there is a single consumer and we want to make it multi-threaded
 
-This creates 4 threads for kafka consumer
-These 4 threads will consume messages from kafka topic partitions
+This creates 4 threads for single kafka consumer
+These 4 threads will consume messages from different kafka topic partitions
 
 If topic has 4 partition and 4 threads are used then 1 thread can read from 1 partition
 Threads should not be greater than partition otherwise they will stay idle
@@ -19,13 +20,13 @@ while if we use 4 threads it will read 4 message in 1 sec
 Consumer Group:
 
 1 partition can be read by only 1 consumer in consumer group
-Main focus is Load Balancing for consumer groups so, If any consumer broke then other consumers
+Main focus is Load Balancing  and parallel processing for consumer groups so, If any consumer broke then other consumers
 will still be there to read messages.
 
 If you have 2 kafka Listeneres who are listening to same topic 'order' and perfroming different things
 Their GroupId should be different otherwise only 1 of them can read messages
 
-To create 2 consumer with sameId to load balance we need to run another instance of the application basically
+To create 2 consumer with same group id to load balance we need to run another instance of the application basically
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 

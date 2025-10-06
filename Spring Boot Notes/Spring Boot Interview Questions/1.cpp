@@ -28,7 +28,7 @@ Converts java objects to tables automatically, removes JDBC boiler plate code
 
 FetchType: 	
 Lazy: 	Entity data is loaded only, related data is loaded only when its accessed	
-Eager: 	Both Entity data and related data are loaded at first
+Eager: 	Both Entity data and related data are loaded when entity is loaded
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ Integrate with monitoring tools (Prometheus, Grafana, ELK, etc.)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Sheduled:		
+Scheduled:		
 It is used on methods to execute them at intervals or at specific time using cron expressions
 @EnableScheduling annotation needs to add to Main method
 

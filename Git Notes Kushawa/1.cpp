@@ -19,10 +19,14 @@ Key Concepts:
 - Remote Repository:
     A repository hosted on a server, typically used for backup, collaboration, and sharing code with others.
 
+- Staging area:
+    A virtual intermediate area between your Working Directory and your Local Repository. 
+    It is where you prepare and organize which changes you want to include in your next commit.
+
 ------------------------------------------------------------------------------------------------------------------------
 Basic Workflow:
 
-1. Create a new repository.
+1. Create a new repository and work on directory
 2. Add files to the staging area (index).
 3. Commit changes to the local repository.
 4. Push commits to a remote repository for sharing and backup.
@@ -31,22 +35,24 @@ Basic Workflow:
 Essential Git Commands:
 
 - Initialize a repository: 
-    `git init` - Sets up a new Git repository in your project directory.
+    `git init`                              - Sets up a new Git repository in your project directory.
 
 - Add files to staging area: 
-    `git add <filename>` - Stages changes for the next commit.
+    `git add <filename>`                    - add files to staging area
 
 - Remove files from staging area: 
-    `git restore --staged <filename>` - Unstages files without discarding changes.
+    `git restore --staged <filename>`       - Unstages files without discarding changes.
+    `git restore <filename>`                - Discards recent changes in the working directory.
 
 - Commit changes: 
-    `git commit -m "commit message"` - Saves staged changes to the repository with a descriptive message.
+    `git commit -m "commit message"`        - Saves staged changes to the repository with a message.
 
 - View status: 
-    `git status` - Shows the current state of the working directory and staging area.
+    `git status`                            - Shows the current state of the working directory and staging area.
 
 - View commit history: 
-    `git log` - Displays a log of all commits in the repository.
+    `git log`                               - Displays a log of all commits in the repository.
+    `git log --oneline`                     - Shows all the commits in a single line format.
 
 - Stop tracking a file: 
     `git rm --cached <filename>` - Removes a file from version control but keeps it in your working directory.
@@ -54,14 +60,14 @@ Essential Git Commands:
 ------------------------------------------------------------------------------------------------------------------------
 Resetting and Reverting Changes:
 
-- Soft Reset: 
-    `git reset --soft <commit-hash>` - Moves HEAD to the specified commit, keeping changes staged.
+- Hard Reset: 
+    `git reset --hard <commit-hash>` - Moves HEAD to the specified commit and discards all changes after that commit.
 
 - Mixed Reset (default): 
     `git reset <commit-hash>` - Moves HEAD to the specified commit, unstaging changes but keeping them in the working directory.
 
-- Hard Reset: 
-    `git reset --hard <commit-hash>` - Moves HEAD to the specified commit and discards all changes after that commit.
+- Soft Reset: 
+    `git reset --soft <commit-hash>` - Moves HEAD to the specified commit, keeping changes staged.
 
 - Revert: 
     `git revert <commit-hash>` - Creates a new commit that undoes the changes from the specified commit, preserving history.
