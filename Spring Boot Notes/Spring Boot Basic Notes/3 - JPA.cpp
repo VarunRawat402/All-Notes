@@ -3,7 +3,8 @@ Spring Boot ( JDBC, JPA, H2, HIBERNATE ):
 ---------------------------------------------------------------------------------------------------------------
 
 SQL properties file ( queries.sql ):
-Location : same folder as application.properties is in
+    It is used to run the sql queries at the start of the application
+    Location : same folder as application.properties is in
 
 Jpa picks up this folder and run all the sql queries in it as soon as the application starts
     Ex:
@@ -21,8 +22,8 @@ It allows developers to work with a lightweight database without setting up an e
 
 Spring JDBC:
 JDBC (Java Database Connectivity) in Spring Boot allows interaction with relational databases using standard SQL queries.
-Unlike Spring Data JPA, which uses ORM (like Hibernate), JDBC gives you direct control over SQL execution.
 In JDBC you have to write manual sql queries and functions to perform CRUD Operations.
+Unlike Spring Data JPA, which uses ORM (like Hibernate), JDBC gives you direct control over SQL execution.
 
 Dependencies:
     <dependency>

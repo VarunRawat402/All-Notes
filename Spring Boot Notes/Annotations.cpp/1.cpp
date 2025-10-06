@@ -43,3 +43,5 @@ It is a front controller. Receives request, finds the correct controller based o
 Jackson:	
 It is a library used for serializing and deserializing Java objects.
 
+@Slf4j:
+It automatically creates a logger for your Java class

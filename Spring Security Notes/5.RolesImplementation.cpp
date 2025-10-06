@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------------------------
-Roles Implementation:
+Authentication strategy:
 -------------------------------------------------------------------------------------------------------------
 
 1: Interface Method:
@@ -109,10 +109,10 @@ public class User {
     private String password;
     private Set<Role> roles = new HashSet<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private Student student;
     
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private Admin admin;
 }
 
@@ -124,7 +124,7 @@ Student Entity:
 public class Student {
 
     private Long id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 }
@@ -135,9 +135,9 @@ Admin Entity:
 
 @Entity
 public class Admin {
-    df
+
     private Long id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 }

@@ -1,5 +1,7 @@
 ----------------------------------------------------------------------------------------------------------------------------------------
 JWT TOKEN IN SS6:
+    In this we dont use jwts.builder() and jwts.parser() to create and parse the token
+    We use jwtEncoder and jwtDecoder to create and parse the token
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 Dependency:
@@ -49,6 +51,7 @@ logging:
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 JWT Config ( Encoder and Decoder)
+    Configure jwtEncoder and jwtDecoder with secret key to automatically sign and validate the token using secret key
 
 @Configuration
 public class JwtConfig {
@@ -56,21 +59,14 @@ public class JwtConfig {
     @Value("${spring.security.oauth2.resourceserver.jwt.secret-key}")
     private String jwtSecret;
 
-    /**
-     * WHAT IT DOES: Creates JWT encoder for generating tokens
-     * SS6: Uses NimbusJwtEncoder with secret key
-     */
+    //use NimbusJwtEncoder to create jwt token and sign the token using secrety key automatically
     @Bean
     public JwtEncoder jwtEncoder() {
         SecretKey key = new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(key));
     }
 
-    /**
-     * WHAT IT DOES: Creates JWT decoder for validating tokens
-     * SS6: Uses NimbusJwtDecoder with secret key
-     */
-    @Bean
+    //use NimbusJwtDecoder to validate jwt token with sign ing key automatically
     public JwtDecoder jwtDecoder() {
         SecretKey key = new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(key).build();
@@ -79,59 +75,10 @@ public class JwtConfig {
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Security Config:
-
-@Configuration
-@EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
-public class SecurityConfig {
-
-    @Autowired
-    private final JwtAuthFilter jwtAuthFilter;
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configure(http))
-            
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/auth/**", "/public/**", "/health").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().authenticated()
-            )
-            
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-            )
-            
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        authoritiesConverter.setAuthorityPrefix("ROLE_");
-        authoritiesConverter.setAuthoritiesClaimName("roles");
-        
-        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
-        jwtConverter.setPrincipalClaimName("sub");
-        
-        return jwtConverter;
-    }
-}
-
-----------------------------------------------------------------------------------------------------------------------------------------
-
 JWT Util and Service:
+    Create jwtClaim object using JwtClaimSet
+    Use jwtEncoder to sign and create the token
+    Use jwtDecoder to validate and parse the token
 
 @Service
 @RequiredArgsConstructor

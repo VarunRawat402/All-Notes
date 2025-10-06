@@ -24,27 +24,30 @@ Example: 1 student has only 1 ID card.
 @OneToMany (One-to-Many Relationship)
 Definition:
 One record in Table A is linked to multiple records in Table B.
-Example: 1 Department has multiple Students.
+Example: 1 order has multiple items.
 
 @ManyToOne (Many-to-One Relationship)
 Definition:
 Many records in Table A are associated with one record in Table B.
-Example: Many students belong to 1 department.
+Example: Multiple items belong to one order.
 
 @ManyToMany (Many-to-Many Relationship)
 Definition:
 Multiple records in Table A are linked to multiple records in Table B.
-Example: Students can enroll in multiple courses, and each course can have multiple students.
+Example: 1 department has multiple students and 1 student can belong to multiple departments.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@JoinColumm : represents the owning side and foreign key
+@JoinColumm : represents the owning side
+    It is used to specify the foreign key column in the owning entitys table.
+
 mappedBy = :  represents the inverse side
+    It is used on the non-owning entity to specify the field that owns the relationship.
     always give the java attribute name in mappedBy not the mysql table name 
 
 Code:
 @Entity
-class Department {
+class Department {  //department is the non-owning side
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +59,7 @@ class Department {
 }
 
 @Entity
-class Student {
+class Student {     //student is the owning side
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,7 +92,6 @@ Lazy Fetching:
     Students are loaded from the database only when dept.getStudents() is called.
 
 Code:
-    Department dept = entityManager.find(Department.class, 1L);
 
     System.out.println(dept.getName()); // ✅ Only Department data is fetched. ❌ Students are NOT loaded yet.
     System.out.println(dept.getStudents());      // Now Hibernate fetches students from the database.
@@ -99,7 +101,6 @@ Eager Fetching:
     ID Card is automatically loaded with the Student.
 
 Code:
-    Student student = entityManager.find(Student.class, 1L);
 
     System.out.println(student.getName()); // ✅ Student data is fetched and ID Card is also fetched automatically.
     System.out.println(student.getIdCard()); // ✅ ID Card is already fetched.

@@ -48,19 +48,19 @@ Token Generation:
     - Sign the token with a secret key.
 
 ---------------------------------------------------------------------------
+Extracting Claims:
+- Use jwts.parser to create a parser.
+- Set the secret key for verification.
+- Parse the token to get the JWT object.
+- Extract the payload (claims) from the object.
+
+---------------------------------------------------------------------------
 JWT Validation:
 - Check if the token is expired:
     - Extract claims from the token.
     - Get the expiration date from claims.
     - If expiration date is before the current date, the token is expired.
     - If expiration date is after the current date, the token is valid.
-
----------------------------------------------------------------------------
-Extracting Claims:
-- Use jwts.parser to create a parser.
-- Set the secret key for verification.
-- Parse the token to get the JWT object.
-- Extract the payload (claims) from the object.
 
 ---------------------------------------------------------------------------
 JWT Validation in doFilter():

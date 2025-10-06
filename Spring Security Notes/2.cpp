@@ -224,13 +224,44 @@ Hello and Certificate: Your browser says "hello" to the server. The server respo
 Key Exchange: Your browser checks the certificate. If its valid and trusted, it uses the public key inside the certificate to agree on a new, temporary secret key with the server.
 Secure Communication: Now, both your browser and the server use that temporary secret key to encrypt and decrypt all future communication for that session.
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------]\
 
+Cascade:
 
+cascade will always be added on the saving side
+If you are saving student and want user to be saved automatically then you need to add cascade on student entity at user attribute
+If you are saving user and want student to be saved automatically then you need to add cascade on user entity at student attribute
 
+Ex:
 
+public class User{
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
+    private String username;
+    private String password;
+
+    private List<String> roles = new ArrayList<>();
+}
+
+public class Student {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String name;
+    private int age;
+
+    @OneToOne(cascade = CascadeType.PERSIST)    //cascade is in the student entity because we are saving student and want user to be saved automatically
+    @JoinColumn
+    private User user;
+
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------]\
 
 
 

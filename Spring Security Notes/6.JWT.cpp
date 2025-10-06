@@ -4,13 +4,32 @@ JWT Implementation:
 
 Steps to Implement JWT Token:
 
-
-
-
-
-
+1: create the sign in key using hash Algorithm
+2: create the jwt token using jwts.builder() with custom claims
+3: validate and parse the token using jwts.parser()
+4: validate the username and expiration date of token
+5: login with username and password and validate the user, then create the token
+6: create jwtAuthFilter to get the token from header, validate the token and make the user authenticated
 
 --------------------------------------------------------------------------------------------------------------------------------------------
+
+JWT util:
+
+jwts is a library used to create and validate the JWT token
+
+To create the token:
+    jwts.builder() is used to create the token 
+    add custom claims, subject, issuedAt, expiration, then sign the token and build it
+
+To validate and parse the token:
+    jwts.parser is used to parse the token
+    verify the token with sign in key
+    parse the claims and get the payload, which is jwt claims
+
+To get expiration, username, claims you can use parse function:
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
 User Model:
 
 public class User {
@@ -29,13 +48,12 @@ public class User {
 UserService:
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
    //Add user in the Repository
     public boolean saveNewUser(User user) {
@@ -62,10 +80,10 @@ public class UserService {
 UserServiceImplementation:
 
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private finalUserRepository userRepository;
 
     //Fetch the user from repository and validate it
     @Override
@@ -88,14 +106,13 @@ Spring Security (Authorization and Authentication):
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SpringSecurity {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtFilter jwtFilter;
+
+    private final UserDetailsServiceImpl userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtFilter jwtFilter;
 
     //SecurityFilterChain for authorization of request
     @Bean
@@ -134,7 +151,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    //verify the token using key and extract the claims
+    //validate and parse the token
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -143,20 +160,15 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    //Extract Username from the claims
+    //Extract Username from token
     public String extractUsername(String token) {
         Claims claims = extractAllClaims(token);
         return claims.getSubject();
     }
 
-    //Extract Expiry Date from the claims
-    public Date extractExpiration(String token) {
-        return extractAllClaims(token).getExpiration();
-    }
-
     //Check if token Expired
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
     //Check if token is valid or not
@@ -189,14 +201,11 @@ public class JwtUtil {
 JWT Filter ( Validate the Token and grant access ):
 
 @Component
-public class JwtFilter extends OncePerRequestFilter {
-    //OncePerRequestFilter : Pass the request only one time
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private JwtUtil jwtUtil;
-
+@RequiredArgsConstructor
+public class JwtFilter extends OncePerRequestFilter {           //OncePerRequestFilter : Pass the request only one time
+   
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
     //This will be automatically called to validate the user through token
     @Override
@@ -247,17 +256,13 @@ Public Controller ( creating token / adding user ):
 @RestController
 @RequestMapping("/public")
 @Slf4j
+@RequiredArgsConstructor
 public class PublicController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final UserService userService;\
+    private final JwtUtil jwtUtil;
 
     //Create the user and store in the DB with username and password
     @PostMapping("/signup")

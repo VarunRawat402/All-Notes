@@ -6,12 +6,17 @@ How to use Logger:
 private static Logger logger = LoggerFactory.getLogger(Controller.class);
 Controller is a class name
 
+or 
+
+@Slf4j annotation on top of the class
+Then use log.info("message");
+
 ----------------------------------------------------------------------------------------------------------------------
 
 Command line runner :
 
 Main function is a static function so we cannot use any service, Repository etc in main as they are non-static
-CommandLineRunner helps us run the non static function in the main
+CommandLineRunner helps us run the non static function at the start of the application
 
 public class Demo implements CommandLineRunner{
 
@@ -33,16 +38,15 @@ public class Demo implements CommandLineRunner{
 Inversion Of Control:
 Instead of you managing the Lifecycle of the object yourself, spring will do it for you.
 
-@Component = The spring will create bean object of any classes which have component annotation directly or indirectly.
-Object created by spring automatically will be stored in the IOC Container
+@Component = The spring will create bean/object of any classes which have component annotation directly or indirectly.
+Object created by spring automatically will be stored in the IOC Container for us to use
 Object created by us manually using new keyword will not be stored in the Container.
 
 -----------------------------------------------------------------------------------------------------------------------
 
 Dependency Injection:
 It is a process to use a bean/object of some class to use wherever we want in whole Application
-If spring dont create an object we cannot use that object in some other classes
-Coz if spring didnt create an object there is no object in the Container to use.
+if spring didnt create an object there is no object in the Container to use.
 So Dependency Injection is Dependable to IOC.
 
 -----------------------------------------------------------------------------------------------------------------------
