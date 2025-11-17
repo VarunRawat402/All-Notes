@@ -2,22 +2,25 @@
 Mockito:
 --------------------------------------------------------------------------------------------------------------------------------
 
-1: Tests should focus on one class (unit) without relying on real dependencies (e.g., databases, APIs, services).
+1: Tests should focus on a single class (unit) without depending on real external resources like databases, APIs, or services.
 Mockito replaces these dependencies with fake (mock) objects.
 
-2: Check if a method was called, how many times, and with which arguments.
+2: Allows verification of:
+    Whether a method was called
+    How many times it was called
+    With which parameters
 
 3: Mocks run in-memory, avoiding slow I/O operations (e.g., HTTP calls, DB queries).
 
-4: Simulate rare scenarios (e.g., null returns, exceptions) without complex setups.
+4: Helps simulate rare or hard-to-reproduce scenarios like null returns, errors, and exceptions.
 
 --------------------------------------------------------------------------------------------------------------------------------
 Mockito Uses:
 --------------------------------------------------------------------------------------------------------------------------------
 
-Databases: Mock Repository classes to avoid real DB calls.
-APIs/Web Services: Mock RestTemplate or FeignClient.
-Third-Party Libraries: Mock classes from SDKs (e.g., AWS, Payment Gateways).
+Databases: Mock repository classes instead of hitting a real DB.
+APIs/Web Services: Mock RestTemplate, FeignClient, or WebClient calls.
+Third-Party Libraries: Mock AWS SDK clients, payment gateways, SMS/email services, etc.
 
 --------------------------------------------------------------------------------------------------------------------------------
 

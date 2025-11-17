@@ -3,39 +3,39 @@ Advanced Rest API Features:
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Content Negotiation ( REST API ):
+    Content Negotiation allows a Spring Boot REST API to return responses in different formats (JSON, XML, etc.) depending on what the client asks for.
 
-Content Negotiation allows a Spring Boot REST API to serve responses in different formats (JSON, XML, etc.) based on client requests.
-With this dependency spring boot will automatically parse the data into the XML 
-Add this request Headers:
-    Accept : application/xml
+// Spring Boot (with the proper dependency) will automatically convert the response to XML.
+If the client sends:
+    Accept: application/xml
 
-Dependency:
-    <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-xml</artifactId>
-    </dependency>
+// Spring Boot already supports JSON by default. Adding this dependency adds XML support.
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Internationalization (i18n):
+    Internationalization (i18n) allows your API to return messages in different languages based on the clients locale.
 
-Spring Boot supports internationalization (i18n) using messages.properties files. 
-This allows you to provide different translations for messages based on the users locale.
-Request Headers:
-Accept-Language : en,nl,fr
+Client sends a language preference using:
+    Accept-Language: en, fr, nl
 
 Steps:
-1: Create messages.properties file for different Languages
-    ( path : src/main/resources)
-    Ex:
-        messages.properties : 
-            goodMorning.message=Good Morning
-        messages_fr.properties : 
-            goodMorning.message=Bonjour!
+1: Create messages.properties file for different Languages ( path : src/main/resources):
+   
+// Spring Boot automatically picks the file based on the locale.
+Ex:
+    messages.properties : 
+        goodMorning.message=Good Morning
+    messages_fr.properties : 
+        goodMorning.message=Bonjour!
 
-2: Use these properties using MessageSource in Controller:
-    //Message source will fetch the message.properties file based on the 
-    //Request header : Accept-Language from the client
+2. Use MessageSource in the Controller:
+    LocaleContextHolder fetches the locale from the request header.
 
 Code:
     @Autowired
@@ -50,18 +50,26 @@ Code:
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Spring Boot Actuator:
+    Spring Boot Actuator provides tools for monitoring and managing a running application.
 
-Spring Boot Actuator provides production-ready features to monitor and manage applications without modifying the code.
-It exposes various endpoints to check application health, metrics, environment properties, and more.
+It exposes endpoints for:
+    health
+    metrics
+    environment
+    beans
+    logs
+    mappings
 
-Dependency:
+1: Add the Dependency:
+
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-actuator</artifactId>
 </dependency>
 
-Application.properties:
-management.endpoints.web.exposure.include=*
+2: Expose the points:
+    Application.properties:
+    management.endpoints.web.exposure.include=*
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 

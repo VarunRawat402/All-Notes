@@ -2,54 +2,58 @@
 Lecture 15: REDIS INTRODUCTION:
 -----------------------------------------------------------------------------------------
 
-To connect Redis to any port:
+To connect Redis to a specific port:
 	redis-cli -p 6380
 
-To connect Redis to any host:
+To connect Redis to a specific host:
 	redis-cli -h { Host Name } -p { Port No } -a { Password }
-	Port No will be the first number in the Host Name
-	When you connect to the cloud Server you need to give the password too
+
+Cloud Redis usually requires a password.
+Port number is typically the number shown in the connection string.
 
 ----------------------------------------------------------------------------------------------------------------------------	
 
 Redis is an in-memory data used for DB, Caching and Message Broker
+Always store data with an expiry time to keep cache clean and avoid memory issues.ate
 
-Always store the data in the redis with expiraty date
+When Redis Cache Memory Is Full:
+	1: Increase memory / add more Redis nodes.
+	2: Evict (delete) existing keys based on eviction policies.
 
-When the storage is full in the cache memory we have 2 options:
-	1: Increase the storage by installing more servers/memory.
-	2: Delete the existing data in the cache based on some policies for the new coming data.
-
-Policy:
-	volatile-lru = Delete the least recently used keys where expiry date is true
+Eviction Policy Example: 
+	volatile-lru = Deletes Least Recently Used keys only if they have an expiry time.
 	Ex: D1 - 8 Days Expiry		        D2 - 5 Days Expiry		--> D2 will be deleted
     	D1 - No Expiry date				D2 - No Expiry date 	--> No data will be deleted and insertion will fail		
-	That is why we need to set the data with an expiry date so we wont get this 
+	If keys have no expiry, nothing is deleted → insertion fails.
+	This is why expiry time is important.
 
 ----------------------------------------------------------------------------------------------------------------------------
 
-When we store some data in redis its storing in memory (RAM) but when we shuts down the server it stores all the data 
-to the disk so we dont loose the data.
+How Redis Stores Data:
 
-1: Redis acts as a cache for real time queries.
-2: It also persist the data onto the disk in a b/g thread to provide persitant capabilities.
+Redis stores data in RAM for fast access.
+When the server shuts down, Redis saves data to disk for persistence.
 
-Disadvantage of 2nd property:
-	1: Load time / Starting time will be high due to the data loading from the disk.
-	2: Duplicate data will be in memory and disk when server is running 
+Redis acts as:
+
+1: Real-time cache (primary use).
+2: Persistent storage by writing snapshots/logs to disk.
+
+Disadvantages:
+	1: Startup time increases because Redis loads data from disk into RAM.
+	2: Duplicate storage — same data in RAM and disk at the same time.
 		Ex: 1 gb data loaded from disk in memory when server starts.
 		    So Memory is using 1 gb and disk is also using 1 gb of storage of same data.
 
 ----------------------------------------------------------------------------------------------------------------------------
 
-Types of Data we can store in the Redis DB:
+Data Types in Redis:
 
-It does not store int, float and double	
-It only store the data in form of strings.
-It can return integer to the user but store only Strings.
+Redis stores everything as strings internally.
+It returns integers for convenience but stores them as strings.
 
 Keys : 
-	Strings ( It can only be strings )
+	Always strings.
 
 Values: 
 	Strings, List<Strings> , Hash<String,String> , set<String> .. etc etc
@@ -69,15 +73,15 @@ KEYS In REDIS:
 3: DEL ( del key ):
 	Ex: del name
 
-4: SETEX ( setex key time value ):
+4: SETEX (seconds expiry):
 	Sets data with expiry date ( Seconds )
 	Ex: setex name 90 varun
 
-5: PSETEX ( setex key time value ):
+5: PSETEX (milliseconds expiry):
 	Sets data with expiry date ( Milliseconds )
 	Ex: setex name 90 varun
 
-6: TTL ( ttl key )
+6: TTL ( check remaining expiry )	
 	Returns remaining expirty time
 	Ex: ttl name
 
@@ -96,7 +100,7 @@ KEYS In REDIS:
 ----------------------------------------------------------------------------------------------------------------------------
 
 LIST In REDIS:
-A List in Redis is an ordered collection of strings.
+A Redis List is an ordered collection of strings.
 
 1: LPUSH / RPUSH
 	Add element in list from both left and right
@@ -118,10 +122,9 @@ A List in Redis is an ordered collection of strings.
 ----------------------------------------------------------------------------------------------------------------------------
 
 SET In REDIS:
-A Redis Set is an unordered collection of unique strings.
-No duplicates allowed
-No guaranteed order
-Very fast for add, remove, and check operations
+	Unordered
+	Unique elements
+	Very fast for add/remove/check
 
 1: SADD:
     Add element in set
@@ -148,9 +151,7 @@ Very fast for add, remove, and check operations
 ----------------------------------------------------------------------------------------------------------------------------
 
 HASHSET In REDIS:
-
-Hashes in redis is similar to HashMaps in java
-There is no particular order in HashMaps
+	Redis Hash = Java HashMap (field → value)
 
 Keys : {
 		feild : Value
@@ -182,4 +183,5 @@ Commands:
 
 6: HDEL : It is used to delete the feild:value 
 	Ex: hdel student name
+	
 -----------------------------------------------------------------------------------------------------------------------------------

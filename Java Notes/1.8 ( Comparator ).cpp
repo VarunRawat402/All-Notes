@@ -2,12 +2,8 @@
 Comparator
 -------------------------------------------------------------------------------------------------------------------------------
 
-A Comparator is an  functional Interface used to define custom sorting logic for objects
-The default sorting (Collections.sort()) doesnt know how to compare objects 
-Use Comparator to sort objects based on different attributes or criteria
-
-Syntax:
-Collection.sort(List,Comparator)
+A Comparator is a functional interface used to define custom sorting logic for objects.
+Collections like Collections.sort() cannot sort objects automatically because they don’t know which field to compare.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -22,28 +18,28 @@ l1.add(s1);
 l1.add(s3);
 l1.add(s2);
 
-Collections.sort(l1,(Student x,Student y)-> {
-    return x.getAge() - y.getAge();
-});
+Lambda Function:
 
-//Lambda Functions
-Collections.sort(l1,(x,y)->(x.getAge()-y.getAge()));    //In Ascending Order
-Collections.sort(l1,(x,y)->(y.getAge())- x.getAge());   //Descending Order
+Collections.sort(l1, (x, y) -> x.getAge() - y.getAge());       // Ascending
+Collections.sort(l1, (x, y) -> y.getAge() - x.getAge());       // Descending
 
-//Modern Approach
-Collections.sort(l1,Comparator.comparingInt(Student::getAge));
-Collections.sort(l1,Comparator.comparingInt(Student::getAge).reversed());
+Modern approach:
+
+Collections.sort(l1, Comparator.comparingInt(Student::getAge));               
+Collections.sort(l1, Comparator.comparingInt(Student::getAge).reversed());
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Sorting Based on Name:
 
-//Lambda Functions
+Lambda Function:
+
 Collections.sort(l1,(x,y)->(x.getName().compareTo(y.getName())));
 Collections.sort(l1,(x,y)->(y.getName().compareTo(x.getName())));               //Descending Order
 
 
-//Modern Approach
+Modern approach:
+
 Collections.sort(l1,Comparator.comparing(Student::getName));
 Collections.sort(l1,Comparator.comparing(Student::getName).reversed());
 
@@ -57,8 +53,8 @@ Collections.sort(l1,Comparator.comparingInt(Student::getAge).thenComparing(Stude
 
 Comparable:
 
-Comparable is an interface which is used to define the default sorting of objects of a class.
-Class needs to implement Comparable interface and override compareTo() method to define the default ordering.
+Comparable is an interface which is used to define the default sorting logic inside the class itself.
+Class needs to implement Comparable<T>
 Use methods like Collections.sort() or Arrays.sort() with this.
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -79,7 +75,7 @@ class Student implements Comparable<Student> {
 
     @Override
     public int compareTo(Student other) {
-        return this.age - other.age;
+        return this.age - other.age;            // Default sorting: by age
     }
 
     @Override
@@ -95,9 +91,9 @@ public class Main {
         students.add(new Student(2, "Bob", 20));
         students.add(new Student(3, "Charlie", 25));
 
-        Collections.sort(students); // Uses compareTo()
+        Collections.sort(students);    // Uses compareTo()
 
-        System.out.println(students); // [Bob (20), Alice (22), Charlie (25)]
+        System.out.println(students);
     }
 }
 

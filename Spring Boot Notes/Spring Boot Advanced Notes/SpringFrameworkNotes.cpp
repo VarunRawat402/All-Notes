@@ -2,59 +2,46 @@
 Spring Framework Concepts:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Spring Container Vs Spring Context ( IOC Controller ) ( All are same thing ):
+Spring Container vs Spring Context (IoC Container):
 
-Spring Container: The core mechanism that manages beans (objects).
-Spring Context (ApplicationContext): A more powerful version of the container that adds extra features like event handling, AOP, internationalization, and property management.
-So, Spring Context is a type of Spring Container but with additional capabilities!
+Spring Container: 
+Core mechanism that creates and manages beans.
 
-Ex:
+Spring Context (ApplicationContext):
+A more advanced and feature-rich type of Spring container. Supports:
+    Event handling
+    AOP
+    Internationalization
+    Property management
 
-public class HelloService {
-    public void sayHello() {
-        System.out.println("Hello, Spring!");
-    }
-}
-
-public class MainApp {
-    public static void main(String[] args) {
-
-        //AnnotationConfigApplicationContext(MainApp.class)
-        //This will create a spring context ( application.context ) of all the beans in the main class and store the
-        //context in the context variable
-        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-
-        //Asks Spring for an object of the HelloService class which is automatically created by spring 
-        //So we can use that object to access the features of that class
-        HelloService helloService = context.getBean(HelloService.class);
-        helloService.sayHello();
-    }
-}
+So ApplicationContext = Container + extra features.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Types of Spring Containers:
 
-BeanFactory (Lightweight, low-level container)
-    The basic container that manages beans.
+1. BeanFactory (Basic, Lightweight):
+    Manages beans
+    Lazy initialization, Very low-level
     Uses lazy initialization (beans are created only when needed).
-    Example: XmlBeanFactory (deprecated).
+    Mostly deprecated (e.g., XmlBeanFactory)
 
-ApplicationContext (Advanced, feature-rich container)
-    Built on top of BeanFactory with additional functionalities.
-    Supports event propagation, internationalization, declarative mechanisms, etc.
-    The ApplicationContext is the preferred container in most Spring applications.
+2. ApplicationContext (Advanced, Default)
+    Built on BeanFactory    
+    Eager initialization
+    Handles events, AOP, i18n
+    Preferred in all Spring applications
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @Qualifer vs @Primary:
 
 @Primary ( Default Bean Selection )
-Marks a bean as the default choice when multiple beans of the same type exist.
+Default bean when multiple beans of the same type exist.
 Works unless another bean is explicitly chosen using @Qualifier.
 
 @Qualifier ( Choosing a Specific Bean )
-Used when multiple beans exist, and we need a specific one.
+Used to select a specific bean when multiple beans exist. 
 Overrides @Primary.
 
 Ex:

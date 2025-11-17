@@ -2,19 +2,19 @@
 Api Gateway:
 ------------------------------------------------------------------------------------------------------------------------------
 
-An API Gateway is a entry point for Client for all the microservices present.
-It is used for adding those features to Microservices which are common so we dont have to add them separately on each one.
+An API Gateway is the single entry point for all client requests in a microservices architecture.
+It helps avoid writing common logic in every microservice by centralizing shared features.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
 Uses of API GATEWAY:
 
-Routing : Clients interact with one endpoint instead of multiple microservices
-Service Discovery --> Works with Eureka to find services dynamically
-Load Balancing 
-Security & Authentication --> Handles JWT, OAuth, API keys, etc.
-Rate Limiting & Throttling --> Prevents abuse by limiting requests per client.
-Logging & Monitoring
+Routing: Clients call one endpoint instead of multiple services.
+Service Discovery: Works with Eureka for dynamic service lookup.
+Load Balancing: Distributes traffic across service instances.
+Security & Authentication: Handles JWT, OAuth, API keys.
+Rate Limiting & Throttling: Controls request spikes.
+Logging & Monitoring: Central place to track and log requests.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
@@ -44,37 +44,40 @@ spring.cloud.gateway.discovery.locator.lowerCaseServiceId=true          //make e
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-3: Since we did not re-route the path manually and are using the automatic re-routing property we need to add the microservice name
-in the path to tell which microservice this path belongs to
+3. Using Automatic Routing:
+Since routes are not defined manually, the URL must include the microservice name.
 
-Ex: localhost:7000/student/{id} ---> localhost:7000/userservice/student/{id}
+Before Gateway:
+localhost:7000/student/{id}
+
+After Gateway (auto-route):
+localhost:7000/userservice/student/{id}
 
 ------------------------------------------------------------------------------------------------------------------------------
 
 Manual Routing:
-1: Use RouteLocator object to reroute the request 
-2: In this we are specifying service here so no need to give in the url
+1: You can manually specify routes using RouteLocator.
+2: Here, the service name is defined inside the route, so URL does NOT need the service name.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
 With Java Code:
 
-Code:
-    @Configuration
-    public class ApiConfiguration {
+@Configuration
+public class ApiConfiguration {
 
-        @Bean
-        public RouteLocator getRouteLocator(RouteLocatorBuilder builder){
+    @Bean
+    public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
 
-            //Any url after currency/exchnange//----> will go to the currencyExchnage service
-            return builder.routes()
-                    .route(p->p.path("/currency/exchange/**")
-                            .uri("lb://CurrencyExchange"))
-                    .route(p->p.path("/currency/conversion/**")
-                            .uri("lb://CurrencyConversion"))
-                    .build();
-        }
+        return builder.routes()
+                .route(p -> p.path("/currency/exchange/**")
+                        .uri("lb://CurrencyExchange"))
+                .route(p -> p.path("/currency/conversion/**")
+                        .uri("lb://CurrencyConversion"))
+                .build();
     }
+}
+
 
 ------------------------------------------------------------------------------------------------------------------------------
 
@@ -102,40 +105,52 @@ public class ApiConfiguration {
 ------------------------------------------------------------------------------------------------------------------------------
 
 Load Balancing : 
-Spring Cloud Gateway automatically load balances requests when multiple instances are registered in Eureka.
-Uses Spring Cloud LoadBalancer (replaces Netflix Ribbon).
-Can customize load balancing algorithm (e.g., random, round-robin).
+Gateway automatically load-balances requests when multiple service instances are registered in Eureka.
+Uses Spring Cloud LoadBalancer (Ribbon is deprecated).
+Custom algorithms like round-robin, random, etc. can be configured.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
 Authentication and Authorization via GateWay:
 
-Authentication is done in Gateway, Then request is re-routed based on the path
-Microservices extracts the roles and authorize based on the roles
-Microservices can re-validate the JWT if the API is super secret
+1: Authentication is done at the API Gateway.
+    Validates JWT before forwarding the request.
+
+2: Routing happens only after token validation.
+
+3: Microservices extract roles from the token and allow/deny access.
+    They may re-validate JWT for highly sensitive endpoints.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-PROBLEM STATEMENT:
+Centralized JWT Authentication Across Multiple Microservices:
 
-There are multiple microservices with protected endpoints with user roles
-You want to add JWT Authentication using API Gateway how will you add centralized 
-Authentication in Multiple Microservices:
+Problem:
+    Multiple microservices have protected endpoints.
+    You want centralized authentication using JWT via an API Gateway.
 
-Auth-Service: 
-Auth-service will have User Database and User Entity
-User will login through Auth-Service 
-It will Verify user credentials
-After Verifying user credentials it will generate JWT token 
-and return the token to user.
+Architecture Breakdown:
 
-API Gateway: 
-JWT Validation Before Forwarding Requests
-Whenever we make a request to any microservice it will go to gateway with token
-and gateway will validate that token before routing the request to the microservice based on the path
+1. Auth-Service
+Contains User entity + User DB.
+User logs in through Auth-Service.
+Auth-Service:
+    Verifies username/password
+    Generates JWT token
+    Returns token to client
 
-Microservices: 
-Each microservice will extract roles and grant the access on the basis of roles.
+2: API Gateway:
+
+All client requests come through the gateway.
+Gateway validates the incoming JWT:
+    If invalid → reject request
+    If valid → forward to the appropriate service using path routing
+
+3. Microservices
+
+    Extract roles/claims from JWT
+    Authorize based on roles
+    Optionally validate token again for high-security endpoints
 
 ------------------------------------------------------------------------------------------------------------------------------
 

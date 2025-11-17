@@ -1,26 +1,24 @@
 -------------------------------------------------------------------------------------------------------------------------------
 Static:
+    static is used when you want a variable or method to belong to the class itself instead of each object.
 
-Static is used to share a method or variable across all instances of a class instead of creating separate copies for each object.
 -------------------------------------------------------------------------------------------------------------------------------
 
 Static Variables (Class-Level Variables)
-
-Belongs to the class, not to any specific object.
-Shared by all objects of the class (only one copy exists in memory).
-Changes to a static variable affect all objects.
-You cannot use 'this' in static
-Outer classes cannot be static, Only inner classes can be static because inner classes have reference of outer class
+    Belong to the class, not to individual objects.
+    Only one copy exists in memory, shared by all objects.
+    Changing the static variable updates it for all instances.
+    this cannot be used inside static methods because this refers to an object.
+    Outer (top-level) classes cannot be static.
+    Only inner classes can be static because a static inner class does not need a reference to the outer class.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Code:
+// 'school' is static, so all Student objects share the same value.
 
-// school is static, so all objects share the same value.
-// If one object changes school, all objects see the updated value.
 class Student {
 
-    // Static variable
     static String school = "Mayo International School"; 
     String name;
 
@@ -52,20 +50,20 @@ public class Main {
 Static Methods (Class-Level Methods)
 
 Can be called using the class name (no object needed).
-Cannot access non-static (instance) variables directly.
+Can only access static variables and static methods.
 Used for utility/helper functions that dont depend on object data.
 
 Code:
 
 class MathUtils {
-    static int square(int x) { // Static method
+    static int square(int x) {
         return x * x;
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        int result = MathUtils.square(5); // Calling static method using class name
+        int result = MathUtils.square(5);                   // Calling static method using class name
         System.out.println("Square of 5: " + result);
     }
 }
@@ -80,23 +78,22 @@ public class Student{
     String name = "varun";
     static int age = 24;
     
-    //Cannot access non static variable
-    static void getName(){
+    static void getName(){                  //Cannot access non static variable
         System.out.println(name);           //Error
     }
 
-    //Can access static variable
-    static void getAge(){
+    static void getAge(){                   //Can access static variable
         System.out.println(age);
     }
 }
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Static Block (Runs Once When Class Loads)
+Static Block (Runs Once When Class Loads):
 
-Executes when the class is loaded into memory (before any object is created).
-Used for static initialization.
+Executes automatically when the class is loaded into memory.
+Runs before the main method and before any object is created.
+Used for initializing static variables.
 
 Code:
 
@@ -121,7 +118,7 @@ public class Main {
 Static Nested Class (Independent Inner Class)
 
 A static nested class does not need an instance of the outer class.
-Used for grouping related classes together.
+Useful for grouping related classes without requiring an outer class object.
 No need to create an object of Outer to access Inner.
 
 Code:
@@ -135,7 +132,7 @@ class Outer {
 
 public class Main {
     public static void main(String[] args) {
-        Outer.Inner obj = new Outer.Inner(); // No need to create Outer class object
+        Outer.Inner obj = new Outer.Inner();            // No need to create Outer class object
         obj.show();
     }
 }
@@ -144,32 +141,44 @@ public class Main {
 
 Final Keyword:
 
-1: Variables -> These can be defined while declaring or in the constructor.
-Final variable can be defined only once you can either define it while declareing or in the
-constructor later.  
-Ex - final int a=5;
-Ex- class hello(final int a){
-    a = 5;
+1. Final Variables:
+    Can be assigned only once.
+    Must be initialized either at declaration or in the constructor.
+    Cannot be changed later.
+
+Ex:
+final int a=5;
+
+Ex:
+class Hello {
+    final int x;
+    Hello() {
+        x = 10;     // Allowed (initialized in constructor)
+    }
 }
 
-2: Functions : Final functions cannot be overriden in the child classes.
+2. Final functions:
+    Final functions cannot be overriden in the child classes.
+
 Ex - public final void hello(){
 }
 
-3: Classes: Final classes cannot be inherited by the child class.
-Every function in the final class are automatically final since final class cannot be
-inherited there is not way to override the function in the final class.
+3. Final Classes:
+    Cannot be inherited.
+    Since the class cannot be extended, its methods also cannot be overridden.
+
 Ex - public final class Person{
 }
 
-4: Objects:
+4. Final Objects:
 You can change the value of the final objects
 But You cannot reassign the final object 
 
 Ex: 
-Student s1 = new Studene("varun")
-s1.setName = "new name";                    //Allowed
-s1 = new Student("New name")                //Not Allowed
 
+final Student s1 = new Student("Varun");
+
+s1.setName("New Name");     // Allowed (modifying data inside object)
+s1 = new Student("X");      // Not allowed (reassigning reference)
 
 -----------------------------------------------------------------------------------------------------------------------------------------

@@ -1,19 +1,19 @@
 Annotations In Spring Boot
 
 @Component: 	
-It is used to mark a class as a Spring-managed component.
-Spring automatically detects and registers it as a bean in the application context.
+Marks a class as a Spring-managed component.
+Spring automatically detects it during component scanning and registers it as a bean.
 
 @jsonIgnore: 	
-It is used to skip the fields from serialization and deserialization and fetching from the DB
-Spring Boot skips this feild in response
+Used to exclude a field from JSON serialization and deserialization.
+Spring will skip this field in API responses and in request-body mapping.
 
 @Transient: 	
-It is used on top of the attribute which we dont want as a column in our DB.
-In Java, the field is ignored and not serialized.
+Used on entity fields that should not be persisted in the database.
+Hibernate ignores this field completely (no column generated).
 
 HikaryPool: 	
-It is a pool used by Hibernate to communicate with the internal DB.
+The default connection pool used by Spring Boot + Hibernate to efficiently manage database connections.
 
 @Table: 	
 Customize table name.
@@ -22,26 +22,29 @@ Customize table name.
 Customize column name.
 
 GenerationType: 	
-Auto: Let Hibernate decide the best strategy for id generation and auto increment based on DB type.
-Identity: Use MySQL identity.
+AUTO: Hibernate chooses the best strategy based on the database.
+IDENTITY: Uses identity columns (auto-increment in MySQL).
 
 @CreationTimestamp:	
-This annotation is used to automatically set the value to current time when data is inserted first.
+Automatically sets the field value to the current timestamp when the record is first inserted.
 
 @UpdateTimestamp:	
-This annotation is used to automatically update the value of the annotated field to the current time whenever the entity is updated and inserted.
+Automatically updates the field value to the current timestamp whenever the entity is updated.
 
 @PostConstruct:	
-Used on methods. Runs method automatically after bean is initialized and injected. Used for database connections.
+Runs a method automatically after the bean is created and dependencies are injected.
+Useful for initialization tasks.
 
 @PreDestroy:	
-Used on methods. Runs method before the bean is destroyed. Used for closing connections.
+Runs a method just before the bean is destroyed.
+Used to close resources like database connections or threads.
 
 DispatcherServlet:	
-It is a front controller. Receives request, finds the correct controller based on the URL, gets the response, renders it, and sends back to client.
+The front controller of Spring MVC.
+Receives every HTTP request, maps it to the correct controller, processes the response, and sends it back to the client.
 
 Jackson:	
-It is a library used for serializing and deserializing Java objects.
+A JSON serialization/deserialization library used by Spring Boot to convert Java objects to JSON and vice versa.
 
 @Slf4j:
-It automatically creates a logger for your Java class
+Lombok annotation that automatically generates a Logger for the class.

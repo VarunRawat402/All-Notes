@@ -2,29 +2,29 @@
 Junit 4 and Junit 5 Annotations:
 --------------------------------------------------------------------------------------------------------------------------------
 
-@Disabled               : This is used to disable the test 
+@Disabled               : Disables a test method or Class.
 
-@Test                   : Marks a method as a test case
+@Test                   : Marks a method as a test case.
 
-@BeforeEach             : Runs before each test method
+@BeforeEach             : Runs before each test method (JUnit 5).
 
 @AfterEach              : Runs after each test method
 
-@BeforeAll              : Runs once before all tests (static method)
+@BeforeAll              : Runs once before all tests (must be static).
 
-@AfterAll               : Runs once after all tests (static method)
+@AfterAll               : Runs once after all tests (must be static).
 
-@DisplayName            : Custom test name for reports
+@DisplayName            : Sets a custom readable name for a test.
 
-@ParameterizedTest      : Marks a test as parameterized.
+@ParameterizedTest      : Marks a test that runs multiple times with different inputs.
 
-@ValueSource            : Provides literal values (ints, strings, etc.)
+@ValueSource            : Provides simple literal values (ints, strings, etc.).
 
-@CsvSource              : Provides inline CSV values.
+@CsvSource              : Provides inline CSV values for multi-argument tests.
 
-@CsvFileSource          : Provides CSV data from a file.
+@CsvFileSource          : Loads CSV data from a file.
 
-@Timeout                : Fails a test if takes longer than given time
+@Timeout                : Fails the test if it exceeds the given time limit.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -37,15 +37,16 @@ In SpringBootTest, rollback does not happen, So If you want rollback you can use
 In DataJpaTest, rollback happens automatically So If you want to persist the data you can use @Commit annotation
 
 @Transactional:
-This is used to rollback all the changes from the DB which are done in the tests
-So, other tests dont get affected by changed data
+Rolls back DB changes after the test completes.
+Used when you want SpringBootTest to behave like DataJpaTest regarding rollback.
 
-@Commit : Commits DB changes (disable rollback)
-It is used to persist the changes in the DB for multi test scenarios
+@Commit : 
+Disables rollback and commits DB changes.
+Useful for multi-step DB tests where next tests depend on persisted data.
 
-@Sql : Executes SQL scripts before test
-Create a SQL script with sql queries
-This annotation will run that script before every test
+@Sql : 
+Executes SQL scripts before test execution.
+Script may contain inserts, deletes, schema setup, etc.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -124,14 +125,14 @@ Differnce between JUNIT4 and JUNIT5:
 
 JUNIT4:
     Single Monolithic Library
-    Before, After,  BeforeClasss, AfterClass
-    Ignore to disable tests
-    External Runner ( for parameterzied tests )
+    Uses @Before, @After, @BeforeClass, @AfterClass.
+    Uses @Ignore to disable tests.tests
+    Parameterized tests require external runners.
 
 JUNIT5:
-    Composed of 3 things, Platform, Jupitor, Vintage
-    BeforeEach, AfterEach,  BeforeAll, AfterAll
-    Disabled
+    Combination of Platform, Jupiter, and Vintage.
+    Uses @BeforeEach, @AfterEach, @BeforeAll, @AfterAll.
+    Uses @Disabled.
     Built in ParameterizedTest
 
 --------------------------------------------------------------------------------------------------------------------------------

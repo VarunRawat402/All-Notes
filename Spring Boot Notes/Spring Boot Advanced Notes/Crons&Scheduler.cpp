@@ -1,16 +1,24 @@
---------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------
 What is a Scheduler?
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-A scheduler allows you to run code at fixed times or intervals—like a cron job.
+A scheduler allows you to run code automatically at fixed intervals or specific times.
+This works like cron jobs in Linux but inside a Spring Boot application.
 
-What is a Cron Expression?
-A cron expression defines tine when a job should run
+Cron Expression:
+A cron expression defines the exact time a scheduled job should run.
 
-Enable Scheduling in Spring
-    @EnableScheduling
-    @SpringBootApplication
-    public class MyApp { ... }
+Spring uses 6 fields:
+    - second minute hour day-of-month month day-of-week
+    - Example: 0 15 10 * * ? → Runs at 10:15 AM every day.
+
+Enable Scheduling in Spring:
+
+@EnableScheduling
+@SpringBootApplication
+public class MyApp {
+}
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 

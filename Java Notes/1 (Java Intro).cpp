@@ -2,19 +2,20 @@
 JAVA 
 -------------------------------------------------------------------------------------------------------------------------------
 
-🔹 Source Code to Execution
+Source Code to Execution
 
-    Source Code → Code written in Hello.java
-    Compiler → Present in JDK, converts source code to Bytecode.
-    Bytecode → Stored as .class file. Can run on any OS that has a JRE.
-    JVM (Java Virtual Machine) → Converts bytecode into machine code and executes it.
-    JDK (Java Development Kit) → Compiles .java → .class.
-    JRE (Java Runtime Environment) → Contains JVM, required to run .class files.
+Source Code → Code written in Hello.java
+Compiler → Present in JDK, converts source code to Bytecode.
+Bytecode → Stored in a .class file; platform-independent and can run on any OS with a JRE.
+
+JVM (Java Virtual Machine) → Reads bytecode, converts it to machine code, and executes the program.
+JDK (Java Development Kit) → Compiles .java → .class.
+JRE (Java Runtime Environment) → Contains JVM + libraries needed to run Java programs; does not include compiler.
 
 Compile Time
-    Conversion of Hello.java → Hello.class
-    Done by compiler (JDK)
-    Performs: Syntax checking, Type checking, Variable declaration errors
+    Converts Hello.java → Hello.class
+    Done by the compiler (inside JDK)
+    Performs syntax checking, type checking, and variable declaration validation
 
 Run Time
     Phase where compiled bytecode is executed inside the JVM
@@ -22,8 +23,8 @@ Run Time
 
 Data Types:
 
-Primitive : byte , short , char, boolean, int , long 
-Non-Primitive : Class, Object, String, Array
+Primitive : byte, short, int, long, char, boolean, float, double
+Non-Primitive : String, Array, Class, Object
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -75,29 +76,34 @@ System.out.println(a);          //-> A
 -------------------------------------------------------------------------------------------------------------------------------
 
 Naming Variables:
-    //Case Sensitive
-    //Can be letters, numbers, $, and _
-    //First letter cannot be a number
-    //Camel Case
-    //Cannot use Java keywords as name
+Case-sensitive
+
+Can include letters, digits, $, and _
+
+Cannot start with a digit
+
+Follow camelCase for variable names
+
+Cannot use Java keywords as variable names
 
 -------------------------------------------------------------------------------------------------------------------------------
-
-Cloneable:
-    Cloneable → Interface used for cloning objects
-    clone() method → Creates a copy of an object
-    Default: Shallow Copy
-    For Deep Copy, override clone() and copy manually
 
 Shallow Copy
     Cloned object shares same references as original
     Changes in one affect the other
 
 Deep Copy
-    Creates a new object with new references
-    Same values, but different memory addresses
-    Changes in one do not affect the other
+    Creates a completely independent object
+    New memory allocations for all fields
+    Changes in one object do not affect the other
 
+Cloneable:
+    Cloneable → Interface used for cloning objects
+    clone() → Creates a copy of an object
+
+    Default cloning in Java is shallow copy
+    For deep copy, override clone() and manually clone all fields
+    
 Note:
     It only works with objects not primitive datatypes
 

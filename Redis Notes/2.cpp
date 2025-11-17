@@ -3,11 +3,12 @@ How to do caching the spring boot using redis:
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Manual Caching:
+
 1: Add redis dependency in the pom.xml
 2: Add the redis configuration in the application.properties file
-3: Create RedisTemplate bean to interact with the Redis server, and configure it
-4: Crete a cacheRepository class to perform cache operations, like saving, retrieving, and deleting cache entries
-5: Use the cacheRepository class in your service layer to cache data as needed
+3: Create a RedisTemplate bean to interact with Redis and configure serializers.
+4: Create a CacheRepository class to perform cache operations (save, get, delete).es
+5: Use the repository class inside the service layer to store and retrieve cached data.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -62,27 +63,26 @@ public class UserCacheRepository {
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Declarative Caching:
-1: Add the dependency of redis in the pom.xml
-2: Add the redis configuration in the application.properties file
-3: Enable caching in your Spring Boot application by adding the @EnableCaching annotation to your main
-4: Create a cacheConfig class to configure the RedisConnectionFactory, RedisCacheManager , RedisCacheConfiguration 
-5: Use caching annotations like @Cacheable, @CachePut, and @CacheEvict on your service methods to manage caching automatically
+
+1: Add Redis dependency in pom.xml.
+2: Add Redis configuration in application.properties.
+3: Enable caching in the main class using @EnableCaching.
+4: Create a configuration class to define RedisConnectionFactory, RedisCacheManager, and RedisCacheConfiguration.
+5: Use caching annotations like @Cacheable, @CachePut, @CacheEvict on service methods.
 
 RedisConnectionFactory:
-It is used to create connections to the Redis server.
-It is used to set the port, host, and other connection properties.
-If the properties are set in the application.properties file, then it will automatically create the connection factory.
-If you want to customize the connection, you can create a bean of RedisConnectionFactory in your configuration class.
+Creates and manages connections to Redis.
+If Redis host/port is set in application.properties, Spring auto-configures the factory.
+If custom settings are required, define a bean manually.
 
 RedisCacheConfiguration:
-It is used to configure the cache settings- time to live (TTL), key prefix, serialization etc.
-You can create a bean of RedisCacheConfiguration in your configuration class to customize the cache settings.
+Defines cache settings such as TTL, key prefix, and serializers.
+You can override the default configuration by exposing a bean.
 
 RedisCacheManager:
-It is used to manager the cache operations.
-It is used to create, update, and delete cache entries.
-It takes RedisConnectionFactory and RedisCacheConfiguration as input parameters to set the connection and cache settings.
-You can use @Cacheable, @CachePut, and @CacheEvict annotations to manage the cache operations automatically.
+Controls creation, update, and deletion of cache entries.
+Takes RedisConnectionFactory and RedisCacheConfiguration as inputs.
+Used internally when you apply annotations like @Cacheable.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

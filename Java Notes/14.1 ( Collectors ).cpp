@@ -2,41 +2,43 @@
 Collectors:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-The Collectors class provides various methods for collecting stream elements 
-into different data structures like List, Set, Map, or performing operations like grouping, partitioning, and summing.
+The Collectors class provides built-in methods to collect Stream results into different data structures like List, Set, Map
+and to perform operations such as grouping, partitioning, joining, and counting.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Methods:
+Basic Collecting Methods:
 
 Collecting Stream Elements:
 
 List<String> names = Arrays.asList("Alice", "Bob", "Charlie", "David");
 
-//Collect into list
-List<String> nameList = names.stream().collect(Collectors.toList());
+// Collect into List
+List<String> nameList = names.stream()
+        .collect(Collectors.toList());
 
-//Collect into set which will have unique values
-Set<String> nameSet = names.stream().collect(Collectors.toSet());
+// Collect into Set (unique values)
+Set<String> nameSet = names.stream()
+        .collect(Collectors.toSet());
 
-//Collect into map with name and name's length
+// Collect into Map (key = name, value = length)
 Map<String, Integer> nameLengthMap = names.stream()
         .collect(Collectors.toMap(name -> name, name -> name.length()));
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Joining:
+Joining Elements:
 
 List<String> words = Arrays.asList("Java", "Streams", "Are", "Powerful");
 
-//will join every word into one string divided by space
-String result = words.stream().collect(Collectors.joining(" "));
-System.out.println(result); // Output: Java Streams Are Powerful
+// Join all words separated by space
+String result = words.stream()
+        .collect(Collectors.joining(" "));
+System.out.println(result);                     // Java Streams Are Powerful
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Grouping By:
-
 List<Integer> numbers = Arrays.asList(10, 15, 20, 25, 30, 35);
 
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -55,6 +57,7 @@ Map<String, List<Integer>> groupedNumbers = numbers.stream()
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 List<String> words = Arrays.asList("apple", "banana", "cherry", "blueberry", "apricot");
+
 // Group words by first letter
 Map<Character, List<String>> groupedWords = words.stream()
         .collect(Collectors.groupingBy(word -> word.charAt(0)));

@@ -4,8 +4,8 @@ JaCOCO:
 
 Implementation:
 
-Add jacoco dependencies
-Add jacoco plugin
+Add JaCoCo dependency
+Add JaCoCo Maven plugin
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -14,23 +14,26 @@ PLUGIN:
 <plugin>
     <groupId>org.jacoco</groupId>
     <artifactId>jacoco-maven-plugin</artifactId>
-    <version>0.8.11</version> <!-- Use latest version -->
+    <version>0.8.11</version> <!-- Latest version recommended -->
     <executions>
-        <!-- Ensures JaCoCo runs during the test phase -->
+        
+        <!-- Attach JaCoCo agent before tests run -->
         <execution>
             <id>prepare-agent</id>
             <goals>
                 <goal>prepare-agent</goal>
             </goals>
         </execution>
-        <!-- Generates the report after tests run -->
+
+        <!-- Generate coverage report after tests -->
         <execution>
             <id>generate-report</id>
-            <phase>test</phase> <!-- Runs after 'test' phase -->
+            <phase>test</phase>
             <goals>
                 <goal>report</goal>
             </goals>
         </execution>
+
     </executions>
 </plugin>
 
@@ -45,46 +48,47 @@ CLASS	% of classes loaded during tests.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-mvn clean spring-boot:run
+`mvn clean spring-boot:run`
 
 What it does:
 
-Deletes the target folder.
-Compiles your applications source code.
-Starts the embedded web server (Tomcat, Jetty, or Undertow).
-Runs your full Spring Boot application so you can interact with it, e.g., access http://localhost:8080.
-The process keeps running until you manually stop it with Ctrl+C.
+Deletes target/
+Compiles source code
+Starts the Spring Boot application (embedded Tomcat/Jetty/Undertow)
+Runs the app and keeps it alive until you stop it (Ctrl + C)
 
-It typically does not run your unit tests (src/test/java) by default. Its primary job is to run the application.
+It does not run unit tests
+Only runs the application for development purposes
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-mvn clean test:
+`mvn clean test`
 
 What it does:
 
-Deletes the target folder.
-Compiles your applications source code (src/main/java).
-Compiles your test code (src/test/java).
-Runs all the tests found in src/test/java.
-Stops the process after running the tests. It does not package your application or run it.
+Deletes target/
+Compiles main and test source code
+Executes all unit tests in src/test/java
+Stops once testing is complete
 
-You will see the test results in the console (pass/fail) and detailed reports (like from JaCoCo or Surefire) will be generated in the target directory.
+Console test results (pass/fail)
+Coverage reports (JaCoCo)
+Surefire reports
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-mvn clean verify
+`mvn clean verify`
 
 Runs clean, compiles, tests, and then runs the verify phase.
 
 The verify phase is typically used to:
-Generate test coverage reports like JaCoCo
-Validate code quality rules (e.g., PMD, Checkstyle)
-Run integration tests (if configured)
+Generating coverage reports (JaCoCo)
+Code quality checks (Checkstyle, PMD)
+Running integration tests (if configured)
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 Imp:
-Learn testing exceptions and errors using assertThrows
+Learn exception testing using assertThrows() for more robust test cases.
 
 --------------------------------------------------------------------------------------------------------------------------------

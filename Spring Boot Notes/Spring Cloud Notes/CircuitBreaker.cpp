@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------------
-Circuit Breaker In Microservice: ( Framework : resilience4j )
+Circuit Breaker in Microservices (Resilience4j):
 ------------------------------------------------------------------------------------------------------------------------------
 
 A Circuit Breaker is used to prevent system failures from cascading when a service is unavailable or slow.
@@ -11,19 +11,20 @@ How Circuit Breaker Works
 
 Closed State (Normal Operation)
 Requests flow normally to the service.
-If requests fail beyond a certain threshold, the circuit breaker trips.
+If the failure rate crosses the defined threshold, the circuit moves to Open.
 
 Open State (Fail Fast Mode)
-Requests are blocked immediately and fail without calling the service.
-This prevents overloading a failing service.
+All calls fail immediately without hitting the actual service.
+Prevents overloading an already failing service.
 
 Half-Open State (Testing the Waters)
-After a cooldown period, a few requests are allowed to check if the service has recovered.
-If successful, the circuit closes; otherwise, it stays open.
+After a cooldown period, only a small number of requests are allowed.
+If they succeed → circuit goes back to Closed.
+If they fail → circuit returns to Open.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-Annotation CircuitBreaker ( @CircuitBreaker ):
+@CircuitBreaker:
 The @CircuitBreaker annotation helps prevent cascading failures in microservices by stopping calls to a failing service after a certain threshold.
 
 Application.properties:
@@ -33,15 +34,15 @@ Application.properties:
     resilience4j.circuitbreaker.instances.CB.permitted-number-of-calls-in-half-open-state=2
 
 Code:
-    @CircuitBreaker(name = "CB", fallbackMethod = "fallbackResponse") // Circuit Breaker only
+    @CircuitBreaker(name = "CB", fallbackMethod = "fallbackResponse")
     public String getHello() {
         logger.info("Request received. Attempting external call...");
-        String ans = restTemplate.getForObject("http://www.dsdsdsss.com", String.class); // Ensure valid URL
+        String ans = restTemplate.getForObject("http://www.dsdsdsss.com", String.class);
         return "This is the hello world, Welcome Home";
     }
 
     public String fallbackResponse(Exception ex) {
-        logger.error("Circuit breaker triggered. Falling back due to: {}", ex.getMessage());
+        logger.error("Circuit breaker triggered: {}", ex.getMessage());
         return "Service is currently unavailable. Please try again later.";
     }
 
@@ -66,23 +67,24 @@ public class RetryController {
     RestTemplate restTemplate = new RestTemplate();
     private Logger logger = LoggerFactory.getLogger(RetryController.class);
 
-    //This getHello() method will get called 3 times if its failing and if it still fails
-    //fallbackResponse method will get called
     @GetMapping("/hello")
-    @Retry(name = "myRetry",fallbackMethod = "fallbackResponse")
-    public String getHello(){
+    @Retry(name = "myRetry", fallbackMethod = "fallbackResponse")
+    public String getHello() {
         logger.info("This is fetched");
-        String ans = restTemplate.getForObject("http://www.dsdsdsss.com",String.class);
+        String ans = restTemplate.getForObject("http://www.dsdsdsss.com", String.class);
         return "This is the hello world, Welcome Home";
     }
+
     public String fallbackResponse(Exception ex) {
         return "Service is currently unavailable. Please try again later.";
     }
 }
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Annotation RateLimiter ( @RateLimiter )
-The @RateLimiter annotation helps limit the number of requests per second for a method, preventing system overload.
+RateLimiter controls how many requests are allowed in a fixed time window. 
+Extra requests are blocked and routed to a fallback method.
 
 How @RateLimiter Works
     Limits the number of requests in a given time period.
@@ -90,7 +92,6 @@ How @RateLimiter Works
     Automatically resets after the defined period.
 
 Application.properties:
-# Rate Limiter Configuration
 resilience4j.ratelimiter.instances.myRateLimiter.limit-for-period=2
 resilience4j.ratelimiter.instances.myRateLimiter.limit-refresh-period=8s
 
@@ -109,8 +110,10 @@ public class RetryController {
     }
 }
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Annotation BulkHead ( @BulkHead )
-The @Bulkhead annotation restricts the number of concurrent calls to a service to prevent thread starvation.
+A Bulkhead limits the number of concurrent calls to prevent system resources (threads) from being overwhelmed.
 
 How @Bulkhead Works
 Limits the number of concurrent requests to a method.
@@ -120,3 +123,5 @@ Optionally queues requests if a semaphore-based bulkhead is used.
 Application.properties:
 resilience4j.bulkhead.instances.myBulkhead.max-concurrent-calls=5
 resilience4j.bulkhead.instances.myBulkhead.max-wait-duration=0ms
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------

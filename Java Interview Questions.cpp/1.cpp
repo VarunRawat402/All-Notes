@@ -2,26 +2,6 @@
 BASICS:
 -------------------------------------------------------------------------------------------------------------------------------
 
-What is the difference between JDK, JRE, and JVM?
-
-JVM : Engine that run the byte code or java applications
-JRE : It contains JVM + libraries, which application needs to exeucute
-JDK : JRE + tools, tools to develop the java applications like compiler, debugger etc
-
--------------------------------------------------------------------------------------------------------------------------------
-
-What is abstraction? Difference between abstraction and encapsulation.
-
-abstraction:
-    Hides Implementation details
-    Tells what object does
-
-encapsulation:
-    Hides data and protect data
-    Implementation of object how it does things
-
--------------------------------------------------------------------------------------------------------------------------------
-
 How does try-with-resources work?:
 It is used to automatically close the resource without using finally block
 The resource declared in the try must implement AutoCloseable interface

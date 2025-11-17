@@ -13,20 +13,20 @@ Why Use Map?
 O(1) average time complexity for HashMap
 No Duplicate Keys
 Logical grouping of related data
-Direct access of value using keys instead of searching
+Direct access through keys (no searching required)
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Types of Maps:
 
-Map<Integer,String> m1 = new HashMap<>();
-    Random ordering of elements , Fastest
+Map<Integer,String> m1 = new HashMap<>();      
+// Random order, fastest
 
-Map<Integer,String> m2 = new LinkedHashMap<>();
-    Ordering maintains, slower
+Map<Integer,String> m2 = new LinkedHashMap<>(); 
+// Maintains insertion order
 
-Map<Integer,String> m3 = new TreeMap<>();               
-    Sort the elements based on keys
+Map<Integer,String> m3 = new TreeMap<>();        
+// Sorted by keys
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ Types of Maps:
 1: HashMap<>();
     No ordering guarantees
     Fastest operations
-    Allows one null key and multiple null values
+    Allows one null key + multiple null values
     Not thread-safe
 
 2: LinkedHashMap<>();
@@ -88,18 +88,18 @@ Types of Maps:
 
 5: TreeMap<>();
     Sorted by keys (natural ordering or custom comparator)
-    Implements SortedMap interface
+    Implements SortedMap
     Slower than HashMap but provides ordering
 
 4: HashTable<>();
-    Legacy class, thread-safe
-    Does not allow null keys or values
-    Slower due to synchronization
+    Legacy, thread-safe
+    No null keys/values
+    Slow due to synchronization
 
 5: ConcurrentHashMap<>();
-    Thread-safe and high-performance
-    Better than HashTable for concurrent access
-    No null keys or values
+    Modern, thread-safe
+    Better concurrency than Hashtable
+    No null keys/values
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -145,31 +145,31 @@ public class EnumMapExample {
 
 Immutable Map:
 
-What is an Immutable Map?
-✅ An Immutable Map is a Map that cannot be modified after creation.
-✅ Prevents accidental changes (useful in multi-threading & constants).
-✅ Java provides multiple ways to create an immutable map.
+Cannot be modified after creation
+Prevents accidental changes
+Useful for constants and multi-threading
+Java provides multiple ways to create it
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Map.of() ( java 9+ ) ;
-Immutable directly
-Fastest & most memory-efficient way to create a small immutable map.
-Does not allow null keys or values.
-Cannot add, remove or modify entries after creation.
+Directly creates immutable map
+Fastest for small maps
+No null keys/values
+No add/remove/modify allowed
 
 Map<String, Integer> immutableMap = Map.of("Alice", 25,
     "Bob", 30,
     "Charlie", 35
 );
 
-System.out.println(immutableMap); // {Alice=25, Bob=30, Charlie=35}
+System.out.println(immutableMap);           // {Alice=25, Bob=30, Charlie=35}
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Map.copyOf() (Java 10+):
-    Unlike Collections.unmodifiableMap(), original map changes wont affect this one.
-    Best for creating an immutable snapshot of an existing map.
+    Creates immutable copy of an existing map
+    Changes in original map do NOT affect the new one
 
 Code:
 Map<String, Integer> mutableMap = new HashMap<>();
@@ -178,7 +178,7 @@ mutableMap.put("Bob", 30);
 
 Map<String, Integer> immutableMap = Map.copyOf(mutableMap);
 
-immutableMap.put("Charlie", 35); // ❌ Throws UnsupportedOperationException
+immutableMap.put("Charlie", 35);    // Throws UnsupportedOperationException
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -187,19 +187,19 @@ Internal working of HashMaps:
 Put Operation:
 
 Convert the key into hashcode, key.hashCode()
-Get the bucket Index, hashCode % arraySize (bucket index)
+Calculate bucket index → hashCode % arraySize
 Store in Bucket:
-    If bucket empty → create new entry
+    Empty bucket → store directly
     If bucket occupied (collision) →
-        Java 7: Store in linked list
-        Java 8+: Use balanced tree if list grows large
+        Java 7 → LinkedList
+        Java 8+ → Tree structure (if bucket grows large)
 
 Get Operation:
 
 Convert the key into hashcode, key.hashCode()
-Find Bucket: hashCode % arraySize
-Search in Bucket:
-    Single entry → return value
-    Multiple entries, Collision → use equals() to find exact match
+Find bucket → hashCode % arraySize
+Search inside bucket:
+    If one entry → return value
+    If multiple → use equals() to find correct key
 
 -----------------------------------------------------------------------------------------------------------------------------------------

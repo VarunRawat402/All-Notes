@@ -3,10 +3,6 @@ Exception:
 An exception is an error that occurs during program execution, disrupting normal flow.
 -------------------------------------------------------------------------------------------------------------------------------
 
-There are 2 types of Exception:
-
--------------------------------------------------------------------------------------------------------------------------------
-
 1: Checked Exception :
 
 Occurs at compile time
@@ -15,7 +11,7 @@ Must Handle them or compilation error will come
 Ex:
 FileReader fileReader = new FileReader("/users/pa/sample.txt");
 
-IOException = Reading a file that does not exist
+IOException → Issues during reading a file
 FileNotFoundException = path of file doesnt exist
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -23,11 +19,10 @@ FileNotFoundException = path of file doesnt exist
 2: Unchecked Exception : 
 Occurs at Run time 
 No need to handle them explicitly
-But should handle them otherwise runTimeException will come and application will crash
+Should still be handled to avoid application crashes
 
 Ex:
-int a = 1/0;
-This will give us Arithmetic Exception which is a part of Runtime Exception.
+int a = 1 / 0; // ArithmeticException
 
 ArrayIndexOutOfBoundsException = When accessing the index that out of size
 ArithmeticException = illegal arithmetic expression
@@ -35,25 +30,25 @@ ArithmeticException = illegal arithmetic expression
 -------------------------------------------------------------------------------------------------------------------------------
 
 Exception Handling:
-Handling the exception so that the application does not crash
+    Handling exceptions ensures the application continues running instead of crashing.
 
 1. Try-Catch Block:
+    Place risky code inside try
+    If an exception occurs, it is caught in the catch block
 
-// Put the risky code in try and if any exception comes 
-// catch that in the catch block
 public class Main {
     public static void main(String[] args) {
 
         try {
-            int result = 10 / 0; // 🚨 This will cause an exception
+            int result = 10 / 0;                            // 🚨 This will cause an exception
         } catch (ArithmeticException e) {
             System.out.println("Cannot divide by zero!");
         }
     }
 }
 
-//We can catch multiple exceptions too using try catch
-//If the code can give multiple exceptions based on user values
+Catching Multiple Exceptions:
+
 public class Main {
     public static void main(String[] args) {
         try {
@@ -70,12 +65,9 @@ public class Main {
 -------------------------------------------------------------------------------------------------------------------------------
 
 2: Finally block :
-It will get executed no matter what
-Weather you get an exception or your code runs without exception
-Even if you return something in the try block it will still
-get executed.
-
-It is generally used to release the database connection 
+    Always executes, whether an exception occurs or not
+    Executes even if the try block returns a value
+    Commonly used to close resources (database connection, files, streams, etc.)
 
 Ex:
 public static void main(String[] args){
@@ -97,7 +89,7 @@ public static String hello(){
 -------------------------------------------------------------------------------------------------------------------------------
 
 3: Throw Keyword:
-We can manually throw an exception using throw.
+    Used to manually throw an exception inside a method.
 
 Ex:
 public class Main {
@@ -117,14 +109,13 @@ public class Main {
 -------------------------------------------------------------------------------------------------------------------------------
 
 4: Throws Keyword:
-The throws keyword in Java is used to declares what exceptions a method can throw.
-It tells the caller of the method that they need to handle the exception.
-You can either handle the exception in the method using try catch block or throw it to the back function using throws keyword.
+    Used to specify what exceptions the method might throw
+    Informs the caller that they must handle the exception
+    A method can either handle the exception using try–catch or pass it upward using throws
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-In this Example I handled the Exception using try catch block so I dont
-need to use Throws Exception:
+Exception Handled inside the method (no need for throws):
 
 public static void main(String[] args) {
     hello();
@@ -138,7 +129,7 @@ public  static void hello(){
     }
 }
 
-In this example I didnt handle the exception in the hello() so i have to throw it to the back function 
+Not handled inside the method → must declare throws:
 
 public static void main(String[] args) {
     try{
@@ -155,8 +146,7 @@ public  static void hello() throws IOException{
 -----------------------------------------------------------------------------------------
 
 5: Custom Exception:
-
-We can create our own exceptions by extending the Exception class.
+    We can create our own exceptions by extending the Exception class.
 
 Ex:
 
@@ -193,7 +183,7 @@ Checked exceptions = compile-time errors → must handle.
 Unchecked exceptions = runtime errors → may crash app if not handled.
 finally always executes → best for closing resources.
 throw → to actually throw an exception.
-throws → to declare potential exceptions in method.
-You can create custom exceptions by extending Exception.
+throws → declares exceptions a method might throw
+Custom exceptions → extend Exception
 
 -------------------------------------------------------------------------------------------------------------------------------

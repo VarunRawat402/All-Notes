@@ -4,8 +4,7 @@ Array List:
 
 It is used to store collection of data.
 Default Capacity : 10 elements
-When elements increased more than the capacity it creates a new array with bigger size and 
-copy the elements to the new array
+When capacity is exceeded, a new larger array is created internally and all elements are copied into it.
 
 Syntax:
     ArrayList<Integer> l1 = new ArrayList<>();
@@ -16,41 +15,42 @@ Syntax:
 Difference Between Arrays and ArrayList:
 
 Size:
-Arrays: Have a fixed size that needs to be specified when the array is created. Once an array is created, its size cannot be changed.
-ArrayLists: Did not have a fixed size and can increase and decrease the size dynamically.
+Arrays → Fixed size, cannot change after creation.
+ArrayList → Dynamic size, grows and shrinks automatically.
 
 Length/Size:
-Arrays: Use the length property to get the size of the array.
-ArrayLists: Use the size() method to get the number of elements in the ArrayList.
+Arrays → Use length property.
+ArrayList → Use size() method.
 
 Mutability:
-Arrays: Once created, the size of the array is fixed. You cannot add or remove elements easily.
-ArrayLists: Can easily add, remove, or modify elements. They are more dynamic in terms of size.
+Arrays → Cannot add/remove elements easily; must manage indexes manually.
+ArrayList → Supports add, remove, update operations easily.
 
 Performance:
-Arrays: Generally have slightly better performance as they are more lightweight and have a lower memory overhead.
-ArrayLists: Have a higher memory overhead due to the underlying array and the additional features provided.
+Arrays → Slightly faster, lower memory overhead.
+ArrayList → Higher overhead due to dynamic resizing and extra features.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Difference Between ArrayList and Vector:
 
-Only Difference is vector is synchronized and thread safe while ArrayList is not ThreadSafe
-Vector can increase performance overhead ( extra time, memory or power required by system due to synchronization )
-So ArrayList is recommended in Single Thread while vector in MultiThread
+Vector is synchronized → Thread-safe.
+ArrayList is not synchronized → Not thread-safe.
+Because of synchronization, Vector has more overhead and is slower.
+Use ArrayList in single-threaded programs, Vector in multi-threaded scenarios (rarely recommended today).
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Difference Between ArrayList and CopyOnWriteArrayList:
 
-When we modify the ArrayList it modifies the original list
-thats why we cannot modify the ArrayList while reading it simultaneously and it will give us an exception
-But when we modify the CopyOnWriteArrayList it creates a new list and now old list points to the new list
-So, when we modify the CopyOnWriteArrayList while reading it, It will not give an exception
-because we are reading the original list and modification is done on the new list and after the reading
-old list will point to the new list 
+ArrayList: 
+    Modifies the original list.
+    Cannot modify while iterating → Causes ConcurrentModificationException.
 
-CopyOnWriteArrayList is thread safe
+CopyOnWriteArrayList:
+    On modification, creates a new copy of the list.
+    Safe to modify while iterating because reading happens on the old array.
+    Thread-safe.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 

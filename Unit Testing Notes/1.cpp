@@ -2,42 +2,56 @@
 Unit Testing:
 --------------------------------------------------------------------------------------------------------------------------------
 
-Flow of Testing:
-AAA Pattern ( Arrange Act Assert )
+Flow of Testing (AAA Pattern):
 
-Multiple Verification level of Repository:
+Arrange → Set up data, mocks, and environment
+Act → Execute the logic or method being tested
+Assert → Verify expected results
 
-1: Check saved Operation ( saved or not ) ( null or not )
-2: Verify Id Generation
-3: Confirm Existance in Database by fetching the data
-4: Check feild values are correct or not
+--------------------------------------------------------------------------------------------------------------------------------
+
+Repository Verification Steps:
+
+1: Check Save Operation
+    Ensure the entity is saved (not null).
+
+2: Verify ID Generation
+    Confirm ID is generated automatically (if applicable).
+
+3: Confirm Existence in Database
+    Fetch the saved record and ensure it exists.
+
+4: Validate Field Values
+    Check whether stored values match expected values.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 @SpringBootTest:
 
-This annotation tells Spring Boot to start the full application context for the test.
-It loads everything: configuration, beans, services, repositories, controllers, etc.
+Starts the full Spring Boot application context during testing.
+Loads everything: configuration, beans, services, repositories, controllers, etc.
+Used for integration testing.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 @DataJpaTest:
 
-This annotation is specialized for JPA tests.
-It only loads: @Entity classes, Spring Data JPA repositories.
-It does not load controllers, services, security, etc.
-By default, it uses an in-memory database (H2)
+This annotation is used for JPA tests.
+It only loads: @Entity classes, JPA repositories.
+Does not load services, controllers, security, etc.
+Uses in-memory H2 database by default.
 
 
 @AutoConfigureTestDatabase:
-Used with @DataJpaTest to control what database gets used.
-By default, Spring uses inMemory H2 Database
-With this annotation you can tell spring to use the configured DB
+Controls which database is used in @DataJpaTest.
+Without configuration → defaults to H2
 
-@DataJpaTest        //Uses Real DB
+Use real configured DB:
+
+@DataJpaTest        //Use Real DB
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 
-@DataJpaTest        //Used TempH2
+@DataJpaTest        //Use TempH2
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 
 --------------------------------------------------------------------------------------------------------------------------------

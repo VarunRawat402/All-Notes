@@ -4,37 +4,37 @@ Time Complexity of Data Structures:
 
 ArrayList:
 
-    Insertion and Deletion              - O(n) ( shifting of elements)
-    Insertion and Deletion at end       - O(1)
-    Searching                           - O(n) 
-    get() and set()                     - O(1)
+Insertion & Deletion (middle/start)   - O(n)   (shifting elements)
+Insertion & Deletion at end           - O(1)
+Searching                              - O(n)
+get() and set()                        - O(1)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 LinkedList:
     
-    Insertion and Deletion at middle                - O(n) ( Traversal of LL )
-    Insertion and Deletion at end or start          - O(1)
-    Searching                                       - O(n) 
-    get() and set()                                 - O(n)
+Insertion & Deletion at middle         - O(n)   (traversal required)
+Insertion & Deletion at start/end      - O(1)
+Searching                               - O(n)
+get() and set()                         - O(n)   (no index-based access)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Set: 
 
-Hashset, LinkedHaset:
-    Everything - O(1)
+HashSet, LinkedHashSet:
+    All operations (add, remove, search)   - O(1)
 
 TreeSet:
-    Everything - O(logn)
+    All operations                         - O(log n)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Map:
 
 HashMap, LinkedHashMap:
-    Insertion and Deletion      - O(1)
-    Accessing                   - O(1)
+    Insertion & Deletion                  - O(1)
+    Access (get/containsKey)              - O(1)
 
 TreeMap:    
     Insertion and Deletion      - O(logn)
@@ -44,15 +44,15 @@ TreeMap:
 
 Stack:
     
-    push(), pop(), peek()       - O(1)
-    search()                    - O(n)
+    push(), pop(), peek()                 - O(1)
+    search()                              - O(n)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Queue:
     
-    LinkedList: O(1)
-    PriorityQueue : O(logn)
-    ArrayDeque: O(1)
+    LinkedList Queue          - O(1)
+    PriorityQueue             - O(log n)
+    ArrayDeque                - O(1)
 
 -------------------------------------------------------------------------------------------------------------------------------

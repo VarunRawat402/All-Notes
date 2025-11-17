@@ -2,17 +2,20 @@
 Centralized Configuration:
 ------------------------------------------------------------------------------------------------------------------------------
 
+A Config Server allows all microservices to fetch their configuration from a single centralized location (Git or local folder). 
+This avoids manually updating configuration in each service.
+
 How to setup the Centralized Configuration:
 
 Config Server:
-    A centralized server that stores/fetch configuration properties from git
+    A dedicated Spring Boot application that exposes configuration stored in Git (remote/local).
 
 1: Dependecies:
-    //Spring Cloud Config Server
     <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-config-server</artifactId>
     </dependency>
+
 
 2: Annotations:
     @SpringBootApplication
@@ -46,28 +49,33 @@ Config Client:
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-Practical ( With GIT ):
+Practical Setup (Using Git Repo):
 
-Lets create a small application on Centralized Configurations:
-We will Load configuration from git using Config server and then Limit service will fetch its config from server
+Goal: Load config from Git using Config Server, and Limit Service fetches its config through the server.
 
-Git Repo:
-1: We created the folder "git-config" where we will store all our configuration ( same folder where MS are present )
-2: We created limit service configuration "limit-ms.properties" 
-    (make sure the name of the configuration file is same as the microservice name )
-3: Then we did "git init" and added this file to the git
+1. Git Repo Setup:
 
-Config Server:
+Create a folder named git-config.
+Inside it, create the file limit-ms.properties.
+(The file name must match the microservice name: spring.application.name=limit-ms)
+Run:
+    git init
+    git add .
+    git commit -m "Initial config"
 
-1: Configured the Config Server
-    spring.cloud.config.server.git.uri=file:///C:/Users/User/Desktop/CentralizedConfigMS/git-localconfig-repo
-    //Actual path had backward slashes but, we have to have forwards slashes here so, it can run
+2: Config Server Setup (Local Git Path)
+spring.cloud.config.server.git.uri=file:///C:/Users/User/Desktop/CentralizedConfigMS/git-localconfig-repo
+
+Note: Even on Windows, forward slashes must be used in the URI.
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-Practical ( With Local ):
+Instead of using Git, configurations can be loaded from the project itself:
 
-//Loads the config properites from resources/config package
+In the microservice:
 spring.config.import=optional:classpath:/config/
+
+Place your config files inside:
+src/main/resources/config/
 
 ------------------------------------------------------------------------------------------------------------------------------

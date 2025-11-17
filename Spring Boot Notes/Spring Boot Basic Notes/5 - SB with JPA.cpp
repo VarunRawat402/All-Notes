@@ -2,72 +2,69 @@
 Lecture 4: Spring Boot with JPA and HIBERNATE 1
 -----------------------------------------------------------------------------------------
 
-Without JPA:
-1: We made a model class Person and store the details of the person in the Person object.
-2: Then we made a connection to the DB using DBConfig File.
-3: Then in Repository we will create table by writing manual sql queries and store the details of the person in the DB table
-    using the person object with the help of preparedStatement and statement.
-
 In JPA :
-1: We will create table in DB using annotation in the model class rather than creating by writing manual sqls.
-2: We will not make connection to connect to the database instead we will use hibernate commands to connect to the db.
-3: We will store the details of the person using pre defined functions given by JPA Repository in the service class.
-4: With the help of JPA we dont need to write manual sql queries / Map data manually / and create basic functions.
+1: Tables are created automatically using annotations in the model class.
+2: No manual DB connection setup in code; Hibernate handles connection through configuration.
+3: CRUD operations are performed using predefined methods from JpaRepository.
+4: No manual SQL, no manual mapping, no boilerplate code.
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 @Entity: 
-It is used on top of the class and to tell the hibernate to create a table of this class in the DB.
-Every Attribute in the model class will become the column.
+Placed on top of the class, Tells Hibernate to create a table for this class.
+Each attribute becomes a column.
 
 @Transient: 
-It is used on top of that attribute which we dont want as column in our DB.
+Used on fields that should not become database columns.
 
 HikaryPool: 
-It is a pool which is used by Hibernate to communicate with the internal DB.
+A fast connection pool used internally by Spring Boot + Hibernate to communicate with the database.
 
 @Id: 
-It is used on top of that attribute which we have to make primary key in DB.
-It is mandatory because in order to map with Hibernate we have to define the primary key.
+Used to make the attribute as Primary Key of the table.
+Mandatory for JPA entities.
 
 @Column: 
-It is used to change the name of the column and set the values like size of the attribute
-Ex- column(length = 30) -> varchar(30)
+Used to customize column properties such as name, length, nullable, etc.
+Example: @Column(length = 30) → VARCHAR(30)
 
-@Table: It is used to change the properties like name of table in DB.
+@Table:
+Used to customize the table name and other table-level properties.
 
 Note:
-    This is present in JPA and not in hibernate because If the developer wants to use other frameworks
-    instead of hibernate then we will not be able to use this annotation so that is why it is 
-    present in the JPA.
-    Hibernate converts the camelcase structure of attributes to the underscore structure automatically.
-    Ex - firstName will be first_Name
+    These annotations come from JPA, not Hibernate.
+    This is because JPA is framework-independent.
+    Hibernate automatically converts camelCase into snake_case.
+    Example: firstName → first_name
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 How To connect application to the DB:
 
-To connect to the mysql DB:
-    spring.datasource.url = jdbc:mysql://localhost:3306/office?createDatabaseIfNotExist=true
+spring.datasource.url=jdbc:mysql://localhost:3306/office?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=root402
 
-Username & password of mysql:
-    spring.datasource.username = root
-    spring.datasource.password = root402
+Hibernate DDL Auto (startup behavior):
 
-To manage how DB operates on startup:
-    It has 4 modes : create, update, validate, create-drop
+create - Drops and recreates tables every time
+update - Updates schema without dropping data
+validate - Validates schema, does not modify
+create-drop - Creates on start, drops on shutdown
 
-Note:
-Dialect: A dialect is used to tell the hibernate/jpa how to generate SQL queries as different databases uses different dialects
-Ex:  
-MySQL      -    org.hibernate.dialect.MySQL8Dialect
-PostgreSQL -	org.hibernate.dialect.PostgreSQLDialect
+Dialect:
+Tells Hibernate how to generate SQL for the specific database.
+
+Examples:
+MySQL: org.hibernate.dialect.MySQL8Dialect
+PostgreSQL: org.hibernate.dialect.PostgreSQLDialect
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 REPOSITORY:
-JPA is an interface and to use JPA We need to make the Repository interface and extends it with JpaRepository<Person,Integer>
-where Person is the class whose object we will be saving and Integer is the datatype of the primary key of that class.
+JPA is a specification, so we create a repository interface and extend JpaRepository<Person, Integer>.
+Person → entity class
+Integer → type of primary key
 
 Code:
 public interface PersonRepository extends JpaRepository<Person,Integer> {
@@ -78,17 +75,19 @@ public interface PersonRepository extends JpaRepository<Person,Integer> {
 
 @Entity
 public class Person {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 }
 
-@GeneratedValue: It is used to automatically generate the value of the Id.
+@GeneratedValue:
+    Automatically generates values for the primary key.
 
-It has 2 types:
-GenerationType.AUTO : In this hibernate will generate the id for me 
-In this there is a common table hibernate_sequence where after every insertion id is incremented by 1 and 
-given to tables ID.
+GenerationType.AUTO :
+Hibernate decides the best strategy.
+Uses a global table hibernate_sequence.
+IDs are shared across all entities.
 
 But Lets say there are 2 tables and so if we insert in those 2 tables alternatively then the table id will look
 like 
@@ -96,8 +95,9 @@ person - 1 3 5 7
 author - 2 4 6 8
 hibernate_sequence - 1 2 3 4 5 6 7 8 
 
-GenerationType.IDENTITY: In this my DB will generate the id for me like mysql 
-In this every table increases his Id by its own so there is no skipping of ID 
-even when we insert alternatively.
+GenerationType.IDENTITY: 
+Database (MySQL) generates the ID.
+Each table maintains its own auto-increment sequence.
+No skipping due to other tables inserting.
 
 ---------------------------------------------------------------------------------------------------------------------------------------

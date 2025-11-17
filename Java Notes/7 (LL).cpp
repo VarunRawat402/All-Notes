@@ -3,16 +3,16 @@ Linked List:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Linear data structure where elements are stored in nodes
-Each node contains data and reference to next node
+Each node contains data and a reference to the next node.
 Dynamically sized - grows/shrinks at runtime
 Does not require contiguous memory allocation
 
 Time Complexity:
 
-Insertion: O(1) at beginning/end, O(n) at specific position
-Deletion: O(1) at beginning, O(n) at end/specific position
-Search: O(n) - must traverse from head
-Access: O(n) - must traverse to index
+Insertion:  O(1) at beginning/end, O(n) at specific position
+Deletion:   O(1) at beginning, O(n) at end/specific position
+Search:     O(n) — must traverse from head
+Access:     O(n) — cannot directly access index
 
 1. Singly Linked List:
     Each node points only to next node
@@ -36,11 +36,11 @@ Note: Java's LinkedList class implements Doubly Linked List
 
 Key Points:
 
-✅ Better for frequent insertions/deletions - No element shifting required
-✅ Dynamic size - No pre-allocation needed
-❌ Slow random access - Must traverse from head to desired index
-❌ More memory overhead - Each node stores data + references
-✅ Efficient memory utilization - No contiguous block required
+Better for frequent insertions/deletions → no shifting of elements
+Dynamic size
+Slow random access → must traverse
+More memory usage → each node stores pointers
+No requirement for contiguous memory
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -92,8 +92,8 @@ boolean isEmpty =   list.isEmpty();                  // Check if empty
 
 Difference Between ArrayList and LinkedList:
 
-Insertion and Deletion is better in LL due to not shifting of elements
-get(index) is slower in LL than ArrayList becuase it has to traverse the whole LL
-LL requires more memory head as it contains the address of the next node too
+LL is better for insertions/deletions → no shifting
+get(index) is slower in LL → must traverse
+LL uses more memory → every node stores next/prev references
 
 -----------------------------------------------------------------------------------------------------------------------------------------

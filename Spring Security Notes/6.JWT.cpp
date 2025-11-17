@@ -22,7 +22,7 @@ To create the token:
     add custom claims, subject, issuedAt, expiration, then sign the token and build it
 
 To validate and parse the token:
-    jwts.parser is used to parse the token
+    jwts.parser() is used to parse the token
     verify the token with sign in key
     parse the claims and get the payload, which is jwt claims
 
