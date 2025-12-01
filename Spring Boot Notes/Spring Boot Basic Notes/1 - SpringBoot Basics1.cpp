@@ -2,8 +2,6 @@
 Lecture 1: Spring Boot Basics
 -----------------------------------------------------------------------------------------------------------------------
 
------------------------------------------------------------------------------------------------------------------------
-
 Inversion Of Control:
 
 Instead of you managing the lifecycle of objects, Spring creates and manages them.
@@ -37,19 +35,17 @@ Option 2:
 
 Command line runner :
 
-main() is static, so we cannot use any service, Repository etc in main as they are non-static
-CommandLineRunner allows executing non-static code at application startup.
+It is an interface
+It lets u run code after spring application context is fully started
+You need to override the run() method in CommandLineRunner
 
-public class Demo implements CommandLineRunner {
+Main():
+It is static and runs before spring creates beans, load configs, autowire dependency
+You cannot use autowired fields + access beans + repo, service, controller etc
 
-    @Autowired
-    AuthorRepository ar;
-
-    @Override
-    public void run(String[] args) throws Exception {
-        // code executed at startup
-    }
-}
+Uses:
+Insert initial data
+Run setup scripts
 
 ----------------------------------------------------------------------------------------------------------------------
 

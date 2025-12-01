@@ -10,35 +10,6 @@ In JPA :
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
-@Entity: 
-Placed on top of the class, Tells Hibernate to create a table for this class.
-Each attribute becomes a column.
-
-@Transient: 
-Used on fields that should not become database columns.
-
-HikaryPool: 
-A fast connection pool used internally by Spring Boot + Hibernate to communicate with the database.
-
-@Id: 
-Used to make the attribute as Primary Key of the table.
-Mandatory for JPA entities.
-
-@Column: 
-Used to customize column properties such as name, length, nullable, etc.
-Example: @Column(length = 30) → VARCHAR(30)
-
-@Table:
-Used to customize the table name and other table-level properties.
-
-Note:
-    These annotations come from JPA, not Hibernate.
-    This is because JPA is framework-independent.
-    Hibernate automatically converts camelCase into snake_case.
-    Example: firstName → first_name
-
----------------------------------------------------------------------------------------------------------------------------------------
-
 How To connect application to the DB:
 
 spring.datasource.url=jdbc:mysql://localhost:3306/office?createDatabaseIfNotExist=true
@@ -85,19 +56,14 @@ public class Person {
     Automatically generates values for the primary key.
 
 GenerationType.AUTO :
-Hibernate decides the best strategy.
-Uses a global table hibernate_sequence.
-IDs are shared across all entities.
-
-But Lets say there are 2 tables and so if we insert in those 2 tables alternatively then the table id will look
-like 
-person - 1 3 5 7
-author - 2 4 6 8
-hibernate_sequence - 1 2 3 4 5 6 7 8 
+Hibernate decides the best strategy for each DB
+Good for batch insertions 
+Good when you have different type of DB
 
 GenerationType.IDENTITY: 
-Database (MySQL) generates the ID.
+Database  generates the ID.
 Each table maintains its own auto-increment sequence.
-No skipping due to other tables inserting.
+No batch insertions
+Good when you have one type of DB
 
 ---------------------------------------------------------------------------------------------------------------------------------------

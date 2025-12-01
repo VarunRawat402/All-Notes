@@ -14,6 +14,7 @@ How to Achieve Abstraction in Java?
     Can have instance + static variables
     Can have a constructor
     Multiple Inheritance Not supported
+    Cannot create object of absrtact class
 
 2: Interfaces (interface keyword) :
 
@@ -21,6 +22,8 @@ How to Achieve Abstraction in Java?
     Only public static final (constants)
     Cannot have a constructor
     Multiple Inheritance Supported (A class can implement multiple interfaces)
+    You can create objects with interface references
+    Object can assess methods of those who the object is reference to
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -31,17 +34,17 @@ abstract class Animal {
     String name;
     static int price = 1000;
 
-    Animal(String name){    //Constructor
+    Animal(String name){                                //Constructor
         this.name=name;
     }
 
-    abstract void eat()     //abstract method
-
-    void run(){             //Normal method
+    public void run(){                                  //Normal method
         System.out.println("I am running");
     }
 
-    static void fly(){      //static method
+    abstract void eat()                                 //abstract method
+
+    static void fly(){                                  //static method
         System.out.println("I am flying");
     }
 
@@ -51,13 +54,10 @@ public class Dog extends Animal{
 
     String breed;
 
-    //using super to call the constructor to initialize the name 
-    Dog(String name,String breed) {
         super(name);
         this.breed=breed;
     }
 
-    //Override the eat method of abstract class
     @Override
     void eat(){
         System.out.println( name + " is eating");
@@ -65,9 +65,10 @@ public class Dog extends Animal{
 }
     
 Dog dog = new Dog("PetDog", "Golden Retreiver");
-dog.eat()           //Dog is barking
-dog.run();          //I am running
-Animal.fly();       //I am flying
+dog.eat()                                   //Dog is barking
+dog.run();                                  //I am running
+Animal.fly();                               //I am flying
+Animal a1 = new Animal("Shiro")             //Wrong as you cannot create object of abstract class
 
 -------------------------------------------------------------------------------------------------------------------------------
 

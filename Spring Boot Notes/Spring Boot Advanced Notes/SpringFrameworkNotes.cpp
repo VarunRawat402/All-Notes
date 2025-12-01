@@ -18,22 +18,6 @@ So ApplicationContext = Container + extra features.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Types of Spring Containers:
-
-1. BeanFactory (Basic, Lightweight):
-    Manages beans
-    Lazy initialization, Very low-level
-    Uses lazy initialization (beans are created only when needed).
-    Mostly deprecated (e.g., XmlBeanFactory)
-
-2. ApplicationContext (Advanced, Default)
-    Built on BeanFactory    
-    Eager initialization
-    Handles events, AOP, i18n
-    Preferred in all Spring applications
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 @Qualifer vs @Primary:
 
 @Primary ( Default Bean Selection )
@@ -50,7 +34,7 @@ interface Vehicle {
 }
 
 @Component
-@Primary  // This will be the default bean
+@Primary  
 class Car implements Vehicle {
     public void drive() {
         System.out.println("Car is driving...");
@@ -96,21 +80,16 @@ class TransportService {
 POJO VS Java Bean VS Spring Bean:
 
 POJO (Plain Old Java Object)
+Simple java class with no restrictions
+getter + setter + methods + private variables are optional
+No dependencies on spring framework
 
-A POJO is a simple Java class with no special restrictions. 
-It Has no dependencies on frameworks (Spring, Hibernate, etc.)
-May or may not have getters/setters
-Can have any methods
 Ex:
     public class Car {
         private String brand;
         
         public Car(String brand) {
             this.brand = brand;
-        }
-
-        public void drive() {
-            System.out.println(brand + " is moving...");
         }
     }
 
@@ -119,19 +98,15 @@ Ex:
 Java Bean:
 
 A Java Bean is a special type of POJO with these rules:
-Must have private fields
-Must have public getters and setters
-Must have a no-argument constructor
+Private feilds + public getters & setters + no argument constructor is must
 Serializable (optional)
 
 Ex:
     public class Person implements Serializable { // Optional for Java Bean
         private String name;
     
-        // No-argument constructor (Required)
         public Person() {}
     
-        // Getter & Setter (Required)
         public String getName() {
             return name;
         }
@@ -144,10 +119,8 @@ Ex:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Spring Bean:
-
-A Spring Bean is an object that is managed by the Spring Container. 
-It can be a POJO or a Java Bean but is created and managed by Spring.
-Mark the class with @Component or register it with @Bean annotation
+Can be pojo or java bean
+Needs to be managed by spring using @Component annotation
 
 Ex:
     @Component  // Marks this as a Spring Bean
@@ -164,50 +137,35 @@ DI ( Dependency Injection Type ):
 
 1: Constructor Injection ( Best )
 Dependencies are passed via the constructor.
-    Recommended by Spring because it supports immutability and testability.
-    Ensures that dependencies must be provided when creating the object.
-    Encourages immutability because fields can be final.
-    Easier for unit testing
+    Supports Immutability and Testability
+    Ensures dependency injection when object is created
+    Immutability - dependencies should be final 
+    Testability  - Easier for unit testing
 
 Ex:
-    @Component
-    class Engine {
-        public void start() {
-            System.out.println("Engine started...");
-        }
-    }
-
-    // Dependent Class
     @Service
     class Car {
-        private final Engine engine;
+        private final CarRepository carRepository;
 
-        // Constructor Injection
         public Car(Engine engine) {
             this.engine = engine;
-        }
-
-        public void drive() {
-            engine.start();
-            System.out.println("Car is moving...");
         }
     }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Setter Injection:
-    Injects Dependency using setter functions
-    If a dependency is not always needed, you can set it only when required.
-    The object can be created without the dependency, and it may fail later at runtime.
-    Developers might forget to call the setter, leading to null pointer exceptions.
-    Fields cannot be final since they need to be set later.
+    Injects dependencies using setteer function
+    Used when dependency are not always needed and only injects when required
+    Cons: Object can be created without dependency + can fail at runtime
+    Dev sometime forgets to call the dependencies
+    Feilds cannot be final 
 
 Ex:
     @Service
     class Car {
         private Engine engine;
 
-        // Setter Injection
         @Autowired
         public void setEngine(Engine engine) {
             this.engine = engine;
@@ -222,13 +180,11 @@ Ex:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Feild Injection ( Worst ):
-    Uses @Autowired directly on fields (reflection-based).
-    Not recommended because it makes testing harder.
+    @Autowired is used to inject dependencies
+    Cons: Make testing harder
     Uses @Autowired directly on the field, making it impossible to create an instance without Springs help.
-    You cannot replace the dependency easily for testing because it is injected by the framework (Spring) using reflection.
-    You cannot create a Car object manually in unit tests because Spring injects the dependency using reflection.
-    If you create an object of Car manually dependencies will not get injected and give
-    you null pointer exception making it harder to test the code.
+    If you create car object manually, dependency will not be injected in the object making testing harder
+    Gives null pointer exception
 
 Ex:
 @Service
@@ -244,19 +200,6 @@ class Car {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@Lazy vs @Eager
-
-Eager Initialization (Default):
-Spring creates all beans at startup, even if they are not used.
-This can slow down application startup.
-Useful when you want fast response times after startup.
-
-Lazy Initialization (@Lazy):
-Spring only creates the bean when it is first used.
-Improves startup time by delaying unnecessary bean creation.
-Useful for rarely used beans or heavy resources (e.g., database connections, large services).
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Types of Bean Scopes:
 

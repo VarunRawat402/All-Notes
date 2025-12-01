@@ -4,8 +4,8 @@ Wrapper Classes:
 
 Wrapper classes convert primitive data types into objects.
 
-Primitive   : int , short, char, long, boolean
-Wrapper    :  Integer, Short, Character, Long, Boolean
+Primitive         : int , short, char, long, boolean
+Wrapper classes   :  Integer, Short, Character, Long, Boolean
 
 Primitive Data Types : Stored in stack
 Wrapper Object : Stored in Heap

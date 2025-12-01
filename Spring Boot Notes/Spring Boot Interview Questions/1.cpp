@@ -171,8 +171,26 @@ proceed() returns the actual result of the method and you can modify it and retu
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 	
+transient Keyword:
+It is used to skip the feild during serialization
+When u send the data you need to serialize it and convert it to byte stream
+transient feild becomes null during serialization and its value is not sent 
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+@Lazy vs @Eager Initialization:
+
+Eager Initialization (Default):
+All the beans are created at startup even if they are not used
+Slows your application startup
+fast response time after startup
+
+Lazy Initialization (@Lazy):
+Creates bean only when they are first used
+Improves startup time 
+Useful for rarely used beans
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 

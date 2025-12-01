@@ -23,7 +23,7 @@ Class names for class loading
 
 If Strings were mutable, malicious code could modify these values during runtime, causing security vulnerabilities.
 
------------------------------------------------------------------------------------------------------------------------------------------x`
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 2. String Pool (Memory Optimization):
 Java stores String literals in the String Pool for reusability.
@@ -52,7 +52,7 @@ If String was mutable, hashcode would change, breaking HashMap and HashSet funct
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 String (Immutable)
-        A String is immutable, meaning its value cannot be changed after creation.
+A String is immutable, meaning its value cannot be changed after creation.
 
 Ex:
 String s1 = "Hello";
@@ -131,5 +131,20 @@ t2.join();
 System.out.println("length "+s.length());
 
 //If we Use StringBuffer the output will be 2000000 Everytime
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Note:
+Using new keyword to create string will always create another string even if the value is same
+
+Example 1:
+String s1 = "Hello";                    
+String s2 = "Hello";
+s1==s2                          //True
+
+Example 2:
+String s1 = "Hello";
+String s2 = new String("Hello");
+s1==s2                          //False
 
 -----------------------------------------------------------------------------------------------------------------------------------------

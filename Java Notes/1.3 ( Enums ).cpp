@@ -17,7 +17,7 @@ public class Constants {
     public static final String ADMIN = "ADMIN";
 }
 
-/With enum (cleaner, safer):
+With enum (cleaner, safer):
 
 public enum Constants {
     USER, STUDENT, ADMIN

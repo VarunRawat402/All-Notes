@@ -2,7 +2,7 @@
 JPA Relationships:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JPA allows defining relationships between tables using annotations. 
+JPA allows creating relationships between tables using annotations. 
 These relationships are based on primary key → foreign key mappings.
 
 JPA supports four types of relationships:
@@ -38,7 +38,7 @@ Example: 1 student can belong to multiple departments, and 1 department can have
 
 @JoinColumm : 
     Represents the owning side of the relationship.
-    Specifies the foreign key column in the owning entity’s table.
+    Specifies the foreign key column in the owning entity table.
 
 mappedBy = :  represents the inverse side
     Used on the non-owning side.
@@ -74,6 +74,7 @@ class Student {             // Owning side
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Cascade Types:
+
 CascadeType.ALL - Applies all operations: Persist, Merge, Remove, Refresh, Detach
 
 CascadeType.PERSIST - Saves child when parent is saved
@@ -86,12 +87,11 @@ CascadeType.DETACH - Detaches child from persistence context
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
 Cascade:
 
 cascade will always be added on the saving side
-If you are saving student and want user to be saved automatically then you need to add cascade on student entity at user attribute
-If you are saving user and want student to be saved automatically then you need to add cascade on user entity at student attribute
+If you are saving student and want user to be saved automatically then you need to add cascade in student entity at user attribute
+If you are saving user and want student to be saved automatically then you need to add cascade in user entity at student attribute
 
 Ex:
 
@@ -138,7 +138,6 @@ Lazy Fetching:
 Code:
     System.out.println(dept.getName());             // Only Department is fetched.
     System.out.println(dept.getStudents());         // Students are loaded now.
-
 
 
 Eager Fetching:
