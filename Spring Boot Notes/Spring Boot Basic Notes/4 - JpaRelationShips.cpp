@@ -76,13 +76,9 @@ class Student {             // Owning side
 Cascade Types:
 
 CascadeType.ALL - Applies all operations: Persist, Merge, Remove, Refresh, Detach
-
 CascadeType.PERSIST - Saves child when parent is saved
-
 CascadeType.MERGE - Updates child when parent is updated
-
 CascadeType.REMOVE - Deletes child when parent is deleted
-
 CascadeType.DETACH - Detaches child from persistence context
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

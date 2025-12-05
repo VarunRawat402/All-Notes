@@ -40,23 +40,6 @@ CascadeType.REMOVE	:   Deletes child entities when parent is deleted.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Pagination: 	
-It is used to limit the number of records which needs to be shown, split large numbr of data into chunks
-Helps performance and user Experience, You dont need to show 1 million users at once
-limit 10, offset = limit * pageNumber
-
-Sorting: 	It makes the data meaningful, like cheapest products, latest articles
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Dialect:	It is syntax of each DB, mysql , postgreSQL has different dialects from each other
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Transient: 	feild is not serialized, ignored during serialization
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Transactional: 	
 It is used where either everything executes or nothing executes
 With this if 1 step fails, everything rollbacks
@@ -81,15 +64,6 @@ ResponseEntity:
 It is a class which is used to create HTTP response
 new ResponseEntity<>(body, header, httpstatus)
 It has already defined static methods to make it ease
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Content Negotiation:	
-It is used to server responses in different formats like Json, XML HTML
-Add the dependency only
-It checks the requests headers:
-Accept: application/json → Server returns JSON
-Accept: application/xml → Server returns XML
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 

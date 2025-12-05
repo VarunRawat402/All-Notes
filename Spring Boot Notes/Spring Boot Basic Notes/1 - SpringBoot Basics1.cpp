@@ -33,6 +33,16 @@ Option 2:
 
 ----------------------------------------------------------------------------------------------------------------------
 
+Why Main() is static:
+
+main is static so JVM can call it immediately, without creating any object, making it the universal entry point for every Java program.
+
+If it were not static:
+    JVM would need to create an object, but it would not know which constructor to call.
+    That would create a circular problem.
+
+----------------------------------------------------------------------------------------------------------------------
+
 Command line runner :
 
 It is an interface
@@ -46,58 +56,6 @@ You cannot use autowired fields + access beans + repo, service, controller etc
 Uses:
 Insert initial data
 Run setup scripts
-
-----------------------------------------------------------------------------------------------------------------------
-
-ModelMapper:
-Used to map fields from one class to another. Useful when entity classes and response DTOs differ.
-
-Example:
-Two classes → Student and StudentResponse.
-We fetch a Student entity but want to return a StudentResponse in the API.
-
-Student student = repository.findById(id).get();
-StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
-
-----------------------------------------------------------------------------------------------------------------------
-
-Circular Dependency:
-
-Code:
-
-Book Class:
-public class Book{
-
-    private int id;
-    private String name;
-    private int cost
-
-    @ManyToOne
-    @JoinColumn
-    @JsonIgnore
-    private Author author;
-}
-
-Author Class:
-public class Author{
-
-    private int id;
-    private String name;
-    private String email;
-
-    @OneToMany(mappedBy="author",fetch=FetchType.EAGER);
-    private List<Book> booklist
-}
-
-While returning a Book, it tries to fetch the Author.
-While fetching Author, it tries to fetch the bookList.
-This causes circular dependency in JSON serialization, not in Spring beans.
-
-Ways to break the loop:
-
-    1: @JsonIgnore: We will put it on Author and It will ignore the author while collecting data.
-    2: @JsonIgnore("bookList") : It will go to the author and collect all data except bookList.
-
 
 ----------------------------------------------------------------------------------------------------------------------
 Mapping DTOs (MapStruct() ) :
@@ -178,6 +136,32 @@ public interface StudentMapper {
     @Mapping(target = "department", source = "dept")
     @Mapping(target = "createdDate", expression = "java(java.time.LocalDate.now())")
     StudentResponse toStudentResponse(Student student);
+}
+
+----------------------------------------------------------------------------------------------------------------------
+
+Singleton Class:
+A singleton class is a class that allows only one instance of itself to be created and provides a global access point to that instance.
+
+Code:
+public class Customer {
+
+    private static Customer customer;
+
+    private Customer(){
+        System.out.println("Singleton Customer is created");
+    }
+
+    public static Customer getCustomer(){
+        if(customer==null){
+            return customer = new Customer();
+        }
+        return customer;
+    }
+
+    public void getMessage(){
+        System.out.println("Hello singleton instance of Customer");
+    }
 }
 
 ----------------------------------------------------------------------------------------------------------------------

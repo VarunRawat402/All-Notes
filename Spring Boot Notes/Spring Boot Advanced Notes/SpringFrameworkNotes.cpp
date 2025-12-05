@@ -28,6 +28,10 @@ Works unless another bean is explicitly chosen using @Qualifier.
 Used to select a specific bean when multiple beans exist. 
 Overrides @Primary.
 
+Note:
+If the bean is created via @Component/@Service/@Repository, the default bean name is the class name with lowercase first letter.
+If the bean is created via @Bean in a configuration class, the default name is the method name.
+
 Ex:
 interface Vehicle {
     void drive();
