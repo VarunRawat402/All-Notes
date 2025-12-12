@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------------------------------------------------------
-Executor Framework:
+Executors Framework:
 -------------------------------------------------------------------------------------------------------------------------------
 
-The Executor Framework is used to manage and control thread execution in a flexible and scalable way.
+The Executors Framework is used to manage and control thread execution in a flexible and scalable way.
 It helps developers avoid manual thread creation and provides built-in thread pooling and task scheduling features.
 
 Why Use Executor Framework?
@@ -16,7 +16,7 @@ Provides better performance with thread pools
 
 Core Interfaces:
 
-Executor - the base interface with a single method:
+Executors - the base interface with a single method:
 ExecutorService - a more advanced interface with methods to manage lifecycle and submit tasks:
 ScheduledExecutorService - for executing tasks with delay or periodically.
 
@@ -47,12 +47,13 @@ It is used to do some tasks after all the threads completed and shutdown is done
 -------------------------------------------------------------------------------------------------------------------------------
 
 pool.submit() :
-    It is used to run the task by the threads created by Executor
+    It is used to define the tasks that needs to be run by threads
     It Returns a future Object, You can return anything in submit
 
 future.get():
     It is used to get the result of the submit
     It Stops the application untill thread finishes or get Exception etc
+    Its like join() to wait for thread to finish
 
 Ex:
 ExecutorService pool = Executors.newSingleThreadExecutor();

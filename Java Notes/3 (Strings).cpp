@@ -49,6 +49,17 @@ When u get the value using key it convert the key into hashcode and search it in
 Hashcode % totalBuckets formula
 If String was mutable, hashcode would change, breaking HashMap and HashSet functionality.
 
+Collisions:
+When two different keys produce the same hash code and mapped to the same bucket
+
+How Java handles collisions:
+
+Each bucket holds a Linked list / Red black tree of entries.
+If multiple keys hash to the same bucket, they are stored in that list.
+When the map grows beyond load factor, Java increases the bucket array and redistributes entries.
+
+In bucket list/tree .equals() is used to get the correct key
+
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 String (Immutable)
@@ -146,5 +157,16 @@ Example 2:
 String s1 = "Hello";
 String s2 = new String("Hello");
 s1==s2                          //False
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+==  vs .equals():
+
+==:
+It checks the reference
+
+.equals():
+It checks the Value
+Originally .equals() also checks the refernce in the object class but it is overridden in String class to check value
 
 -----------------------------------------------------------------------------------------------------------------------------------------

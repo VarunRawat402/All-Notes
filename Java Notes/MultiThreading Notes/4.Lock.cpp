@@ -4,10 +4,10 @@ Lock
 
 There are 2 Types of Locking:
 
-Intrinsic Locks (a.k.a. Monitor Locks):
+Intrinsic Locks:
 
-These are the locks implicitly used when you use the synchronized keyword.
 Every object in Java has an intrinsic lock.
+These are the locks used when you use synchronized keyword
 synchronized blocks or methods acquire this lock.
 Automatically released when the block/method exits (even on exceptions).
 Simple and safe, but less flexible.
@@ -15,7 +15,7 @@ Simple and safe, but less flexible.
 Explicit Locks:
 
 These are manually controlled using classes from the java.util.concurrent.locks package, like ReentrantLock.
-Must be manually acquired (lock()) and released (unlock()).
+You manually acquire the lock and release the lock -> lock() & unlock()
 More flexible: tryLock(), timeout, interruptible lock, fairness policies.
 More error-prone if you forget to unlock.
 
@@ -47,14 +47,15 @@ public class LockExample {
 -------------------------------------------------------------------------------------------------------------------------------
 
 ReentrantLock():
-    This lock prevents the self locking and deadlock
+    self deadlock : when same thread tries to re-lock the lock without unlocking it
+    It prevents the self deadlock 
     Relocking happens only on same threads
 
-//Thread 1 lock the object in method 1 and prints statement, Then runs method2()
-//In method2() it tries to lock the object again but its already locked right, resulting in deadlock
-//but its Reentrantlock and its same thread which is trying to lock again, so it allows it
-//so now thread 1 has 2 lock, then it prints statement and method2 unlock the method1 unlock
-//If another thread tried to lock the method2 lock then it wont
+//Thread 1 locks the lock object in method1(), then it runs the method2()
+//In method2() we want to lock the object again but we didnt unlocked the object before so its a selflock situation
+//Re-entrant lock() allows you to lock the object multiple times without unlocking it, preventing self lock situation
+//Now thread t1 has 2 locks and we must unlock it 2 times 
+//It only happens in same thread if thread 2 lock the method2() we cannot prevent that
 Code:
 public class ReentrantExample {
     private final ReentrantLock lock = new ReentrantLock();
@@ -83,14 +84,15 @@ public class ReentrantExample {
 -------------------------------------------------------------------------------------------------------------------------------
 
 tryLock() : 
-    This checks if any thread is locked if not then This method tries to acquire the lock:
-    Returns immediately with true if successful.
-    Returns false if the lock is held by another thread.
-    There's also a version with a timeout.
+If the lock is free → it acquires the lock and returns true
+If the lock is already held by another thread → it returns false immediately
+It does not block or wait
 
-tryLock( 2, Time.SECONDS ) :
-    This checks if any thread is locked if not then This method tries to acquire the lock:
-    Wait till given time to acquire the lock
+tryLock(2, TimeUnit.SECONDS) :
+If the lock is free → it acquires it immediately
+If not → it waits up to the given time
+If the lock is still not available → returns false
+This method can throw InterruptedException
 
 Code tryLock():
 
@@ -241,9 +243,10 @@ Unfair lock gives better performance, but some threads might get starved if othe
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-//This creates 5 Threads and starts it and 5 threads called lock method So, 5 Threads are now in queue in Scheduler to run
-//Any Thread can run and first, It Depends on scheduler
-//If you use Fair Lock Then which Thread gets in queue of lock first will run first 
+//This loop creates 5 threads and starts it immediately
+//Now 5 threads are in queue to acquire the lock 
+//Any thread can acquire this lock, it depends on scheduler
+//If you use fair lock, Thread which gets in queue first will acquire the lock first
 Code:
 
 ReentrantLock lock = new ReentrantLock(true); // fair

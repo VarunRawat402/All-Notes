@@ -36,7 +36,8 @@ currentThread()	: Static method — returns a reference to the currently running
 
 Code:
 
-public class DemoApplication {
+p
+ublic class DemoApplication {
     public static void main(String[] args) throws InterruptedException {
 
         Student student = new Student();            //Create Object of Student class

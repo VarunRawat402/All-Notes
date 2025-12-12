@@ -27,27 +27,3 @@ Improved API performance by optimizing Spring Boot backend processes and data ha
 13: Implemented rate limiting to prevent abuse and ensure fair usage of the API.
 14: Used efficient data structures and algorithms in the code to reduce time complexity.
 16: Used lazy loading for entities to avoid fetching unnecessary data from the database.
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Reduced processing latency by 30% by improving Kafka thread management and message handling in Spring Boot:
-
-In Spring Boot, Kafka listeners use threads to process messages. 
-The number of threads affects how fast messages are consumed.
-Configured Kafka consumer thread pool to have an optimal number of threads based on expected load.
-Used ConcurrentKafkaListenerContainerFactory to set concurrency level.
-
-spring:kafka:listener:concurrency: 4  
-It Allows 4 threads to process messages simultaneously instead of just 1.
-
-Using ConcurrentKafkaListenerContainerFactory and ThreadPoolTastExecutor you can customize the min, max thread size
-@KafkaListener(topics = "my-topic", containerFactory = "kafkaListenerContainerFactory")
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Automated API docs with Swagger, cutting integration time by 25%:
-
-I automated API documentation using Swagger, so all REST endpoints were documented and testable directly via a web UI. 
-This made it much easier for other teams to understand and integrate with our APIs, cutting integration time by 25%.
-
------------------------------------------------------------------------------------------------------------------------------------------------------------

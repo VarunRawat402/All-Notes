@@ -2,24 +2,49 @@
 How to Optimise your Application
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-spring.kafka.listener.concurrency=4
-    This is basically used when there is a single consumer and we want to make it multi-threaded
+How to optimize Kafka Listener / Consumer:
 
-This creates 4 threads for single kafka consumer
-These 4 threads will consume messages from different kafka topic partitions
+1: spring.kafka.listener.concurrency=4
 
-If topic has 4 partition and 4 threads are used then 1 thread can read from 1 partition
-Threads should not be greater than partition otherwise they will stay idle
+This is used when there is only single consumer and we want to make that consumer multi-threaded
 
-By Default it sets to 1
-Meaning if consumer takes 1 sec to read the message then it will read 4 messages in 4 sec
-while if we use 4 threads it will read 4 message in 1 sec
+This creates 4 threads for 1 kafka consumer
+By Default it sets to 1 thread
+
+If topic has 4 partition, then 4 threads can read each partition
+
+If consumer takes 1 sec to read 1 msg, then it would take 4 sec to read 4 messages
+With this, 4 threads works together and read 4 messages in 1 sec 
+
+Note:
+Threads should not be greater than the partition, otherwise they would stay idle
+
+2: Multiple Kafka Listeners in 1 Application:
+This creates 4 consumers in same consumer group, doing same task
+So, If topic has 4 partition, each consumer gets 1 partition
+
+@KafkaListener(topics = "user_created", groupId = "grp123")
+public void c1(String msg){}
+
+@KafkaListener(topics = "user_created", groupId = "grp123")
+public void c2(String msg){}
+
+@KafkaListener(topics = "user_created", groupId = "grp123")
+public void c3(String msg){}
+
+@KafkaListener(topics = "user_created", groupId = "grp123")
+public void c4(String msg){}
+
+Note:
+Comapnies mostly used Horizontal scaling and launch multiple instances of same application
+Concurrency method is also
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Consumer Group:
 
-1 partition can be read by only 1 consumer in consumer group
+1 partition can be read by only 1 consumer in consumer group1 partition can be read by only 1 consumer in the consumer group
+1 consumer can read multiple partition 
 Main focus is Load Balancing  and parallel processing for consumer groups so, If any consumer broke then other consumers
 will still be there to read messages.
 
@@ -32,19 +57,13 @@ To create 2 consumer with same group id to load balance we need to run another i
 
 Disadvantages of Using Spring Kafka concurrency:
 
-1. Concurrency is limited by the JVM and system resources
-All concurrent threads in a single instance share the same JVM, memory, and CPU.
-This means you are limited by vertical scalability (one machine's capacity).
-
-2: High Availability / Fault Tolerance:
-If you only run one instance, and it crashes, your consumer group goes offline.
-With multiple app instances, even if one crashes, others keep consuming.
-
-3: Microservices / Kubernetes / Docker
-In modern distributed systems, apps are deployed in containers or pods, which naturally lend themselves to multi-instance deployments.
-Scaling is often managed at the orchestration level, not just via threading.
+1: Concurrency is limited by the JVM and core size, It takes a load on CPU
+2: If you set high concurrency and use single intannce, this means single point of failure, if consumer broke, all message will stop
+3: In modern systems, kubernetes scale Horizontally
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+ASYNC Methods:
 
 @Async : It is used to run a method in a background thread.
 

@@ -45,6 +45,7 @@ public class PrimitiveStreamExample {
 Parallel Streams():
 Normally, streams execute sequentially, meaning one item at a time. If the dataset is large, this can be slow.
 Parallel streams split the work across multiple threads, utilizing multiple CPU cores to process data faster.
+Used when dataset is large, operation is CPU intesive, No shared data, Each element takes time to process
 
 Example:
 public class ParallelStreamExample {
@@ -145,6 +146,7 @@ static public Optional<String> upperCase(String name){
 5: Predicate:
 A Predicate<T> is a functional interface
 Predicate<T> → Performs a function, returns true or false
+
 @FunctionalInterface
 public interface Predicate<T> {
     boolean test(T t);
@@ -233,4 +235,7 @@ System.out.println(count);
 String sentence = "Hello world";
 long c = sentence.chars().filter(ch -> ch == 'l').count();
 
+//Max and Min element in the List
+Optional<Integer> maxi = l1.stream().reduce((a, b)->a>b?a : b);
+Optional<Integer> mini = l1.stream().reduce((a, b)->a>b?b : a);
 -----------------------------------------------------------------------------------------------------------------------------------------

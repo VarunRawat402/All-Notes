@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------------------------------------
-Lecture 1: Spring Boot Basics
+Spring Boot Basics
 -----------------------------------------------------------------------------------------------------------------------
 
 Inversion Of Control:
@@ -15,21 +15,6 @@ Dependency Injection:
 DI allows us to use beans created by Spring anywhere in the application.
 If Spring did not create an object, then that object is not available for injection.
 DI completely depends on IoC, because IoC must create and store the object first.
-
------------------------------------------------------------------------------------------------------------------------
-
-How to use Logger:
-
-Option 1:
-
-    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
-    logger.info("This is an info message");
-    Controller is the class name.
-
-Option 2:
-
-    Use @Slf4j on top of the class
-    log.info("message");
 
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -53,15 +38,109 @@ Main():
 It is static and runs before spring creates beans, load configs, autowire dependency
 You cannot use autowired fields + access beans + repo, service, controller etc
 
-Uses:
-Insert initial data
-Run setup scripts
-
-----------------------------------------------------------------------------------------------------------------------
-Mapping DTOs (MapStruct() ) :
 ----------------------------------------------------------------------------------------------------------------------
 
-Dependency:
+Singleton Class:
+A singleton class is a class that allows only one instance of itself to be created and provides a global access point to that instance.
+
+Code:
+public class Customer {
+
+    private static Customer customer;
+
+    private Customer(){
+        System.out.println("Singleton Customer is created");
+    }
+
+    public static Customer getCustomer(){
+        if(customer==null){
+            customer = new Customer();
+        }
+        return customer;
+    }
+
+    public void getMessage(){
+        System.out.println("Hello singleton instance of Customer");
+    }
+}
+
+----------------------------------------------------------------------------------------------------------------------
+Types of Singleton:
+----------------------------------------------------------------------------------------------------------------------
+
+Eager Initialization:
+Creates the single instance with class
+
+class EagerSingleton {
+
+    private static final EagerSingleton instance = new EagerSingleton();
+    private EagerSingleton() {}
+    public static EagerSingleton getInstance() {
+        return instance;
+    }
+}
+
+----------------------------------------------------------------------------------------------------------------------
+
+lazy Initialization:
+Creates the single instance when it is asked
+
+class LazySingleton {
+
+    private static LazySingleton instance;
+    private LazySingleton() {}
+    public static LazySingleton getInstance() {
+        if (instance == null) {
+            instance = new LazySingleton();
+        }
+        return instance;
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+How can a Singleton be broken (reflection, clone, serialization)
+
+Clone:
+If the class implements Cloneable, clone() can produce a new instance.
+
+Fix:
+Override clone() and prevent cloning:
+@Override
+protected Object clone() throws CloneNotSupportedException {
+    throw new CloneNotSupportedException();
+}
+
+Serialization:
+Serialization creates a new object during deserialization.
+
+Implement readResolve() to return the original instance:
+private Object readResolve() {
+    return INSTANCE;
+}
+
+----------------------------------------------------------------------------------------------------------------------
+
+How to use Logger:
+
+Option 1:
+
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+    logger.info("This is an info message");
+    Controller is the class name.
+
+Option 2:
+
+    Use @Slf4j on top of the class
+    log.info("message");
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+Mapping DTOs:
+    MapStruct() is used to map DTOs
+
+1: Dependency:
 
 <dependencies>
     <!-- MapStruct Runtime -->
@@ -117,7 +196,8 @@ Dependency:
 
 ----------------------------------------------------------------------------------------------------------------------
 
-Interface:
+2: Interface:
+
 Create an Interface with @Mapper() annotation 
 Create an abstract method taking Student and Returning StudentResponse, Mapper will automatically implement this
 
@@ -127,7 +207,7 @@ public interface StudentMapper {
     StudentResponse toStudentResponse(Student student);
 }
 
-2: If Feilds names are different you can mention it here
+3: If Feilds names are different you can mention it here
 
 @Mapper(componentModel = "spring")
 public interface StudentMapper {
@@ -136,32 +216,6 @@ public interface StudentMapper {
     @Mapping(target = "department", source = "dept")
     @Mapping(target = "createdDate", expression = "java(java.time.LocalDate.now())")
     StudentResponse toStudentResponse(Student student);
-}
-
-----------------------------------------------------------------------------------------------------------------------
-
-Singleton Class:
-A singleton class is a class that allows only one instance of itself to be created and provides a global access point to that instance.
-
-Code:
-public class Customer {
-
-    private static Customer customer;
-
-    private Customer(){
-        System.out.println("Singleton Customer is created");
-    }
-
-    public static Customer getCustomer(){
-        if(customer==null){
-            return customer = new Customer();
-        }
-        return customer;
-    }
-
-    public void getMessage(){
-        System.out.println("Hello singleton instance of Customer");
-    }
 }
 
 ----------------------------------------------------------------------------------------------------------------------

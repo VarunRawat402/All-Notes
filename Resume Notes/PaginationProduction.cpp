@@ -202,19 +202,6 @@ app:
     max-page-size: 100
     default-page-size: 20
 
-# Logging for production monitoring
-logging:
-  level:
-    com.yourcompany.student: DEBUG
-    org.springframework.data.jpa.domain.Specification: WARN
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: logs/student-api.log
-    max-size: 10MB
-    max-history: 30
-
 # Database pool settings for production
 spring:
   datasource:
@@ -224,14 +211,6 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          batch_size: 20
-        order_inserts: true
-        order_updates: true
-        generate_statistics: false
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -270,34 +249,25 @@ public class GlobalExceptionHandler {
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-KEY PRODUCTION DIFFERENCES FROM YOUR CODE:
-✅ Input Validation - Prevents crashes
-✅ Case-insensitive search - User-friendly
-✅ Returns pagination metadata - Frontend can build UI
-✅ Proper error handling - Graceful degradation
-✅ Logging - Debgging & monitoring
-✅ DTO pattern - Control what data is exposed
-✅ Performance hints - Query optimizations
-✅ Security -Sort field validation prevents injection
-✅ Clean response structure - Consistent API
-✅ Configuration externalized - Easy to change
-This is what goes to production. Add swagger later if needed for documentation. Focus on functionality, security, and reliability first.
+Optimization:
+
+1. enforce maxPageSize (e.g., 100) in production:
+
+It caps the result to return only 100 pages of content, if dont find add more specific filter 
+
+2. Index the columns used in filtering and sorting
+When u create index, it sorts the data and make lookup easy for searching 
+Dont work with %john%
+Works with only john%
+
+3. Avoid LIKE '%...%' when possible:
+What it is: Using % at the start of a LIKE search prevents the database from using indexes.
+What it does: Queries become full table scans, which are slow for millions of rows.
+
+4: Fetch only ResponseDTO feilds using projection:
+@Query("SELECT new com.example.StudentDTO(s.id, s.name, s.age) FROM Student s WHERE ...")
+Page<StudentDTO> findStudents(..., Pageable pageable);
+
+5: Avoid cb.lower() in queries if possible or use database-specific case-insensitive collations.
 
 --------------------------------------------------------------------------------------------------------------------------------------------
-
-4️⃣ How would you optimize this if the table has millions of rows?
-
-Answer:
-
-For large datasets, I would:
-
-Ensure proper indexes on columns used in filters.
-
-Avoid cb.lower() in queries if possible or use database-specific case-insensitive collations.
-
-Consider cursor-based pagination (using last-seen ID) instead of page-number pagination for better performance.
-
-Implement caching for frequently requested pages or filters.
-
-https://chatgpt.com/share/6930d70a-a1f4-800d-9ea0-5575cdd05e59
-https://chat.deepseek.com/share/0osilay901njbkjcjy

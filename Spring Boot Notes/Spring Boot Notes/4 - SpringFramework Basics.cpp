@@ -17,7 +17,6 @@ A more advanced and feature-rich type of Spring container. Supports:
 So ApplicationContext = Container + extra features.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 @Qualifer vs @Primary:
 
 @Primary ( Default Bean Selection )
@@ -136,8 +135,7 @@ Ex:
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-DI ( Dependency Injection Type ):
+Dependency Injection Type:
 
 1: Constructor Injection ( Best )
 Dependencies are passed via the constructor.
@@ -203,8 +201,6 @@ class Car {
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 Types of Bean Scopes:
 
 Singleton Scope (Default):
@@ -325,7 +321,6 @@ User A views /cart
 Instead of ["Shoes", "Watch"], they see only the last added item or an empty cart.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 @PostContruct vs @PreConstruct:
 
 @PostConstruct (Executed After Bean Creation)
@@ -362,7 +357,6 @@ public class DatabaseService {
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Real Application Example:
 
 @Component

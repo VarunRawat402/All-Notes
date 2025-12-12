@@ -41,7 +41,7 @@ CascadeType.REMOVE	:   Deletes child entities when parent is deleted.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transactional: 	
-It is used where either everything executes or nothing executes
+It is used where multiple operations are executing then, either everything executes or nothing executes
 With this if 1 step fails, everything rollbacks
 Can be used at class level, method level and both level
 Method level overrides the class level configurations
@@ -59,41 +59,13 @@ Types:
 Isolation:	How isolated is my data from other running transactions
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-ResponseEntity:	
-It is a class which is used to create HTTP response
-new ResponseEntity<>(body, header, httpstatus)
-It has already defined static methods to make it ease
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-SpringBoot Actuator:	
-It provides production-ready features to monitor and manage your application.
-It exposes built-in endpoints that give insights into your apps health, metrics, environment, and more.
-Monitor Application health (DB up or down)
-Gather metrics (memory, CPU, HTTP requests, GC)
-Check logs and thread dumps
-Integrate with monitoring tools (Prometheus, Grafana, ELK, etc.)
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Scheduled:		
-It is used on methods to execute them at intervals or at specific time using cron expressions
-@EnableScheduling annotation needs to add to Main method
-
-Cron:			
-It is an expression which tells sheduled to run at given time
-Syntax: @Sheduled( sec, min, hour, day, month, day of week(sat,sun)
-* means every time, 0 means skip
-			
------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 Primary:		
 When you have bean of same type, spring wont know which one to inject 
 So, @Primary annotation is used to tell spring which one to inject by default
 
 Qualifier:		
-@Qualifer is used to specify which bean to inject when there are multiple beans of same type
+@Qualifer is used to we need to specify exactly which bean to inject out of all the similar beans
 It overrides the primary one
 
 @Primary			
@@ -146,6 +118,7 @@ proceed() returns the actual result of the method and you can modify it and retu
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 transient Keyword:
+
 It is used to skip the feild during serialization
 When u send the data you need to serialize it and convert it to byte stream
 transient feild becomes null during serialization and its value is not sent 

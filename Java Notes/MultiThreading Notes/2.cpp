@@ -8,13 +8,13 @@ Java supports Multithreading:
 2: java.lang.Runnable Interface
 
 When Java program starts, One thread begins running immediately, which is called Main Thread.
-Main Thread is responsible for executing the main method of the program
+The Main Thread is responsible for running the main() method.
 
 To get the current thread:
     Thread.currentThread().getName();
 
-Thread Safety:
-When Multiple threads can access or modify shared data simultaneously without corrupting it or causing bugs.
+Thread Safe:
+When Multiple threads access or modify shared data simultaneously without corrupting it or causing bugs.
 
 Why is it needed?
     When multiple threads read/write the same variable or object, things can go wrong like:
@@ -77,38 +77,24 @@ t2.start();
 Thread vs Runnable:
 
 Thread:
-Thread is a concrete class that you extend 
-Since Java doesn't support multiple inheritance, extending Thread prevents your class from extending any other class
-Need to create the new object to create the new thread
-
-Code:
-Student student = new Student();
-student.start();
-Student student1 = new Student();
-student1.start()
+Class + cannot extend another class + Each thread requires a new object
+5 threads = 5 student object
 
 Runnable:
-Runnable is an interface that you implement
-Your class can still extend another class while implementing Runnable
-can use the same object for new threads
-
-Code:
-Employee employee = new Employee();
-Thread t1 = new Thread(employee);
-Thread t2 = new Thread(employee);
+Interface + Can extend another class + Multiple threads can share one Runnable object
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Join():
 
-It is a method that allows one thread to wait for the completion of another thread.
-Throws InterruptedException Exception ( Must handle or declare it )
-You can also specify a timeout in milliseconds or nanoseconds.
+join() makes one thread wait until another thread finishes.
+Throws InterruptedException ( Must handle or declare it )
+Optional timeout can be provided
 If you dont use join(), threads will run independently and may overlap in unpredictable ways.
 
-Useful when threads are working in dependent order, like:
-    Thread A prepares data
-    Thread B uses the data → so B should wait for A to finish
+When thread execution order matters:
+    Thread A → prepares data
+    Thread B → uses that data (must wait for A)
 
 Code:
 public class DemoApplication {
@@ -130,10 +116,10 @@ public class DemoApplication {
 
 Daemon Thread:
 
-A daemon thread is a background thread that helps other threads do their work.
-The JVM will not wait for daemon threads to finish.
+A daemon thread is a background thread that supports other threads.
+JVM does not wait for daemon threads to finish
 When all main/user threads are done, JVM will exit even if daemon threads are still running.
-Cannot set Daemon after starting the thread.
+You must call setDaemon(true) before starting the thread, Cannot set Daemon after starting the thread.
 
 //Student Thread and Main thread will get printed
 //After sleep will not get printed coz it is a daemon thread and it stops as soon as main thread is finished

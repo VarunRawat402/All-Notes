@@ -8,9 +8,7 @@ An exception is an error that occurs during program execution, disrupting normal
 Occurs at compile time
 Must Handle them or compilation error will come
 
-Ex:
-FileReader fileReader = new FileReader("/users/pa/sample.txt");
-
+Example: 
 IOException → Issues during reading a file
 FileNotFoundException = path of file doesnt exist
 
@@ -21,9 +19,7 @@ Occurs at Run time
 No need to handle them explicitly
 Should still be handled to avoid application crashes
 
-Ex:
-int a = 1 / 0; // ArithmeticException
-
+Example: 
 ArrayIndexOutOfBoundsException = When accessing the index that out of size
 ArithmeticException = illegal arithmetic expression
 
@@ -185,5 +181,39 @@ finally always executes → best for closing resources.
 throw → to actually throw an exception.
 throws → declares exceptions a method might throw
 Custom exceptions → extend Exception
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+GLOBAL EXCEPTION HANDLING:
+
+//Used to handle exceptions globally in whole application
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse();
+        error.setMessage(ex.getMessage());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGenericException(Exception ex) {
+        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+Custom Error Response:
+
+ErrorResponse Class:
+public class ErrorResponse {
+    private String message;
+    private int status;
+    private long timestamp;
+}
 
 -------------------------------------------------------------------------------------------------------------------------------

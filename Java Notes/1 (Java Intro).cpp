@@ -8,8 +8,8 @@ Source Code → Code written in Hello.java
 Compiler → Present in JDK, converts source code to Bytecode.
 Bytecode → Stored in a .class file; platform-independent and can run on any OS with a JRE.
 
-JVM (Java Virtual Machine) → Reads bytecode, converts it to machine code, and executes the program.
 JDK (Java Development Kit) → Compiles .java → .class.
+JVM (Java Virtual Machine) → Reads bytecode, converts it to machine code, and executes the program.
 JRE (Java Runtime Environment) → Contains JVM + libraries needed to run Java programs; does not include compiler.
 
 Compile Time
@@ -25,6 +25,9 @@ Data Types:
 
 Primitive : byte, short, int, long, char, boolean, float, double
 Non-Primitive : String, Array, Class, Object
+
+Default value of primitive = 0
+Default value of Non-primitive = null
 
 -------------------------------------------------------------------------------------------------------------------------------
 

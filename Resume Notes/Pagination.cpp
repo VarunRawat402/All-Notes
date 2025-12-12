@@ -2,23 +2,35 @@
 Pagination:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-offset = ( pageno - 1 ) * pageSize
-Pagination is an interface which can be used by spring data jpa 
+Pagination is an interface
 PageRequest is a class 
 PageRequest.of() is a static function
-Sort is a utility to define the sorting order when you fetch the results from the repository in spring Dat JPA
+
+Sort is a utility class 
+Used to define the sorting order when you fetch the results from the repository
     Used when you findAll(), Paginatiion, Custom Fetch queries
     By default data comes unsorted
+
+offset = ( pageno - 1 ) * pageSize
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Basic Pagination using Page and PageSize:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Get pageNumber and pageSize in controller
-Use of() functin of PageRequest and pass pageNumeber and pageSize 
-It will calculate all the things automatically
-PageRequest.of() returns an object, store it in Pageable object
-Pass that object to service method() and Repository findAll() method
+Get PageNumber and PageSize in Controller
+Pass both in PageRequest.of(), It returns object of Pageable
+Pass the object to the service class
+
+studentRepository.findAll(pageable), It returns Page<Student> not list of student
+Page<Student> Contains:
+    content: [list of students]
+    totalElements: 150
+    totalPages: 15
+    pageNumber: 0
+    pageSize: 10
+    sort: name: ASC
+
+studentRepository.findAll(pageable).getContent(), To get the acutal list of students
 
 Controller:
 @GetMapping("/student/")
@@ -36,6 +48,9 @@ public List<Student> getAllStudents(Pageable pageable) {
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Pagination with Sorting:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+sortBy: we sort based on this attribute like id, name , salary
+sortDir: ascending or descending
 
 @GetMapping("/student/")
 public List<Student> getPagedStudents(@RequestParam(required = false, defaultValue = "1") int page,
@@ -89,9 +104,6 @@ public List<Student> getAllStudents(Pageable pageable, String search) {
     }
 }
 
-//When we write a query to fetch something from repo we can send pageable object to apply pagination logUserActivity
-//Without pagination logic it will give us all the entries present in the data base with the name
-//with pagination logic it will give us first 5 entries with searched name and in next page next 5 entries, if 5 entries are present it will return empty list
 public interface StudentRepository extends JpaRepository<Student,Integer> {
     Page<Student> findByName(String name, Pageable pageable);
 }

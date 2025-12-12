@@ -1,15 +1,44 @@
+-------------------------------------------------------------------------------------------------------------------------------
+Volatile vs Atomic : 
+-------------------------------------------------------------------------------------------------------------------------------
 
-Normal Variable:
-A normal variable is the basic form of a variable in Java. 
-When accessed by multiple threads without synchronization, its not thread-safe.
+Thread visibility Problem:
 
-2. Volatile Variable
-A volatile variable is one where every read and write happens directly in main memory, not in a thread-local cache.
-Threads read data directly from main memory not from cache
+In Java, each thread can keep a cached copy of shared variables in its own working memory.
 
-3: Atomic Variables (like AtomicInteger)
-AtomicInteger is a special Java class that lets you safely update numbers from multiple threads without using synchronized.
-"An integer that protects itself from race conditions.
+This means:
+A thread may read a value once from main memory.
+It may then continue using its cached value, even if another thread updates the variable.
+As a result, threads may see stale (old) values, leading to incorrect behavior.
+For example, if Thread A updates a variable, Thread B might not immediately see that update because it is still reading the old value from its local cache.
+This issue is known as the visibility problem.
 
+-------------------------------------------------------------------------------------------------------------------------------
 
+Volatile:
 
+volatile solves visibility, not atomicity.
+When a variable is declared volatile, all threads always see the latest written value.
+It prevents caching the value in thread-local memory.
+It does not make operations like i++, i += 1, or check-then-act atomic.
+
+Used for boolean flags
+Best used for read and write operations not modify
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Atomic:
+Atomic classes (AtomicInteger, AtomicLong, AtomicReference) solve atomicity + visibility.
+
+They provide lock-free thread-safe operations like:
+    incrementAndGet()
+    compareAndSet()
+    addAndGet()
+    These operations are atomic, meaning no race conditions.
+
+Best used for modifing states
+
+“volatile guarantees visibility but not atomicity. Atomic types guarantee both visibility and atomicity. 
+Therefore, volatile is safe only for reads/writes, while AtomicInteger is safe for operations like increment.”
+
+-------------------------------------------------------------------------------------------------------------------------------

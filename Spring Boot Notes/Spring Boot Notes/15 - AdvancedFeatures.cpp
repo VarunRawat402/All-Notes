@@ -50,15 +50,13 @@ Code:
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Spring Boot Actuator:
-    Spring Boot Actuator provides tools for monitoring and managing a running application.
 
-It exposes endpoints for:
-    health
-    metrics
-    environment
-    beans
-    logs
-    mappings
+It provides production-ready features to monitor and manage your application.
+It exposes built-in endpoints that give insights into your apps health, metrics, environment, and more.
+Monitor Application health (DB up or down)
+Gather metrics (memory, CPU, HTTP requests, GC)
+Check logs and thread dumps
+Integrate with monitoring tools (Prometheus, Grafana, ELK, etc.)
 
 1: Add the Dependency:
 
@@ -70,6 +68,48 @@ It exposes endpoints for:
 2: Expose the points:
     Application.properties:
     management.endpoints.web.exposure.include=*
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+4: What is a Scheduler?
+
+A scheduler allows you to run code automatically at fixed intervals or specific times.
+This works like cron jobs in Linux but inside a Spring Boot application.
+
+Cron Expression:
+A cron expression defines the exact time a scheduled job should run.
+
+Spring uses 6 fields:
+    - second minute hour day-of-month month day-of-week
+    - Example: 0 15 10 * * ? → Runs at 10:15 AM every day.
+
+Enable Scheduling in Spring:
+
+@EnableScheduling
+@SpringBootApplication
+public class MyApp {
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Examples:
+
+Fixed Rate (every 5 seconds)
+
+@Scheduled(fixedRate = 5000)
+public void runTask() {
+    System.out.println("Runs every 5 seconds");
+}
+
+Every day at 10:15 AM
+@Scheduled(cron = "0 15 10 * * ?")
+public void dailyTask() {
+    System.out.println("Runs at 10:15 AM every day");
+}
+
+Every Sun at 9 AM:
+@Scheduled(cron = "0 0 9 * * SUN")
+public void dailyTask() {
+    System.out.println("Runs at 9:00 AM every SUN");
+}
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
