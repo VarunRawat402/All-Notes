@@ -121,3 +121,61 @@ public CompletableFuture<String> processData() throws InterruptedException {
 String result = service.processData().get();  // waits
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+We improved thread management by configuring Kafka consumers to process messages in parallel using partitions and listener concurrency instead of sequential processing.
+We increased partitions so Kafka could distribute load across multiple consumer threads
+Earlier, messages were processed sequentially. After enabling parallel consumption using multiple partitions and consumer concurrency, messages waited less time in the queue, which reduced end-to-end processing latency by around 30%.
+We compared average message processing time and lag before and after enabling parallel consumption using application logs and Kafka consumer lag metrics.
+
+
+We moved from sequential message processing to parallel consumption using Kafka partitions and listener concurrency
+By processing messages faster, consumer lag reduced, which directly lowered end-to-end event latency.
+We ensured all consumers were in the same consumer group so partitions were evenly distributed and no instance stayed idle.
+
+We avoided blocking operations inside the Kafka listener and moved heavy processing to async/service layers, using Async functions
+    Kafka assigns one thread per partition
+    That thread is now busy
+    New messages for that partition wait
+    Consumer lag increases
+    Latency increases
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+PROM AND GRAFANA:
+
+1. CPU Metrics
+
+Metrics you see:
+    CPU usage (%)
+    CPU cores used
+    CPU usage per container / pod
+
+How to explain:
+    CPU usage shows how much processing power the application is using. 
+    High CPU usage can indicate heavy load or inefficient processing.
+    Safe example line:
+    “We monitored CPU usage to ensure the service was not over-consuming processor resources.”
+
+2. Memory Metrics
+Metrics you see:
+    Memory usage (MB/GB)
+    Memory limit vs used memory
+    JVM heap usage (for Spring Boot)
+How to explain:
+    Memory metrics show how much RAM the application consumes. Monitoring this helps detect memory leaks or applications nearing their memory limits.
+    Safe example line:
+    “Memory usage was tracked to ensure the application stayed within allocated limits.”
+
+
+3. Application (Basic) Metrics
+
+These come from the application itself.
+Common ones you can say:
+    Request count
+    Response time / latency
+    Error count (4xx / 5xx)
+    Application uptime
+How to explain:
+    Application metrics help understand how the service behaves under load, such as how many requests it handles and how quickly it responds.
+
+------------------------------------------------------------------------------------------------------------------------------------------------

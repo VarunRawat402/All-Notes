@@ -137,3 +137,29 @@ Examples: Ribbon, Spring Cloud LoadBalancer, Feign with Eur
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+Web Client:
+WebClient is Springs modern, reactive HTTP client introduced in Spring 5
+
+Setup:
+
+// Add to pom.xml for Spring Boot
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+
+// Create WebClient instance
+WebClient webClient = WebClient.create();  // Default
+// OR with base URL
+WebClient webClient = WebClient.builder()
+    .baseUrl("https://api.example.com")
+    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+    .build();
+
+Mono:
+Returns 0 or 1 item
+Optional or CompletableFuture
+
+Flux:
+Returns 0 or N items
+List or stream

@@ -113,4 +113,12 @@ public void dailyTask() {
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
+Spring Boot Actuator Endpoints:
 
+/actuator/health    : Shows application health (up, down, details)
+/actuator/info	    : Displays arbitrary info properties (from application.properties)
+/actuator/env	    : Exposes environment properties
+/actuator/metrics	: Lists available metrics (like jvm.memory.used, http.server.requests)
+/actuator/beans	    : Displays all Spring Beans
+
+--------------------------------------------------------------------------------------------------------------------------------------------

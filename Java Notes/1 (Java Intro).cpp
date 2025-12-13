@@ -108,6 +108,28 @@ Cloneable:
     For deep copy, override clone() and manually clone all fields
     
 Note:
-    It only works with objects not primitive datatypes
+    Deep and shallow copy only used for nested classes 
 
+Example:
+If you clone p1 to p2
+changes in person does not affect others they are not shared in any copy
+nested objects are shared in shallow copy
+
+class Person implements Cloneable {
+    String name;
+    Address address;
+
+    Person(String name, Address address) {
+        this.name = name;
+        this.address = address;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); // shallow copy
+    }
+}
+
+Person p1 = new Person("Varun", addr);
+Person p2 = (Person) p1.clone();
 -------------------------------------------------------------------------------------------------------------------------------

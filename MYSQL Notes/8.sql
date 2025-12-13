@@ -102,3 +102,21 @@ NORMALIZATION:
     To change the office of any Instructor, we only need to change it one time in the Instructor Table
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+First Normal Form (1NF)
+Each column must contain single, atomic values.
+Each row must be unique.
+If a column has multiple values, split them into separate rows so that every cell holds only one value.
+
+Second Normal Form (2NF)
+Must already satisfy 1NF.
+Every non-key column must depend on the whole primary key, not just part of it.
+If the table has a composite primary key, separate the data into multiple tables so that each non-key column fully depends on the entire primary key.
+Often involves creating two tables and a relation table connecting them.
+
+Third Normal Form (3NF)
+Must already satisfy 2NF.
+There should be no transitive dependency, meaning a non-key column should depend only on the primary key and not on another non-key column.
+If a non-key column depends on another non-key column, move it to a separate table and link it using a foreign key.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------

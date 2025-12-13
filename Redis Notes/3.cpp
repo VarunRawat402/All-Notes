@@ -1,5 +1,6 @@
+------------------------------------------------------------------------------------------------------------------------------------------------
 Redis Cache Notes:
-
+------------------------------------------------------------------------------------------------------------------------------------------------
 
 1. @Cacheable:
 Caches the result of a method. 
@@ -15,6 +16,8 @@ public User getUserById(Long id) {
     return userRepository.findById(id).orElse(null);
 }
 
+------------------------------------------------------------------------------------------------------------------------------------------------
+
 2. @CachePut:
 Updates the cache with the method result. 
 The method is always executed, and the result is put into cache.
@@ -25,6 +28,7 @@ public User updateUser(User user) {
     return userRepository.save(user);
 }
 
+------------------------------------------------------------------------------------------------------------------------------------------------
 
 3. @CacheEvict:
 
@@ -38,4 +42,4 @@ public void deleteUser(Long id) {
 
 beforeInvocation = true → Evicts cache before method execution (useful if the method throws exception).
 
-
+------------------------------------------------------------------------------------------------------------------------------------------------

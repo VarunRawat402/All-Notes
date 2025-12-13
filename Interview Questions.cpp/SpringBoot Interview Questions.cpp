@@ -13,6 +13,7 @@ Automatically configures beans based on the dependencies in your projec
 Comes with embedded Tomcat/Jetty
 Pre-Defined Dependency like springboot starter Web
 
+-------------------------------------------------------------------------------------------------------------------------------
 
 Explain Spring Boot Starters. Can you give examples:
 Instead of adding multiple dependencies individually, you just include a single starter which includes related dependencies
@@ -21,6 +22,8 @@ spring-boot-starter-web
 spring-boot-starter-data-jpa
 spring-boot-starter-security
 spring-boot-starter-actuator
+
+-------------------------------------------------------------------------------------------------------------------------------
 
 What is application.properties vs application.yml? Which one do you prefer:
 
@@ -41,6 +44,8 @@ spring:
 
 or small projects or simple settings → application.properties is fine.
 For larger projects with hierarchical configurations → application.yml is preferred.
+
+-------------------------------------------------------------------------------------------------------------------------------
 
 Difference between @Component, @Service, @Repository, @Controller.
 
@@ -65,6 +70,8 @@ Difference between @Component, @Service, @Repository, @Controller.
     Works with Spring MVC.
     @RestController is a special version for REST APIs.
     If @Component is used, get and post will not work
+
+-------------------------------------------------------------------------------------------------------------------------------
 
 Conditional beans:
     Conditional Beans in Spring Boot are beans that are created only if certain conditions are met
@@ -110,6 +117,7 @@ public MyService myService() {
     return new MyService();
 }
 
+-------------------------------------------------------------------------------------------------------------------------------
 
 What is @Value:
 Annotation for injecting configuration values into fields
@@ -127,6 +135,7 @@ private int appPort;
 @Value("${app.port:9000}")
 private int appPort;
 
+-------------------------------------------------------------------------------------------------------------------------------
 
 @ConfigurationProperties:
 Bind a group of related properties to a Class attributes automatically.
@@ -153,6 +162,7 @@ public class AppProperties {
     }
 }
 
+-------------------------------------------------------------------------------------------------------------------------------
 
 Difference between CrudRepository, JpaRepository, and PagingAndSortingRepository.
 
@@ -174,6 +184,8 @@ saveAndFlush()
 deleteInBatch()
 getOne() (lazy fetch)
 
+-------------------------------------------------------------------------------------------------------------------------------
+
 What is the N+1 query problem and how to solve it in Spring Boot?:
 
 1: Use JOIN FETCH in JPQL
@@ -189,3 +201,5 @@ List<Department> findAll();
 @OneToMany(mappedBy = "department")
 @BatchSize(size = 10)
 private List<Employee> employees;
+
+-------------------------------------------------------------------------------------------------------------------------------
