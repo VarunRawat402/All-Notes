@@ -2,22 +2,19 @@
 How to Optimise your Application
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-How to optimize Kafka Listener / Consumer:
-
 1: spring.kafka.listener.concurrency=4
-
-This is used when there is only single consumer and we want to make that consumer multi-threaded
+By Default kafka reads message synchronusly one by one
 
 This creates 4 threads for 1 kafka consumer
-By Default it sets to 1 thread
 
 If topic has 4 partition, then 4 threads can read each partition
-
-If consumer takes 1 sec to read 1 msg, then it would take 4 sec to read 4 messages
-With this, 4 threads works together and read 4 messages in 1 sec 
+If consumer takes 1 sec to read 1 message, then it would take 4 sec to read 4 messages
+With concurrency 4, it can read 4 messages in 1 sec
 
 Note:
 Threads should not be greater than the partition, otherwise they would stay idle
+
+------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Multiple Kafka Listeners in 1 Application:
 This creates 4 consumers in same consumer group, doing same task
@@ -40,10 +37,9 @@ Comapnies mostly used Horizontal scaling and launch multiple instances of same a
 Concurrency method is also
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
-
 Consumer Group:
 
-1 partition can be read by only 1 consumer in consumer group1 partition can be read by only 1 consumer in the consumer group
+1 partition can be read by only 1 consumer in the consumer group
 1 consumer can read multiple partition 
 Main focus is Load Balancing  and parallel processing for consumer groups so, If any consumer broke then other consumers
 will still be there to read messages.
@@ -62,82 +58,93 @@ Disadvantages of Using Spring Kafka concurrency:
 3: In modern systems, kubernetes scale Horizontally
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+Backoff and Retry in Kafka:
+------------------------------------------------------------------------------------------------------------------------------------------------
 
-ASYNC Methods:
+What happens when processing fails:
 
-@Async : It is used to run a method in a background thread.
-
-Helps offload non-critical, time-consuming tasks like:
-	Email Send, Logging, Generating Report
-
-Implementation:
-1: Create a Async Class with @Configuration and @EnableAsync Annotation
-2: Use @Async Annotation on top of the method
-3: You have to call the method with another service, You cannot call from where its defined
-4: Async function should be void or CompletableFuture nothing else.
-
-@EnableAsync
-@Configuration
-public class AsyncConfig {
-    
-    @Bean(name = "taskExecutor")
-    public Executor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();		
-        executor.setCorePoolSize(5);						//4 threads will always be available for operations
-        executor.setMaxPoolSize(10);						//Max threads can be created upto 10 not more than that
-        executor.setQueueCapacity(20);						//Tasks can be in queue for upto 500 tasks after that reject
-        executor.setThreadNamePrefix("AsyncThread-");
-        executor.initialize();							//Initialize the properties 
-        return executor;
-    }
+Exception thrown (no retry configured):
+public void consume(UserEvent event) {
+    // error here
+    throw new RuntimeException("DB down");
 }
+
+What happens on failure:
+    Message read (offset 10)
+    Exception thrown
+    Offset NOT committed
+    Consumer polls again
+    Same message (offset 10) read immediately
+    Infinite loop
+
+❌ No delay
+❌ No retry limit
+❌ Partition blocked forever
+
+Other partitions/threads:
+Continue normally
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Service Code:
+WHY THIS IS DANGEROUS (real production impact)
 
-@Service
-public class BackgroundService {
-
-    @Async("taskExecutor")
-    public void sendOtp(String phone) {
-        // call SMS API
-    }
-
-    @Async("taskExecutor")
-    public void logUserActivity(String userId) {
-        // log to database
-    }
-}
-
-CompletableFuture :
-
-@Async("taskExecutor")
-public CompletableFuture<String> processData() throws InterruptedException {
-    Thread.sleep(2000); // heavy work
-    return CompletableFuture.completedFuture("done");
-}
-
-String result = service.processData().get();  // waits
+CPU goes to 100%
+Logs explode
+DB gets hammered
+Other messages in that partition never get processed
+Looks like Kafka is “stuck”
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-We improved thread management by configuring Kafka consumers to process messages in parallel using partitions and listener concurrency instead of sequential processing.
-We increased partitions so Kafka could distribute load across multiple consumer threads
-Earlier, messages were processed sequentially. After enabling parallel consumption using multiple partitions and consumer concurrency, messages waited less time in the queue, which reduced end-to-end processing latency by around 30%.
-We compared average message processing time and lag before and after enabling parallel consumption using application logs and Kafka consumer lag metrics.
+Retry behavior (Spring Kafka):
+
+For message at offset 10:
+    Consumer reads message
+    Processing fails
+
+ErrorHandler:
+    pauses the partition
+    waits 3 seconds
+    Retry #1
+    Retry #2 (after 3 sec)
+    Retry #3 (after 3 sec)
+    Still fails → handler gives up
+
+At this point:
+    Offset is committed
+    Message is skipped or sent to DLT
+    Consumer moves to offset 11
+
+Concurrency impact:
+    Only that consumer thread is blocked
+    Other threads keep running
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+DEAD LETTER TOPIC:
+
+Message fails 3 times
+Sent to: user_create.DLT
+Original offset committed
+Consumer continues normally
+
+Now you can:
+    Inspect bad messages
+    Replay them later
 
 
-We moved from sequential message processing to parallel consumption using Kafka partitions and listener concurrency
-By processing messages faster, consumer lag reduced, which directly lowered end-to-end event latency.
-We ensured all consumers were in the same consumer group so partitions were evenly distributed and no instance stayed idle.
+WHEN RETRY SHOULD NOT HAPPEN:
+    Not all errors are retryable.
 
-We avoided blocking operations inside the Kafka listener and moved heavy processing to async/service layers, using Async functions
-    Kafka assigns one thread per partition
-    That thread is now busy
-    New messages for that partition wait
-    Consumer lag increases
-    Latency increases
+Example:
+    Invalid email
+    JSON schema error
+    Business validation failure
+
+Flow:
+    No retry
+    Directly sent to DLT
+    Offset committed immediately
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 

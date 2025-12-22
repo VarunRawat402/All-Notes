@@ -62,14 +62,9 @@ public class FileEntity {
     private Long id;
 
     private String originalFileName;
-
     private String s3Key;
-
     private String uploadedBy; // optional: track user
-
     private LocalDateTime uploadedAt = LocalDateTime.now();
-
-    // getters & setters
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------

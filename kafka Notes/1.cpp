@@ -213,6 +213,13 @@ If commit log file has 9 messages it will create 3 segement files each consist o
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Retention Policy:
+
+Time-Based Retention (Default)
+Messages are deleted after a certain time.
+
+Size-Based Retention
+Messages are deleted when the total log size exceeds a limit.
+
 Kafka does not delete messages immediately after they are consumed. Instead, it follows a retention policy.
 Kafka deletes entire segments, not individual messages.
 If a segment contains messages beyond the retention period, Kafka deletes it.
@@ -220,13 +227,6 @@ If a segment contains messages beyond the retention period, Kafka deletes it.
 Ex:
 If some messages in the segments are older than expiry time but some are not then 
 it waits until all messages in the segment exceed the expiry period, then deletes the entire segment.
-
-
-Time-Based Retention (Default)
-Messages are deleted after a certain time.
-
-Size-Based Retention
-Messages are deleted when the total log size exceeds a limit.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 

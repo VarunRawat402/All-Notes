@@ -88,7 +88,7 @@ NORMALIZATION:
 
         Table 1: Courses (now simplified)
 
-            Course (PK)	        nstructorID (FK)
+            Course (PK)	        InstructorID (FK)
                 Math	                1
                 Physics	                2
 

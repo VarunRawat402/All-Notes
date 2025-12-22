@@ -162,4 +162,112 @@ input.chars()
      .ifPresent(System.out::println);
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+List and Strings:
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+1: First non-repeating character
+String s = "swiss";     //w
+
+Code:
+Character c1 = s.chars().mapToObj(c -> (char) c)
+        .collect(Collectors.groupingBy(c -> c, Collectors.counting()))
+        .entrySet()
+        .stream()
+        .filter(x -> x.getValue() == 1)
+        .map(x -> x.getKey())
+        .findFirst().orElse(null);
+System.out.println(c1);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2: Find duplicate elements in a list:
+List<Integer> list = List.of(1,2,3,2,4,5,1);
+o/p = 1,2
+
+Code:
+List<Integer> collect = list.stream().collect(Collectors.groupingBy(x -> x, Collectors.counting()))
+        .entrySet().stream()
+        .filter(x -> x.getValue()>1)
+        .map(x -> x.getKey())
+        .collect(Collectors.toList());
+System.out.println(collect);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3: Find frequency of each character:
+String s = "banana";
+
+s.chars().mapToObj(c->(char)c).collect(Collectors.groupingBy(c->c,Collectors.counting()));
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+4: Sort a list in descending and ascending order
+List<Integer> list = List.of(3,1,5,2);
+
+List<Integer> collect = list.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+List<Integer> collect = list.stream().sorted().collect(Collectors.toList());
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+5: Find second highest number:
+List<Integer> list = List.of(10,20,30,40);
+
+list.stream().sorted(Comparator.reverseOrder())
+				.skip(1)
+				.findFirst().orElse(null);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+6: Check if list contains duplicate elements
+List<Integer> list = List.of(1,2,3,4,2);
+
+//collect elements into set or distinct elements and check size of both list
+boolean collect = list.stream().distinct().count()!=list.size();
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+7: Reverse a string using Stream API:
+String s = "java";
+
+String reduce = s.chars().mapToObj(c -> (char) c)
+        .reduce("", (a, b) -> b + a, String::concat);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+8: Find longest string in a list:
+List<String> list = List.of("java", "springboot", "api");
+
+String longest = list.stream()
+        .max(Comparator.comparingInt(String::length))
+        .orElse("");
+
+System.out.println(longest); // springboot
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+9: Find sum of all even numbers:
+List<Integer> list = List.of(1,2,3,4,5,6);
+int sum = list.stream()
+        .filter(n -> n % 2 == 0)
+                .mapToInt(x->(int) x).sum();
+                
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+10: Count words in a sentence:
+String sentence = "java stream api java";
+
+Map<String, Long> collect = Arrays.stream(sentence.split(" "))
+        .collect(Collectors.groupingBy(c -> c, Collectors.counting()));
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+11: Flatten a list of list:
+
+List<List<Integer>> list = List.of(
+        List.of(1,2),
+        List.of(3,4)
+);
+
+Set<Integer> collect = list.stream().flatMap(x -> x.stream()).collect(Collectors.toList());
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
