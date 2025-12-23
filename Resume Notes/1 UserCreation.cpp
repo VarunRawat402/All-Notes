@@ -355,3 +355,7 @@ partition-3 → USER_UPDATED
 Order broken ❌
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+Full Production with testing:
+
+https://chat.deepseek.com/a/chat/s/e86bafab-7a40-4fea-aa17-ecddfec5c7d2

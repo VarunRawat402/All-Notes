@@ -19,7 +19,7 @@ System.out.println(reversed);
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-2. Check Palindrome:
+2. Check Palindrome ( same from both sides ):
 String s = "madam";
 
 static boolean checkPalindrome(String s){
