@@ -64,7 +64,6 @@ Difference between @Component, @Service, @Repository, @Controller.
     Special feature: converts database exceptions to Spring exceptions automatically.
     Otherwise works like @Component.
 
-
 4. @RestController
     Presentation layer (handles HTTP requests).
     Works with Spring MVC.

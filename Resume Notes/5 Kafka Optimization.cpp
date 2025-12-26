@@ -186,3 +186,17 @@ How to explain:
     Application metrics help understand how the service behaves under load, such as how many requests it handles and how quickly it responds.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Consumer Service Configuration of Kafka:
+//This is used to map the kafka json event to java class automatically
+//Json data coming with typeId = txncreation will be mapped to TxnCreation class
+//Json data coming with typeId = usercreation will be mapped to UserCreation class
+spring.kafka.consumer.properties.spring.json.type.mapping = txncreation:com.example.wallet.wallet.kafkaUtil.TxnCreation,usercreation:com.example.wallet.wallet.kafkaUtil.UserCreation
+
+
+//Producer Service Configuration of Kafka:
+//This is used to set the typeId while sending json data to kafka topic
+//This will automatically add typeId = txnupdate in the json data
+spring.kafka.producer.properties.spring.json.type.mapping=txnupdate:com.example.wallet.wallet.kafkaUtil.TxnUpdate
+
+------------------------------------------------------------------------------------------------------------------------------------------------
