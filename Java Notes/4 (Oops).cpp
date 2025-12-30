@@ -293,18 +293,3 @@ Finalize():
     It is used for cleanup Functions
 
 -----------------------------------------------------------------------------------------------------------------------------------------
-
-Difference betweem == and .equals():
-
-==:
-    Used on both primitives and objects.
-    For primitives -> compares values.
-    For objects    -> compares references.
-
-equals():
-    A method in Object class.
-    Not used for primitives.
-    It Can be overridden to compare values.
-    It checks reference like == with objects 
-
------------------------------------------------------------------------------------------------------------------------------------------

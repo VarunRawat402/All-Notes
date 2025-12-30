@@ -4,7 +4,7 @@ Volatile vs Atomic :
 
 Thread visibility Problem:
 
-In Java, each thread can keep a cached copy of shared variables in its own working memory.
+In Java, each thread keep a cached copy of shared variables in its own working memory.
 
 This means:
 A thread may read a value once from main memory.
@@ -39,6 +39,6 @@ They provide lock-free thread-safe operations like:
 Best used for modifing states
 
 “volatile guarantees visibility but not atomicity. Atomic types guarantee both visibility and atomicity. 
-Therefore, volatile is safe only for reads/writes, while AtomicInteger is safe for operations like increment.”
+Therefore, volatile is safe only for reads, while AtomicInteger is safe for operations like increment.”
 
 -------------------------------------------------------------------------------------------------------------------------------

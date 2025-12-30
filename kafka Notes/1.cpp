@@ -2,16 +2,20 @@
 KAFKA Notes:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Apache Kafka is a distributed messaging system that allows applications to send, store
-and process real-time data streams efficiently.
+Kafka is used to send, store, and process data in real time between systems.
+
+Problems Before Kafka ( Using REST API calls ):
+Blocking calls
+Data loss
+
 
 Advantages of Kafka:
-1. Capable of handling millions of messages per second.
+1. Handles millions of messages per second
 2. Easy to scale by adding more brokers.
 3. Messages are stored on disk and replicated across multiple brokers.
 4. Fault Tolerance: Continues to operate even if some brokers fail.
-5. Supports real-time data processing with low latency.
-6: For a specific stream of data, it guarantees that messages are read in the exact order they were sent.
+5. Avoid tight coupling
+6: Communicate asynchronously
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -33,9 +37,7 @@ Follower -              A replica of a partition that stays in sync with the lea
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Zookeeper:
-Zookeeper is a distributed coordination service developed by Apache.    
 
-Why is Zookeeper used in Kafka?
 Manages Kafka brokers (keeps track of which brokers are alive).
 Handles leader election for partitions.
 Stores metadata (e.g., topic configurations, ACLs).
@@ -254,8 +256,7 @@ Every partition is replicated in every broker too
 So, 1 broker is leader of 1 partition 
 
 Ex:
-I created 2 brokers with different ports
-I created a topic in all 2 servers with replication factor 2 and partition factor 2
+I created 2 brokers and topic with replication factor 2
 It means topic is created on all 2 servers
 So, All 2 brokers have topic food with 2 partition
 So, Each broker is a leader of 1 partition each

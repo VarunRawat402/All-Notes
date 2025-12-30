@@ -1,79 +1,85 @@
 -------------------------------------------------------------------------------------------------------------------------------
-Executors Framework:
+Executor Framework:
+It is used to manage threads in more efficient way.
 -------------------------------------------------------------------------------------------------------------------------------
 
-The Executors Framework is used to manage and control thread execution in a flexible and scalable way.
-It helps developers avoid manual thread creation and provides built-in thread pooling and task scheduling features.
-
-Why Use Executor Framework?
-
-Simplifies multithreading
-Manages thread life cycle efficiently
-Prevents resource exhaustion by reusing threads
-Provides better performance with thread pools
+Before Java 5:
+Create threads manually 
+No thread re-use 
+No task queue
+Hard to handle exceptions and result 
 
 -------------------------------------------------------------------------------------------------------------------------------
+Core Components:
 
-Core Interfaces:
+Executor: 
+    the base interface with a single method:
 
-Executors - the base interface with a single method:
-ExecutorService - a more advanced interface with methods to manage lifecycle and submit tasks:
-ScheduledExecutorService - for executing tasks with delay or periodically.
+ExecutorService: 
+    Interface with methods to submit tasks and manage lifecycle ( shutdown, submit, etc )
+
+ScheduledExecutorService: 
+    Run tasks with delay or periodically.
+
+Executors: 
+    Utility class with factory methods to create different types of thread pools
+
+-------------------------------------------------------------------------------------------------------------------------------
 
 Instead of creating threads manually and managing it Java will do it for us:
 
 Syntax:
     ExecutorService pool = Executors.newFixedThreadPool(3)                          //fixed-size thread pool.
     ExecutorService pool = Executors.newCachedThreadPool()                          //Threads will get created dynamically based on number of tasks
-    ExecutorService pool = Executors.newSingleThreadExecutor()                      // single worker thread.
+    ExecutorService pool = Executors.newSingleThreadExecutor()                      //Single worker thread.
     ExecutorService pool = Executors.newScheduledThreadPool(int corePoolSize)       //fixed-size thread pool for schedule tasks
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 shutdown():
-It tells that all the tasks that are running before calling me should be finished and no more tasks is Allowed
-after me
+    It tells every task before me should be finished and no more task should be accepted after this
 
 shutdownNow():
-It forcefully shutdown the executor even if tasks are still running
+    It forcefully shutdown the executor even if tasks are still running
 
 isShutdown():
-Returns True or False based on if shutdown() is called yet or not
+    Returns true or false based on whether shutdown() or shutdownNow() is called
 
 awaitTermimation():
-When all tasks are finished and shutdown is done then we reach terminated state
-It is used to do some tasks after all the threads completed and shutdown is done
+    When all tasks are finished and shutdown is done then we reach terminated state
+    It is used to do some tasks after all the threads completed and shutdown is done
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 pool.submit() :
-    It is used to define the tasks that needs to be run by threads
-    It Returns a future Object, You can return anything in submit
+    It is used to submit a task to run in a thread pool
+    It returns result in Future Object
 
 future.get():
-    It is used to get the result of the submit
-    It Stops the application untill thread finishes or get Exception etc
-    Its like join() to wait for thread to finish
+    It is used to get the result from the future object
+    It makes the main thread wait untill task is finished or exception occurs
+    It makes code synchronized
 
 Ex:
-ExecutorService pool = Executors.newSingleThreadExecutor();
+public static void main(String[] args){
 
-//It will print as soon as main starts
-System.out.println("Before Submit");
-Future<?> submit = pool.submit(() -> {
-    try {
-        sleep(3000);
-    } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-    }
-    System.out.println("This is Pool and Thread id is " + Thread.currentThread().getName());
-});
+    System.out.println("Before Submit");
+    ExecutorService pool = Executors.newSingleThreadExecutor();
 
-//It will print after submit thread finishes the task
-//If submit.get() wasnt here then this would have also printed as soon as main starts
-submit.get();
-System.out.println("After submit");
-pool.shutdown();
+    Future<?> result = pool.submit(()->{
+        try{
+            System.out.println("Inside Try");
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Outside Try");
+        return 100;
+    });
+
+    System.out.println(result.get());           //This will block the main thread and after submit will print after result
+    System.out.println("after submit");
+}
 
 -------------------------------------------------------------------------------------------------------------------------------
 

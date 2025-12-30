@@ -82,7 +82,7 @@ bin/kafka-console-consumer --topic user_created --bootstrap-server localhost:909
 
 Note:
     @KafkaListener("user-create", groupId = "grp123")
-    public void updateWalletsForTxn(String msg) throws ParseException, JsonProcessingException {
+    public void updateWalletsForTxn(String msg) throws ParseException, JsonProcessingException {}
 
 @KafkaListener annotation is used on top of the function which we want to run automatically when msg is produced on the 
 group we mention in the annotation.

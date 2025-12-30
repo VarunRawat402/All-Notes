@@ -87,12 +87,11 @@ Interface + Can extend another class + Multiple threads can share one Runnable o
 
 Join():
 
-join() makes one thread wait until another thread finishes.
+Makes all the threads wait untill current thread is finished
+Makes the code synchronized
 Throws InterruptedException ( Must handle or declare it )
-Optional timeout can be provided
-If you dont use join(), threads will run independently and may overlap in unpredictable ways.
 
-When thread execution order matters:
+Example:
     Thread A → prepares data
     Thread B → uses that data (must wait for A)
 
@@ -116,46 +115,24 @@ public class DemoApplication {
 
 Daemon Thread:
 
-A daemon thread is a background thread that supports other threads.
-JVM does not wait for daemon threads to finish
-When all main/user threads are done, JVM will exit even if daemon threads are still running.
-You must call setDaemon(true) before starting the thread, Cannot set Daemon after starting the thread.
+A daemon thread is a background thread
+When all threads are finished JVM will exit and daemon threads will be terminated automatically
+setDaemon(true) → to make a thread daemon thread
 
-//Student Thread and Main thread will get printed
-//After sleep will not get printed coz it is a daemon thread and it stops as soon as main thread is finished
+//t1 thread will not print hello world because main thread will finish first and jvm will exit
 Code:
-
-public class Student extends Thread{
-
-    @Override
-    public void run(){
-
-        System.out.println("Student Thread");
-
-        try {
-            Thread.sleep(100000000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.out.println("After Sleep");
-    }
-}
-
-Main():
-
-Student student = new Student();
-student.setDaemon(true);
-student.start();
-System.out.println("Main");
+Thread t1 = new Thread(()->{
+        Thread.sleep(1000);
+    System.out.println("Hello world");
+});
+t1.setDaemon(true);
+t1.start();
 
 -------------------------------------------------------------------------------------------------------------------------------
-
 Multiple Ways of Creating a Thread:
-
 -------------------------------------------------------------------------------------------------------------------------------
 
-1: Creating a class:
+1: Class
 
 Code:
     Admin admin = new Admin();
@@ -164,8 +141,7 @@ Code:
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-2: Anonymous class ( One Step Less ):
-{No Class Initialization}
+2: Anonymous class:
 
 Code:
 Runnable task1 = new Runnable() {
@@ -179,10 +155,7 @@ t1.start();
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-3: Create Thread Directly ( 2 Step Less ):
-{ No Class and Anonymous class object }
-Initialize thread directly and write method directly inside thread using Lambda Function
-Start the thread
+3: Create Thread Directly:
 
 Thread t3 = new Thread(()->{
     wallet.withDraw(50);
@@ -191,9 +164,7 @@ t3.start();
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-4: Anonymous Thread ( 0 Initialization ):
-No class, No Runnable Object, No Thread Initialization
-Create Anonymous Thread, Write Method directly inside thread and start the thread
+4: Anonymous Thread:
 
 new Thread(()->{
     wallet.withDraw(50);

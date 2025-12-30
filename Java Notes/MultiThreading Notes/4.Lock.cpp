@@ -5,19 +5,15 @@ Lock
 There are 2 Types of Locking:
 
 Intrinsic Locks:
-
-Every object in Java has an intrinsic lock.
-These are the locks used when you use synchronized keyword
-synchronized blocks or methods acquire this lock.
-Automatically released when the block/method exits (even on exceptions).
-Simple and safe, but less flexible.
+    Every object in Java has an intrinsic lock.
+    These locks are used by synchronized keyword
+    synchronized acquire this lock and automatically released when the method exits
+    Simple and safe, but less flexible.
 
 Explicit Locks:
-
-These are manually controlled using classes from the java.util.concurrent.locks package, like ReentrantLock.
-You manually acquire the lock and release the lock -> lock() & unlock()
-More flexible: tryLock(), timeout, interruptible lock, fairness policies.
-More error-prone if you forget to unlock.
+    These are manually controlled locks
+    You manually acquire the lock and release the lock
+    More flexible: tryLock(), timeout, interruptible lock, fairness policies.
 
 Syntax:
     Lock lock = new ReentrantLock();
@@ -25,39 +21,37 @@ Syntax:
 -------------------------------------------------------------------------------------------------------------------------------
 
 lock.lock() : 
-    This locks the current object and other threads will wait until locked object is unlocked 
+    This locks the object and prevent other threads to access the locked object
 
 Code:
-public class LockExample {
+public class Counter {
+
     private final Lock lock = new ReentrantLock();
 
-    public void access() {
-        lock.lock(); // blocks until acquired
-        try {
-            System.out.println(Thread.currentThread().getName() + " got the lock.");
-            Thread.sleep(1000); // simulate some work
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
+    public void getHello(){
+        lock.lock();
+        try{
+            System.out.println("Hello world");
+        }finally {
             lock.unlock();
         }
     }
-}    
+} 
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 ReentrantLock():
-    self deadlock : when same thread tries to re-lock the lock without unlocking it
-    It prevents the self deadlock 
+    It allows self locking multiple times without unlocking the lock first
+    self deadlock : when same thread tries to lock the same lock again without unlocking it first
     Relocking happens only on same threads
 
-//Thread 1 locks the lock object in method1(), then it runs the method2()
-//In method2() we want to lock the object again but we didnt unlocked the object before so its a selflock situation
-//Re-entrant lock() allows you to lock the object multiple times without unlocking it, preventing self lock situation
-//Now thread t1 has 2 locks and we must unlock it 2 times 
+//Thread 1 calls the method1() and locks the object
+//Inside method1(), It calls method2() and locks the object again, now it has 2 locks
+//method2() finishes, unlocked the lock, same for method()1
 //It only happens in same thread if thread 2 lock the method2() we cannot prevent that
 Code:
 public class ReentrantExample {
+
     private final ReentrantLock lock = new ReentrantLock();
 
     public void method1() {
@@ -84,15 +78,16 @@ public class ReentrantExample {
 -------------------------------------------------------------------------------------------------------------------------------
 
 tryLock() : 
-If the lock is free → it acquires the lock and returns true
-If the lock is already held by another thread → it returns false immediately
-It does not block or wait
+It tries to lock the object 
+    If the lock is free → acquires the lock and returns true
+    If not → it returns false immediately
+    It does not block or wait
 
 tryLock(2, TimeUnit.SECONDS) :
-If the lock is free → it acquires it immediately
-If not → it waits up to the given time
-If the lock is still not available → returns false
-This method can throw InterruptedException
+    If the lock is free → acquires it immediately
+    If not → it waits up to the given time
+    If the lock is still not available → returns false
+    This method can throw InterruptedException
 
 Code tryLock():
 
@@ -121,12 +116,12 @@ InterruptedException:
 This is a checked exception thrown when a blocking operation is interrupted.
 
 Methods that throw InterruptedException:
-Thread.sleep()
-wait()
-join()
-BlockingQueue.take()
-lock.lockInterruptibly()
-Thread.join()
+    Thread.sleep()
+    wait()
+    join()
+    BlockingQueue.take()
+    lock.lockInterruptibly()
+    Thread.join()
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -228,50 +223,21 @@ Why its useful
 
 Fair vs Unfair Locks
 
-When multiple threads are trying to acquire a lock, you have two choices:
-
 ✅ Fair Lock:
-Threads acquire the lock in the order they requested it — like a queue (FIFO).
+    Threads acquire the lock in the order they requested it — like a queue (FIFO).
 
 ❌ Unfair Lock (default):
-Threads might skip the queue if the lock becomes available and they happen to run first.
+    Some threads skip the queue and acquire the lock before requested threads.
 
-Why does it matter?
+
 Fair lock ensures predictable behavior — no thread is starved.
-
 Unfair lock gives better performance, but some threads might get starved if others keep jumping ahead.
-
--------------------------------------------------------------------------------------------------------------------------------
-
-//This loop creates 5 threads and starts it immediately
-//Now 5 threads are in queue to acquire the lock 
-//Any thread can acquire this lock, it depends on scheduler
-//If you use fair lock, Thread which gets in queue first will acquire the lock first
-Code:
-
-ReentrantLock lock = new ReentrantLock(true); // fair
-ReentrantLock lock = new ReentrantLock(); // Unfair
-
-for (int i = 1; i <= 5; i++) {
-    final int threadId = i;
-    new Thread(() -> {
-        lock.lock();
-        try {
-            System.out.println("Thread-" + threadId + " acquired the lock");
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
-    }).start();
-}
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Thread scheduling is non-deterministic
 
-When you call .start(), the thread goes to the ready queue of the OS.
+When you call .start(), the thread goes to the queue of the OS.
 Then the OS scheduler (not Java!) decides:
 Which thread to run first
 How much CPU time to give it
@@ -280,94 +246,31 @@ So even though Thread-1 was created first, the CPU might run Thread-2 earlier or
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Example of Fair and Unfair Lock Deeply:
-
-In Fair:
-
-Thread 1 and Thread 2 Starts the thread at same time, Now any Thread can lock the lock first
-Each Thread tries to lock the lock 2 times in J loop
-Lets Say Thread 1 got the lock first and locks the lock
-Now it will print -> Sleep for 100 -> print -> unlock the lock -> sleep for 50, Then start the next iteration
-So Thread 2 is waiting in line when Thread 1 got the lock So, As soon as Thread 1 releases the lock and goes to 50ms Sleep
-Thread-2 gets the lock — because it was waiting in line. This continues back and forth like a queue.
-📌 Fair = First Come, First Served
-
-In Unfair
-So Thread 2 is waiting in line when Thread 1 got the lock So, As soon as Thread 1 releases the lock and goes to 50ms Sleep
-Thread 2 should get the lock now right? coz its in line and Thread 1 is sleeping for 50ms but Thread 1 will get the lock 
-again even Thread 2 was in line and Thread 1 was sleeping for 50ms coz it is unfair Lock
-It does not matter if you were in line Thread 1 can still cut it
-
--------------------------------------------------------------------------------------------------------------------------------
-
-Conclusion:
-
-In Fair : Threads get the lock in the order they come in lock queue
-In UnFair : Threads can cut other threads in queue line even if they starts later resulting 
-in some threads never getting the chance to lock
-
-
-public class FairVsUnfair {
-
-    // 👇 Change to `true` for fair lock
-    static Lock lock = new ReentrantLock(false); // false = unfair, true = fair
-
-    public static void main(String[] args){
-
-        for(int i=1;i<=2;i++){
-            int id = i;
-            new Thread(()->{
-                for(int j=1;j<3;j++){
-                    lock.lock();
-                    try {
-                        System.out.println("Thread " + id + " got the lock");
-                        Thread.sleep(100);
-                        System.out.println("Thread " + id + " released the lock");
-                        lock.unlock();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
-        }
-    }
-}
-
--------------------------------------------------------------------------------------------------------------------------------
-
 Read & Write Locks:
 
-A ReadWriteLock is a type of lock that allows concurrent access for multiple reader threads, as long as no writer thread is active.
-However, if a writer thread holds the lock, all other readers and writers are blocked until the writer releases it.
+In ReadWriteLock, Multiple threads can acquire the read locks simultaneously, but only one thread can acquire the write lock at a time.
 
 Read Lock:
-Can be held by multiple threads at the same time.
-Allowed only if no thread holds the write lock.
+Multiple threads can hold the read lock simultaneously.
+No write lock can be acquired when read locks are active.
 
 Write Lock:
-Exclusive — only one thread can hold it.
-Blocks all readers and other writers.
+Only one thread can hold the lock at a time.
+No read or write locks can be acquired when the write lock is active.
+
 
 Use ReadWriteLock when:
-
 You have a shared resource that is read often but rarely modified.
-You want to improve performance over a standard lock (e.g. synchronized or ReentrantLock) by allowing multiple reads.
 
 -------------------------------------------------------------------------------------------------------------------------------
-
 Syntax:
 
-//Generic Use
-ReadWriteLock rwLock = new ReentrantReadWriteLock();
+//Interface Reference
+ReadWriteLock rwLock = new ReentrantReadWriteLock();    
 Lock readLock = rwLock.readLock();
 Lock writeLock = rwLock.writeLock();
 
-//Need advanced features
+//Class Reference
 ReentrantReadWriteLock lock = new ReentrantReadWriteLock(false);
 ReentrantReadWriteLock.ReadLock  readLock = lock.readLock();
 ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
