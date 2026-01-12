@@ -98,6 +98,8 @@ Appends every write command to a log file (.aof)
 On restart, Redis replays the log to reconstruct the dataset.
 Slower than RDB, but more durable.
 
+------------------------------------------------------------------------------------------------------------------------------------------------
+
 Redis is in-memory, so without RDB/AOF, all data is lost on restart.
 RDB: Good for backups, fast startup, minimal performance impact.
 AOF: Good for high durability, ensures almost no data loss.

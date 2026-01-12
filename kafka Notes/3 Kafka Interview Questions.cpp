@@ -2,65 +2,46 @@
 Kafka Interview Questions:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Producer acknowledgments:
-    spring.kafka.producer.acks:
-    It defines how many Kafka brokers must confirm a message is written before the producer considers it successfully sent.
+Producer acknowledgments (spring.kafka.producer.acks):
+    How many brokers must confirm a write before the producer says successfull
 
-When a producer sends a message to Kafka:
-The message is written to the leader partition
-leader replicate the mesasge to other brokers
-Kafka waits for acknowledgments based on the acks value.
-after confirmations, Kafka replies success to the producer.
+Producer → Leader → Replicas → Ack → Producer
+Producer waits for the ack from the leader and the in-sync replicas to return the message as sent
 
-spring.kafka.producer.acks: 0/1/all
-    0   -> No acknowledgment
-    1   -> Leader acknowledgment only
-    all -> Leader + all in-sync replicas
+spring.kafka.producer.acks:
+    acks=0 → No confirmation (fast, unsafe)
+    acks=1 → Leader confirms only
+    acks=all → Leader + all in-sync replicas (safest)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 min.insync.replicas:
-It is the minimum number of replicas that must be alive and in-sync for Kafka to accept a write.
-min.insync.replicas and acks work together 
+    Minimum number of in-sync replicas required to accept a write.
+    min.insync.replicas and acks work together 
 
-3 brokers, 3 replication factor, ISR count - 3
-min.insync.replicas:2
-It means do not accept write from producer until 2 replicas are in sync or throw exception
+3 brokers, RF=3, min.insync.replicas=2
+→ Write allowed only if 2 replicas are alive & in sync
+→ Else, write fails
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 What happens if a consumer crashes:
+
 If a Kafka consumer crashes, Kafka reassigns its partitions to another consumer in the same consumer group and continues message consumption.
 
 Kafka periodically receives heartbeats from consumers
-Consumer stops sending heartbeats
-Broker waits for session.timeout.ms
-Consumer is marked dead
-Rebalance is triggered
-Partitions of crashed consumer are assigned to other consumers
+Heartbeat stops → broker waits for timeout → consumer marked dead → rebalance → partitions reassigned
 
 What Happens to Messages:
-
-Case 1: Offsets Were Committed:
-Consumer processed message, Offset committed
-No reprocessing
-
-Case 2: Offsets NOT Committed
-    Consumer crashes mid-processing, Offset not committed
-    Message is reprocessed by another consumer
+    Offset committed → no reprocessing
+    Offset not committed → message reprocessed by another consumer
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is idempotent producer:
-When producer sends message to broker and it ack back
-if ack fails, then kafka retry sending the message automatically and with that duplicate message can be produced
-It prevents this duplication of mesasges by checking producerID + Sequence number
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Does Kafka guarantee ordering:
-It orders the messages in a single partition with same key, but not across multiple partitions.
-If key is provided, it will send messagese with same key in same partition and in same order they are sent
+When producer sends message to broker and it fails to ack then
+kafka retries sending the message automatically which could lead to duplicate messages
+Kakfa uses producerID + Sequence Number to avoid duplicate message
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 At-most-once vs At-least-once vs Exactly-once;
@@ -78,7 +59,6 @@ At-least-once
     Producer sends message
     Offset committed after processing
     Duplicates possible if retry happens
-    offsets are not auto commited
 
 @KafkaListener(...)
 public void consume(OrderEvent event, Acknowledgment ack) {
@@ -237,12 +217,6 @@ Increase spring.kafka.listener.concurrency
 Use retry topics instead of blocking retries
 Increase Partitions
 Scale Kafka
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-How do you handle duplicate messages:
-    Kafka allows duplicate messages due to at-least-once delivery, 
-    so duplicates are handled by making consumers idempotent, typically using a unique business key with database or cache-based deduplication.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 

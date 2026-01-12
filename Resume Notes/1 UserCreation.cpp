@@ -12,47 +12,13 @@ User Creation Service Notes:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: User Creation DTO:
-Used to receive user creation data from client.
-Used for validation 
-
-Code:
-
-public class CreateUserRequest {
-    private String email;
-    private String name;
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-2: User Entity:
-Used to map user data to the DB 
-
-Code:
-
-@Entity
-@Table(
-    name = "users",
-    uniqueConstraints = @UniqueConstraint(columnNames = "email")
-)
-public class User {
-
-    @Id
-    private UUID id;
-
-    private String email;
-    private String name;
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
 3: User Kafka Entity:
-Used to store user data to send to kafka topics
+    This is sent to kafka topics 
 
 public class UserCreatedEvent {
 
     private UUID eventId;
-    private UUID userId;
+    private Long userId;
     private String email;
     private Instant createdAt;
 
@@ -69,24 +35,22 @@ public class UserCreatedEvent {
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 4: OutBox Entity:
-Used to store user data to send to kafka topics later
+Processed by scheduler to send messages to kafka
 
 @Entity
 @Table(name = "outbox_event")
 public class OutboxEvent {
 
     @Id
-    private UUID id; // SAME as eventId
+    private UUID eventId;
 
     private String topic;
 
     @Lob
-    private String payload;
+    private UserCreatedEvent payload;
 
     @Enumerated(EnumType.STRING)
-    private Status status; // NEW, SENT
-
-    private int retryCount;
+    private Status status; 
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -101,7 +65,6 @@ public class UserService {
     public void createUser(CreateUserRequest dto) throws Exception {
 
         User user = new User(
-            UUID.randomUUID(),
             dto.getEmail(),
             dto.getName()
         );
@@ -114,9 +77,8 @@ public class UserService {
             new OutboxEvent(
                 event.getEventId(),
                 "user_created",
-                objectMapper.writeValueAsString(event),
+                event,
                 Status.NEW,
-                0
             )
         );
     }
@@ -150,6 +112,21 @@ Used to send user information to kafka topics using outbox Entity
 @Component
 public class OutboxScheduler {
 
+    @Retryable(
+    retryFor = KafkaException.class,
+    maxAttempts = 3,
+    backoff = @Backoff(delay = 2000)
+    )
+    public void publish(OutboxEvent event) {
+        kafkaTemplate.send(event.getTopic(), event.getId(), event.getPayload()).get();      //blocking
+    }
+
+    @Recover
+    public void recover(KafkaException ex, OutboxEvent event) {
+        event.markFailed();
+        outboxRepository.save(event);
+    }
+
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void publish() {
@@ -158,14 +135,28 @@ public class OutboxScheduler {
 
         for (OutboxEvent event : events) {
             try {
-                kafkaTemplate.send(event.getTopic(), event.getPayload());
+                publish(event);
                 event.setStatus(Status.SENT);
+                outboxRepository.save(event);
             } catch (Exception e) {
-                event.incrementRetry();
             }
         }
     }
 }
+
+//This is for async non blocking way of sending message to kafka
+//and updating the outbox status based on success / failurex
+kafkaTemplate.send(topic, key, payload)
+    .addCallback(
+        success -> {
+            event.markSent();
+            outboxRepository.save(event); // transactional optional
+        },
+        failure -> {
+            event.markFailed();
+            outboxRepository.save(event);
+        }
+    );
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------

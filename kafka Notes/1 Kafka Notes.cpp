@@ -187,24 +187,12 @@ Replication factor = 2
     Means topic is replicated on 2 brokers
 
 Ex:
+User-Topic, replication factor = 2, partition = 2
+user-topic is replicated on 2 brokers with 2 partitions
+Partition 1: Broker 1 (Leader), Broker 2 (Follower)
+Partition 2: Broker 2 (Leader), Broker 1 (Follower)
 
-user-create topic with 2 partition and 2 replication factor
-user-create will be replicated on 2 brokers with both partition
-Each partition has 1 leader and rest followers
-broker1 will be leader of partition 1 in broker 1
-broker2 will be leader of partition 2 in broker 2
-
-Leader : B1 -> P1 | B2 -> P2
-If message goes to P1:
-    Producer sends message to Leader (B1)
-    B1 writes message to disk
-    B1 replicates message to Follower (B2)
-    B2 sends ACK to B1
-    B1 confirms success to producer
-
-Why Leaders are Important:
-
-Producer sends data to only one broker (Leader)
+Producer sends data to only Leader
 Leader:
     Writes data
     Replicates to followers
