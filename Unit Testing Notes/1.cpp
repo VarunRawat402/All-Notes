@@ -2,102 +2,105 @@
 Unit Testing:
 --------------------------------------------------------------------------------------------------------------------------------
 
-Flow of Testing (AAA Pattern):
+Flow of Testing:
+    AAA = Arrange → Act → Assert
 
-Arrange → Set up data, mocks, and environment
-Act → Execute the logic or method being tested
-Assert → Verify expected results
+Arrange     → Set up data, mocks, and environment
+Act         → test logic
+Assert      → Verify expected results
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Repository Verification Steps:
+Repository Testing - Steps:
 
 1: Check Save Operation
-    Ensure the entity is saved (not null).
+    Ensure save() returns a non-null entity.
 
 2: Verify ID Generation
-    Confirm ID is generated automatically (if applicable).
+    Verify auto-generated ID is not null.
 
 3: Confirm Existence in Database
-    Fetch the saved record and ensure it exists.
+    Fetch the entity using findById() or findAll().
 
 4: Validate Field Values
-    Check whether stored values match expected values.
+    Compare stored values with expected values.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 @SpringBootTest:
 
-Starts the full Spring Boot application context during testing.
-Loads everything: configuration, beans, services, repositories, controllers, etc.
+Starts the entire Spring Boot application context
+Loads:
+    Controllers
+    Services
+    Repositories
+    Security
+    Configuration
 Used for integration testing.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 @DataJpaTest:
 
-This annotation is used for JPA tests.
-It only loads: @Entity classes, JPA repositories.
+Used for JPA layer testing only
+Loads:
+    @Entity
+    JPA repositories
 Does not load services, controllers, security, etc.
 Uses in-memory H2 database by default.
 
+--------------------------------------------------------------------------------------------------------------------------------
 
 @AutoConfigureTestDatabase:
 Controls which database is used in @DataJpaTest.
-Without configuration → defaults to H2
 
 Use real configured DB:
 
 @DataJpaTest        //Use Real DB
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 
-@DataJpaTest        //Use TempH2
+@DataJpaTest        //Use H2
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 
 --------------------------------------------------------------------------------------------------------------------------------
-
-Junit5 Assertions:
 
 Basic Comparisons:
 
 assertEquals(expected, actual);
 assertNotEquals(unexpected, actual);
+
 assertSame(expectedObject, actualObject);
 assertNotSame(unexpectedObject, actualObject);
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Boolean Conditions:
+Boolean & Null Checks   
 
 assertTrue(condition);
 assertFalse(condition);
+
 assertNull(actual);
 assertNotNull(actual);
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Collections/Iterables:
+Collections & Iterables
 
 assertIterableEquals(expectedIterable, actualIterable);
 assertLinesMatch(expectedLines, actualLines);
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Advanced:
+Exception Testing (Preferred Way):
 
 assertThrows(ExpectedException.class, () -> method());
-assertTimeout(Duration.ofSeconds(2), () -> operation());
-assertAll("group", 
-    () -> assertEquals(1, x),
-    () -> assertEquals(2, y)
+
+Capture Exception & Verify Message:
+
+Exception ex = assertThrows(IllegalArgumentException.class,
+    () -> service.method(null)
 );
 
---------------------------------------------------------------------------------------------------------------------------------
-
-Exception Testing:
-// Clear exception assertion
-Exception e = assertThrows(NullPointerException.class, 
-    () -> obj.method(null));
-assertEquals("Parameter cannot be null", e.getMessage());
+assertEquals("Parameter cannot be null", ex.getMessage());
 
 --------------------------------------------------------------------------------------------------------------------------------

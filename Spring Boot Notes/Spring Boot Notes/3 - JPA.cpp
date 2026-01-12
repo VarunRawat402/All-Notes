@@ -2,15 +2,7 @@
 JPA and HIBERNATE 
 -----------------------------------------------------------------------------------------
 
-In JPA :
-1: Tables are created automatically using annotations in the model class.
-2: No manual DB connection setup in code; Hibernate handles connection through configuration.
-3: CRUD operations are performed using predefined methods from JpaRepository.
-4: No manual SQL, no manual mapping, no boilerplate code.
-
----------------------------------------------------------------------------------------------------------------------------------------
-
-Connect Application to the DB:
+Connecting Spring Boot to Database:
 
 spring.datasource.url=jdbc:mysql://localhost:3306/office?createDatabaseIfNotExist=true
 spring.datasource.username=root
@@ -18,27 +10,25 @@ spring.datasource.password=root402
 spring.jpa.hibernate.ddl-auto=update
 
 Hibernate DDL Auto (startup behavior):
+create          - Drops + recreates tables every startup
+update          - Updates schema, keeps old data
+validate        - Only checks schema, no changes
+create-drop     - Create on start, drop on shutdown
 
-create - Drops and recreates tables every time
-update - Updates schema without dropping data
-validate - Validates schema, does not modify
-create-drop - Creates on start, drops on shutdown
-
-Dialect:
-Tells Hibernate how to generate SQL for the specific database.
-
-Examples:
-MySQL: org.hibernate.dialect.MySQL8Dialect
-PostgreSQL: org.hibernate.dialect.PostgreSQLDialect
+Production: usually validate or none
+Development: update
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 REPOSITORY:
-JPA is a specification, so we create a repository interface and extend JpaRepository<Person, Integer>.
+    Interface that gives CRUD + query methods.
+
+CrudRepository → basic CRUD
+PagingAndSortingRepository → pagination
+JpaRepository → CRUD + pagination + JPA features
 
 Code:
 public interface PersonRepository extends JpaRepository<Person,Integer> {
-    
 }
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -47,23 +37,17 @@ public interface PersonRepository extends JpaRepository<Person,Integer> {
 public class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 }
 
-@GeneratedValue:
-    Automatically generates values for the primary key.
-
 GenerationType.AUTO :
-Hibernate decides the best strategy for each DB
-Good for batch insertions 
-Good when you have different type of DB
+    → Hibernate chooses best strategy (DB independent)
+    → Good when you have different type of DB
 
 GenerationType.IDENTITY: 
-Database  generates the ID.
-Each table maintains its own auto-increment sequence.
-No batch insertions
-Good when you have one type of DB
+    → DB generates ID (MySQL auto_increment)
+    → Best when using single DB
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 JPA Relationships:-
@@ -78,54 +62,51 @@ Jpa relationships are used to connect 2 entities
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @OneToOne (One-to-One Relationship)
-Definition:
-1 record in Table A is associated with exactly 1 record in Table B.
-Example: 1 student has 1 ID card.
+    1 entity ↔ 1 entity
+    Example: 1 user has 1 profile.
 
 @OneToMany (One-to-Many Relationship)
-Definition:
-1 record in Table A is associated with multiple records in Table B.
-Example: 1 order has multiple items.
+    One → many
+    Example: 1 customer can have many orders.
 
 @ManyToOne (Many-to-One Relationship)
-Definition:
-Multiple records in Table A are linked to 1 record in Table B.
-Example: Many items belong to 1 order.
+    Many → one
+    Example: Many orders belong to 1 customer.
 
 @ManyToMany (Many-to-Many Relationship)
-Definition:
-Multiple records in Table A are linked to multiple records in Table B.
-Example: 1 student can belong to multiple departments, and 1 department can have multiple students.
+    Many ↔ many
+    Uses join table
+    Avoid in real projects → prefer separate entity
+    Example: A student can enroll in many courses, and a course can have many students.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @JoinColumm : 
-    Creates and used on the foreign key column in the table
-    Represents the owning side of the relationship.
+    Creates foreign key column
+    Represents the owning side
     
 mappedBy = "user" :  
     Tells JPA which feild is the foreign key in other table
     java variable name is used not database column name
-    Represents the inverse / non-owning side
+    Represents the non-owning side
 
 Code:
+class Student {                 // Owning side
 
-class Student {             // Owning side
-
+    @Id
     private Long id;
-    private String name;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")     // FK in Student table
+    @JoinColumn(name = "department_id")
     private Department department;
 }
 
-class Department {          // Non-owning side
+class Department {              // Non-owning side
 
+    @Id
     private Long id;
-    private String name;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "department",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Student> students;
 }
 
@@ -133,36 +114,27 @@ class Department {          // Non-owning side
 
 Cascade Types:
 
-CascadeType.ALL     - Applies all operations: Persist, Merge, Remove, Refresh, Detach
-CascadeType.PERSIST - Saves child when parent is saved
-CascadeType.MERGE   - Updates child when parent is updated
-CascadeType.REMOVE  - Deletes child when parent is deleted
-CascadeType.DETACH  - Detaches child from persistence context
+CascadeType.ALL     - All operations
+CascadeType.PERSIST - Saves child when parent saved
+CascadeType.MERGE   - Updates child when parent updated
+CascadeType.REMOVE  - Deletes child when parent deleted
+CascadeType.DETACH  - Detach child from persistence context
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Cascade:
-
-cascade will always be added on the saving side
-If you are saving student and want user to be saved automatically then you need to add cascade in student entity at user attribute
-If you are saving user and want student to be saved automatically then you need to add cascade in user entity at student attribute
+    cascade will always be added on the saving side
+    If you are saving student and want user to be saved automatically then you need to add cascade in student entity at user attribute
+    If you are saving user and want student to be saved automatically then you need to add cascade in user entity at student attribute
 
 Ex:
-public class User{
-
-    private int id;
-    private String username;
-    private String password;
-    private List<String> roles = new ArrayList<>();
-}
-
 public class Student {
 
     private int id;
     private String name;
     private int age;
 
-    @OneToOne(cascade = CascadeType.PERSIST)    //cascade is in the student entity because we are saving student and want user to be saved automatically
+    @OneToOne(cascade = CascadeType.PERSIST)    //User will be saved automatically when saving student
     @JoinColumn
     private User user;
 
@@ -173,14 +145,13 @@ public class Student {
 Fetching:
 
 Lazy Fetching:
-
-Do not load related data until it is actually accessed.
-Used when the related data is big or not always needed.
-JPA loads only the main entity
+    Loads related data only when accessed
+    Better performance
+    Used in real projects
 
 Eager Fetching:
-
-Load related data immediately, along with the main entity.
-Used when the related data is always required (but used rarely in practice).
+    Loads related data immediately
+    Can cause performance issues
+    Avoid unless necessary
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

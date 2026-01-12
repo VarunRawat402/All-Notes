@@ -3,59 +3,24 @@ How to Optimise your Application
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: spring.kafka.listener.concurrency=4
-By Default kafka reads message synchronusly one by one
+By default, a Kafka listener processes messages synchronously, one message at a time
 
-This creates 4 threads for 1 kafka consumer
+Concurrency creates multiple consumer threads inside a single application instance.
 
-If topic has 4 partition, then 4 threads can read each partition
-If consumer takes 1 sec to read 1 message, then it would take 4 sec to read 4 messages
-With concurrency 4, it can read 4 messages in 1 sec
+With concurrency 1  → 1 thread reads partitions sequentially
+With concurrency 4  → 4 threads read 4 partitions in parallel
 
-Note:
-Threads should not be greater than the partition, otherwise they would stay idle
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-2: Multiple Kafka Listeners in 1 Application:
-This creates 4 consumers in same consumer group, doing same task
-So, If topic has 4 partition, each consumer gets 1 partition
-
-@KafkaListener(topics = "user_created", groupId = "grp123")
-public void c1(String msg){}
-
-@KafkaListener(topics = "user_created", groupId = "grp123")
-public void c2(String msg){}
-
-@KafkaListener(topics = "user_created", groupId = "grp123")
-public void c3(String msg){}
-
-@KafkaListener(topics = "user_created", groupId = "grp123")
-public void c4(String msg){}
-
-Note:
-Comapnies mostly used Horizontal scaling and launch multiple instances of same application
-Concurrency method is also
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-Consumer Group:
-
-1 partition can be read by only 1 consumer in the consumer group
-1 consumer can read multiple partition 
-Main focus is Load Balancing  and parallel processing for consumer groups so, If any consumer broke then other consumers
-will still be there to read messages.
-
-If you have 2 kafka Listeneres who are listening to same topic 'order' and perfroming different things
-Their GroupId should be different otherwise only 1 of them can read messages
-
-To create 2 consumer with same group id to load balance we need to run another instance of the application basically
+If consumer takes 1 sec to process 1 message
+Without concurrency     → 4 messages take ~4 sec
+With concurrency 4      → 4 messages take ~1 sec
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Disadvantages of Using Spring Kafka concurrency:
+Disadvantages of Using Spring Kafka Concurrency:
 
 1: Concurrency is limited by the JVM and core size, It takes a load on CPU
-2: If you set high concurrency and use single intannce, this means single point of failure, if consumer broke, all message will stop
-3: In modern systems, kubernetes scale Horizontally
+2: If one instance goes down, all threads stop → single point of failure
+3: Kubernetes scales pods better than increasing threads in one JVM
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 Backoff and Retry in Kafka:
@@ -63,7 +28,6 @@ Backoff and Retry in Kafka:
 
 What happens when processing fails:
 
-Exception thrown (no retry configured):
 public void consume(UserEvent event) {
     // error here
     throw new RuntimeException("DB down");
@@ -81,18 +45,14 @@ What happens on failure:
 ❌ No retry limit
 ❌ Partition blocked forever
 
-Other partitions/threads:
-Continue normally
-
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 WHY THIS IS DANGEROUS (real production impact)
 
-CPU goes to 100%
-Logs explode
-DB gets hammered
-Other messages in that partition never get processed
-Looks like Kafka is “stuck”
+CPU spikes to 100%
+Logs grow rapidly
+Database / external services get hammered
+Messages behind that offset never get processed
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -151,17 +111,16 @@ Flow:
 PROM AND GRAFANA:
 
 1. CPU Metrics
-
-Metrics you see:
     CPU usage (%)
     CPU cores used
     CPU usage per container / pod
 
 How to explain:
-    CPU usage shows how much processing power the application is using. 
-    High CPU usage can indicate heavy load or inefficient processing.
-    Safe example line:
-    “We monitored CPU usage to ensure the service was not over-consuming processor resources.”
+    CPU metrics indicate how much processing application consumes.
+    High CPU usage can signal heavy load or inefficient processing.
+
+Safe example line:
+    We monitored CPU usage to ensure the service was not over-consuming processor resources.
 
 2. Memory Metrics
 Metrics you see:

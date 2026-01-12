@@ -10,23 +10,17 @@ Values can be duplicated
 
 Why Use Map?
 
-O(1) average time complexity for HashMap
-No Duplicate Keys
-Logical grouping of related data
-Direct access through keys (no searching required)
+HashMap → O(1) average time
+No duplicate keys
+Natural way to store related data
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Types of Maps:
 
-Map<Integer,String> m1 = new HashMap<>();      
-// Random order, fastest
-
-Map<Integer,String> m2 = new LinkedHashMap<>(); 
-// Maintains insertion order
-
-Map<Integer,String> m3 = new TreeMap<>();        
-// Sorted by keys
+Map<Integer, String> m1 = new HashMap<>();          // No order, fastest
+Map<Integer, String> m2 = new LinkedHashMap<>();    // Insertion order
+Map<Integer, String> m3 = new TreeMap<>();          // Sorted by key
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -34,41 +28,18 @@ How to Iterate over Map:
 
 1: ForEach() ( Modern Approach ):
 
-Map<Integer,String> m = new HashMap<>();
-m.put(1,"Varun");
-m.put(2,"Arun");
-m.put(3,"Priti");
-
-m.forEach((key,value)->System.out.println(key + " " + value));
+m1.forEach((key, value) ->
+    System.out.println(key + " " + value)
+);
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-2: KeySet():
+2: EntrySet():
 
 Map<Integer,String> m = new HashMap<>();
-m.put(1,"Varun");
-m.put(2,"Arun");
-m.put(3,"Priti");
 
-//Just Create a keySet of map in for loop
-for(int i:m.keySet()){
-    System.out.println(m.get(i));
-}
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-3: EntrySet():
-
-Map<Integer,String> m = new HashMap<>();
-m.put(1,"Varun");
-m.put(2,"Arun");
-m.put(3,"Priti");
-
-//Just Create a EntrySet of map in for loop
-//Map.Entry<Integer,String> This is the type of key like int in keySet
-for(Map.Entry<Integer,String> i:m.entrySet()){
-    i.setValue(i.getValue().toUpperCase());
-    System.out.println(i.getValue());
+for(Map.Entry<Integer,String> val : m.entrySet()){
+    System.out.println(val.getKey() + " " val.getValue());
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -77,18 +48,17 @@ Types of Maps:
 
 1: HashMap<>();
     No ordering guarantees
-    Fastest operations
-    Allows one null key + multiple null values
+    Fastest
+    Allows 1 null key + multiple null values
     Not thread-safe
 
 2: LinkedHashMap<>();
     Maintains insertion order
     Slightly slower than HashMap
-    Predictable iteration order
 
 5: TreeMap<>();
-    Sorted by keys (natural ordering or custom comparator)
-    Implements SortedMap
+    Sorted by keys
+    Uses Red-Black Tree
     Slower than HashMap but provides ordering
 
 4: HashTable<>();
@@ -103,60 +73,20 @@ Types of Maps:
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Methods:
-
-1: put( key, value )
-2: get(key)
-3: containsKey(key)
-4: containsValue(value)
-5: size()
-6: remove(key)
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Enum Map:
-    Keys should be enum
-    Faster and more memory-efficient than HashMap
-    Keys are automatically sorted in Enums natural order
-    No null keys allowed
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Code:
-
-enum Day { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }
-
-public class EnumMapExample {
-    public static void main(String[] args) {
-
-        EnumMap<Day, String> schedule = new EnumMap<>(Day.class);
-        
-        schedule.put(Day.MONDAY, "Work from office");
-        schedule.put(Day.WEDNESDAY, "Team meeting");
-        schedule.put(Day.FRIDAY, "Casual Friday");
-        schedule.put(Day.SATURDAY, "Weekend plans");
-        
-        System.out.println(schedule);
-        System.out.println(schedule.get(Day.MONDAY)); // Work from office
-    }
-}
-
------------------------------------------------------------------------------------------------------------------------------------------
-
 Immutable Map:
 
-Cannot be modified after creation
-Prevents accidental changes
-Useful for constants and multi-threading
-Java provides multiple ways to create it
+Map that cannot be modified after creation
+Prevent accidental changes
+Thread-safe
+Ideal for constants/configuration
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Map.of() ( java 9+ ) ;
+Map.of() ( java 9+ ) :
+
 Directly creates immutable map
 Fastest for small maps
 No null keys/values
-No add/remove/modify allowed
 
 Map<String, Integer> immutableMap = Map.of("Alice", 25,
     "Bob", 30,
@@ -173,12 +103,7 @@ Map.copyOf() (Java 10+):
 
 Code:
 Map<String, Integer> mutableMap = new HashMap<>();
-mutableMap.put("Alice", 25);
-mutableMap.put("Bob", 30);
-
 Map<String, Integer> immutableMap = Map.copyOf(mutableMap);
-
-immutableMap.put("Charlie", 35);    // Throws UnsupportedOperationException
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -187,7 +112,7 @@ Internal working of HashMaps:
 Put Operation:
 
 Convert the key into hashcode, key.hashCode()
-Calculate bucket index → hashCode % arraySize
+Calculate bucket index 
 Store in Bucket:
     Empty bucket → store directly
     If bucket occupied (collision) →

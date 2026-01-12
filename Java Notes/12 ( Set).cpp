@@ -2,21 +2,21 @@
 Set ( Collection ):
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Collection that stores unique elements only
+Stores unique elements only
 No Duplicate
 No indexing - cannot access elements by index
 
 Syntax:
     Set<Integer> set1 = new HashSet<>();
-    Set<String> set2 = new LinkedHashSet<>();
-    Set<Double> set3 = new TreeSet<>();
+    Set<String>  set2 = new LinkedHashSet<>();
+    Set<Double>  set3 = new TreeSet<>();
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Common Methods:
-add(E e)	    : Adds an element (E). Returns false if already present.
-remove(E e)	    : Removes an element.
-contains(E e)	: Checks if an element exists.
+add()	        : Adds an element (E). Returns false if already present.
+remove()	    : Removes an element.
+contains()	    : Checks if an element exists.
 size()	        : Returns the number of elements.
 isEmpty()	    : Checks if the set is empty.
 clear()	        : Removes all elements.
@@ -24,18 +24,10 @@ clear()	        : Removes all elements.
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 1: HashSet : Fastest, No Order
-Fastest operations O(1)
+Average time → O(1)
 No order is maintained
 Not thread-safe
-Allows one null element
-
-Ex:
-    Set<Integer> set = new HashSet<>();
-    set.add(5);
-    set.add(2);
-    set.add(8);
-    set.add(1);
-    System.out.println(set); // Output: [1, 2, 5, 8] (Order NOT guaranteed)
+Allows 1 null element
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -43,32 +35,16 @@ Ex:
 Maintains Insertion Order
 Slightly slower than HashSet due to ordering overhead
 Not thread-safe
-Allows one null element
-
-Ex:
-Set<Integer> set = new LinkedHashSet<>();
-set.add(5);
-set.add(2);
-set.add(8);
-set.add(1);
-System.out.println(set); // Output: [5, 2, 8, 1] (Order maintained)
+Allows 1 null element
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 3: TreeSet:
 Sorted Order
-Uses a balanced tree (Red-Black Tree)
+Uses Red-Black Tree
 Slower than HashSet (O(log N))
 Not thread-safe
 No null elements allowed
-
-Ex;
-Set<Integer> set = new TreeSet<>();
-set.add(5);
-set.add(2);
-set.add(8);
-set.add(1);
-System.out.println(set); // Output: [1, 2, 5, 8] (Sorted order)
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 

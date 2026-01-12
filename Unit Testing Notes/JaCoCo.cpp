@@ -2,22 +2,30 @@
 JaCOCO:
 --------------------------------------------------------------------------------------------------------------------------------
 
-Implementation:
+JaCoCo (Java Code Coverage) is a tool used to measure how much of your Java code is executed during tests.
 
-Add JaCoCo dependency
-Add JaCoCo Maven plugin
+It helps you:
+    Identify untested code
+    Improve test quality
+    Enforce minimum coverage in CI/CD pipelines
+
+Implementation Steps:
+
+Add JaCoCo Maven Plugin
+Run tests using Maven
+Generate coverage report
+View HTML report from target/site/jacoco/index.html
 
 --------------------------------------------------------------------------------------------------------------------------------
-
-PLUGIN:
+JaCoCo Maven Plugin Configuration
 
 <plugin>
     <groupId>org.jacoco</groupId>
     <artifactId>jacoco-maven-plugin</artifactId>
-    <version>0.8.11</version> <!-- Latest version recommended -->
+    <version>0.8.11</version>
     <executions>
-        
-        <!-- Attach JaCoCo agent before tests run -->
+
+        <!-- Attach JaCoCo agent before tests -->
         <execution>
             <id>prepare-agent</id>
             <goals>
@@ -39,7 +47,7 @@ PLUGIN:
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Counter	Measures:
+Coverage Counters (Metrics):
 
 LINE	% of executable lines covered (most common).
 BRANCH	% of decision branches (e.g., if/else, switch) covered.
@@ -48,43 +56,54 @@ CLASS	% of classes loaded during tests.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-`mvn clean spring-boot:run`
+Maven Commands & Behavior:
+
+'mvn clean spring-boot:run'
 
 What it does:
+    Deletes target/
+    Compiles source code
+    Starts Spring Boot application
+    Runs embedded server (Tomcat/Jetty)
+    Keeps application running
 
-Deletes target/
-Compiles source code
-Starts the Spring Boot application (embedded Tomcat/Jetty/Undertow)
-Runs the app and keeps it alive until you stop it (Ctrl + C)
+Important:
+    ❌ Does NOT run unit tests
+    ❌ Does NOT generate JaCoCo reports
 
-It does not run unit tests
-Only runs the application for development purposes
+Used only for local development
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-`mvn clean test`
+'mvn clean test'
 
 What it does:
+    Deletes target/
+    Compiles main + test code
+    Runs all unit tests (src/test/java)
+    Stops after tests complete
 
-Deletes target/
-Compiles main and test source code
-Executes all unit tests in src/test/java
-Stops once testing is complete
+Output:
+    Console test results
+    JaCoCo coverage report
+    Surefire reports
 
-Console test results (pass/fail)
-Coverage reports (JaCoCo)
-Surefire reports
+Most common command for coverage
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-`mvn clean verify`
+'mvn clean verify'
 
-Runs clean, compiles, tests, and then runs the verify phase.
+What it does:
+    Runs clean
+    Compiles code
+    Executes unit tests
+    Executes verify phase
 
-The verify phase is typically used to:
-Generating coverage reports (JaCoCo)
-Code quality checks (Checkstyle, PMD)
-Running integration tests (if configured)
+Verify phase is used for:
+    JaCoCo coverage validation
+    Code quality checks (Checkstyle, PMD)
+    Integration tests (if configured)
 
 --------------------------------------------------------------------------------------------------------------------------------
 

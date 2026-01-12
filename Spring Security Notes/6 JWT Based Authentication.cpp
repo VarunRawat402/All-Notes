@@ -14,8 +14,7 @@ Steps to Implement JWT Token:
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 JWT util:
-
-jwts is a library used to create and validate the JWT token
+    jwts is a library used to create and validate the JWT token
 
 To create the token:
     jwts.builder() is used to create the token 

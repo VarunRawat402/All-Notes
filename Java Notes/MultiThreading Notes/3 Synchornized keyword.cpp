@@ -3,47 +3,45 @@ Synchronization:
 -------------------------------------------------------------------------------------------------------------------------------
 
 synchronized keyword:
-It is used to make a method or block thread-safe.
-When a method is synchronized, only one thread can access it at a time for a given object.
+When a method is synchronized, only one thread can access it.
 
-Ex:
+What Exactly Gets Locked?
+    synchronized always locks a monitor
+    Monitor can be:
+        Object lock → this
+        Class lock → ClassName.class
 
-Counter Class:
-public class Counter {
+-------------------------------------------------------------------------------------------------------------------------------
 
-    private int counter;                            //Counter
+1: Object-Level Synchronization
 
-    public synchronized void increment(){           //Increase the counter by 1
-        counter++;
-    }
+Lock is on the object instance
+Threads using the same object → synchronized
+Threads using different objects → NOT synchronized
 
-    public  int getCounter(){                       //Get the counter
-        return counter;
+class Printer {
+    private int balance = 1000;
+
+    public synchronized void withdraw(int amount) {
+        balance -= amount;
+        System.out.println("Remaining Balance: " + balance);
     }
 }
 
-public class DemoApplication {
-    public static void main(String[] args) throws InterruptedException {
-        Counter counter = new Counter();
+-------------------------------------------------------------------------------------------------------------------------------
 
-        Runnable task1 = new Runnable() {
-            @Override
-            public void run() {
-                for(int i=1;i<=1000;i++){
-                    counter.increment();
-                }
-            }
-        };
+2: Block-Level Synchronization (Best Practice):
+    Locks only critical section
+    Better performance than method-level
 
-        Thread t1 = new Thread(task1);
-        Thread t2 = new Thread(task1);
+class BankAccount {
+    private int balance = 1000;
 
-        t1.start();
-        t2.start();
-        t1.join();
-        t2.join();
-        System.out.println(counter.getCounter());
-
+    public void withdraw(int amount) {
+        synchronized (this) {
+            balance -= amount;
+        }
+        System.out.println("Remaining Balance: " + balance);
     }
 }
 

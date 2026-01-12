@@ -1,183 +1,260 @@
-
 ------------------------------------------------------------------------------------------------------------------------
 Git Notes - Comprehensive Guide
-
-Git is a distributed version control system (VCS) that enables developers to efficiently track, manage, and collaborate 
-on code changes. It provides mechanisms for maintaining a complete history of project modifications, facilitating 
-collaboration, and supporting workflows for both individuals and teams.
-
 ------------------------------------------------------------------------------------------------------------------------
-Key Concepts:
 
-- Repository: 
-    A repository is a storage location for your project files and the entire history of their changes. 
-    It can be local (on your computer) or remote (hosted on platforms like GitHub or GitLab).
+1. Repository: 
+    It is used by Git to store and tracks your project files and history.
+    Local Repository - Exists on your computer
+    Remote Repository - GitHub, GitLab, Bitbucket
 
-- Local Repository:
-    The version of the repository stored on your local machine. You can make changes, commit, and review history locally.
+2. Working Folder:
+    The project folder where you create, edit, or delete files.
 
-- Remote Repository:
-    A repository hosted on a server, typically used for backup, collaboration, and sharing code with others.
-
-- Staging area:
-    A virtual intermediate area between your Working Directory and your Local Repository. 
+3. Staging Area:
+    A temporary area between the Working Directory and the Local Repository.
     It is where you prepare and organize which changes you want to include in your next commit.
 
-------------------------------------------------------------------------------------------------------------------------
-Basic Workflow:
-
-1. Create a new repository and work on directory
-2. Add files to the staging area (index).
-3. Commit changes to the local repository.
-4. Push commits to a remote repository for sharing and backup.
+Git Workflow:
+    Working Directory → Staging Area → Local Repository → Remote Repository
 
 ------------------------------------------------------------------------------------------------------------------------
+
 Essential Git Commands:
 
-- Initialize a repository: 
-    `git init`                              - Sets up a new Git repository in your project directory.
+1: Creates a new Git repository in the current folder:
+    `git init`                              
 
-- Add files to staging area: 
+2: Add files to staging area: 
     `git add <filename>`                    - add files to staging area
+    `git add .`                             - stages all files
 
-- Remove files from staging area: 
-    `git restore --staged <filename>`       - Unstages files without discarding changes.
-    `git restore <filename>`                - Discards recent changes in the working directory.
+3: Remove files from staging area: 
+    `git restore --staged <filename>`       - Removes file from staging, but keeps your code changes.
+    `git restore <filename>`                - Removes all uncommitted changes in the working directory.
 
-- Commit changes: 
-    `git commit -m "commit message"`        - Saves staged changes to the repository with a message.
+4: View commit history: 
+    `git log`                               - detailed history
+    `git log --oneline`                     - one line history
 
-- View status: 
-    `git status`                            - Shows the current state of the working directory and staging area.
-
-- View commit history: 
-    `git log`                               - Displays a log of all commits in the repository.
-    `git log --oneline`                     - Shows all the commits in a single line format.
-
-- Stop tracking a file: 
-    `git rm --cached <filename>` - Removes a file from version control but keeps it in your working directory.
+5: Stop Tracking a File (but keep it locally): 
+    `git rm --cached <filename>`            - Removes file from Git tracking but file stays locally
 
 ------------------------------------------------------------------------------------------------------------------------
-Resetting and Reverting Changes:
 
-- Hard Reset: 
-    `git reset --hard <commit-hash>` - Moves HEAD to the specified commit and discards all changes after that commit.
-
-- Mixed Reset (default): 
-    `git reset <commit-hash>` - Moves HEAD to the specified commit, unstaging changes but keeping them in the working directory.
-
-- Soft Reset: 
-    `git reset --soft <commit-hash>` - Moves HEAD to the specified commit, keeping changes staged.
-
-- Revert: 
-    `git revert <commit-hash>` - Creates a new commit that undoes the changes from the specified commit, preserving history.
-
-Note: Revert is generally safer for undoing changes in shared repositories, as it maintains the commit history.
-
-------------------------------------------------------------------------------------------------------------------------
 Branching:
+A branch is a separate line of development
+It lets you work on features, bug fixes, or experiments without touching the main code.
 
-Branches allow parallel development by creating independent lines of work. This enables features, bug fixes, and experiments 
-without affecting the main codebase.
+1: 'git branch'
+Shows all local branches
+Current branch is marked with *
 
-- List branches: 
-    `git branch`
+2: 'git branch <branch-name>'
+Creates a branch but does not switch to it
 
-- Create a new branch: 
-    `git branch <branch-name>`
+3: 'git switch <branch-name>'
+Switch to specific branch
 
-- Switch branches: 
-    `git switch <branch-name>`
+4: 'git switch -c <branch-name>'
+Create branch and switch to it
 
-- Create and switch to a new branch: 
-    `git switch -c <branch-name>`
+5: Delete a branch: 
+'git branch -d <branch-name>'
+    Deletes only if branch is already merged
+'git branch -D <branch-name>'
+    Deletes branch even if not merged
 
-- Delete a branch: 
-    `git branch -d <branch-name>` (safe, checks for unmerged changes)
-    `git branch -D <branch-name>` (force delete)
+6: Rename branches: 
+'git branch -m <new-name>'
+    Rename current branch
 
-- Rename branches: 
-    `git branch -m <new-name>` (current branch)
-    `git branch -m <old-name> <new-name>` (any branch)
+'git branch -m <old-name> <new-name>'
+    Rename any branch
 
 ------------------------------------------------------------------------------------------------------------------------
+
 Remote Operations:
 
-- Push local branch to remote: 
-    `git push origin <branch-name>`
+1: 'git push origin <branch-name>'
+Push changes to remote repositories
 
-- Pull latest changes from remote: 
-    `git pull origin <branch-name>`
+2: 'git pull origin <branch-name>'
+Fetches changes from remote and merges them into your local branch
 
-- Fetch all remote branches: 
-    `git fetch --all`
+4: 'git fetch --all'
+Downloads updates from remote
+Does NOT merge automatically
+Used when you want to review changes first
 
-- Delete a remote branch: 
-    `git push origin --delete <branch-name>`
+5: 'git push origin --delete <branch-name>'
+Removes branch from the remote repository
 
 ------------------------------------------------------------------------------------------------------------------------
+
 Merging and Rebasing:
 
 - Merging: 
-    Combines changes from one branch into another. Typically, switch to the target branch and merge the feature branch.
+    combines one branch into another.
+    Switch to the branch that should receive changes
+    Merge the feature branch into it
 
-    Example:
-        `git switch main`
-        `git merge feature/login`
+Example:
+    `git switch main`
+    `git merge feature/login`
 
 - Rebasing: 
-    Moves or reapplies commits from one branch onto another, creating a linear history.
+    moves your branch commits on top of another branch.
+    Switch to the branch you want to update
+    Reapply its commits on top of the target branch
+    Mostly used for local or personal branches.
 
-    Example:
-        `git switch feature/login`
-        `git rebase main`
+Example:
+    `git switch feature/login`
+    `git rebase main`
 
 ------------------------------------------------------------------------------------------------------------------------
+
 Typical Branch Workflow:
 
-1. Create a new branch for your feature or fix.
-2. Add and commit changes.
-3. Push the branch to the remote repository.
-4. Merge the branch into the main branch.
-5. Delete the temporary branch after merging.
+1. Create a feature branch
+2. Make changes and commit
+3. Push branch to remote
+4. Merge into main
+5. Delete the feature branch
+feature → commit → push → merge → delete
+
+Do NOT rebase a branch that others are using
+Rebase only local / personal branches
 
 ------------------------------------------------------------------------------------------------------------------------
+
 Git Stash:
 
-Git stash temporarily shelves (or stashes) changes in your working directory so you can work on something else, 
-then come back and re-apply them later.
+Git stash temporarily saves your uncommitted changes 
+Used when you need to switch branches quickly without committing.
 
-- Stash changes: 
-    `git stash` or `git stash save "description"`
+1: 'git stash' or 'git stash save "description"'
+Saves tracked file changes
 
-- List stashes: 
-    `git stash list`
+2: 'git stash list'
+View All Stashes
 
-- Apply stashed changes: 
-    `git stash apply` (latest) or `git stash apply stash@{n}` (specific)
+3: Apply stashed changes: 
+'git stash apply'
+'git stash apply stash@{n}'
+    Applies stash but does NOT remove it
 
-- Apply and remove stash: 
-    `git stash pop`
+4: 'git stash pop'
+Applies stash and deletes it
 
-- Delete a stash: 
-    `git stash drop` (latest) or `git stash drop stash@{n}` (specific)
+5: Delete a stash: 
+'git stash drop'
+'git stash drop stash@{n}'
 
-- Apply stash to a specific branch: 
-    `git stash apply stash@{n} <branch-name>`
-
-- Clear all stashes: 
-    `git stash clear`
-
-- Recover deleted stashes: 
-    `git fsck` (find stash hash), `git stash store <stash-hash>`
+6: 'git stash clear'
+Deletes all stashed changes
 
 ------------------------------------------------------------------------------------------------------------------------
+
 Remote Setup and Force Push:
 
-- Add a remote repository: 
-    `git remote add origin <repository-url>`
+1: 'git remote add origin <repository-url>'
+Connects local repo to remote
 
-- Force push to remote (use with caution): 
-    `git push --force origin main`
+2: 'git push --force origin main'
+Overwrites remote branch history
+Used after rebase or history rewrite
+
+------------------------------------------------------------------------------------------------------------------------
+
+Git Ignore:
+    .gitignore tells Git which files or folders to not TRACK, STAGE, COMMIT in repository
+    Common use: logs, build files, passwords, environment configs.
+
+Working:
+    Create a file named .gitignore in your projects root directory
+    Add patterns for files/folders you want Git to ignore
+    Git will automatically exclude these files from tracking
+
+Ex:
+*.css
+    Ignore all .css files
+
+passwords/
+    Ignores all files inside the passwords directory
+    
+Note:
+Git does not affect files which are already tracked
+To ignore the file which is already tracked
+'git rm --cached <filename>'
+
+------------------------------------------------------------------------------------------------------------------------
+
+Git Restore:
+    Used to undo changes in files.
+    Works in two places:
+        Working Directory → discard changes
+        Staging Area → unstage files
+
+Scenario 1: Discard Unstaged Changes:
+You edited a file but want to go back to the last commit
+    'git restore myfile.py'
+    Removes all changes
+    File returns to last committed state
+
+Scenario 2: Unstage a File (Keep Changes):
+You staged a file by mistake
+    'git restore --staged myfile.py'
+    File is removed from staging area
+    Changes stay in working directory
+
+Scenario 3: Completely Reset a File:
+Remove file from staging and discard all changes
+    'git restore --staged myfile.py'   # Unstage
+    'git restore myfile.py'            # Discard changes
+    File becomes exactly like the last commit
+
+------------------------------------------------------------------------------------------------------------------------
+
+Git Reset:
+    It is used to undo the changes or going back to the previous commit 
+    It moves the HEAD pointer to the previous specified commit and delete all the commits after the specified commit.
+    It can also modify the staging area and working directory based on the type of reset used.
+
+Example:
+    If your commit history looks like this:
+    A -- B -- C -- D (HEAD)
+    'git reset --hard B', Then your HEAD will be at B
+    A -- B (HEAD)
+    Commits C and D are removed from current history
+
+Types of git reset:
+
+1. Hard Reset:
+    `git reset --hard B` 
+    HEAD moves to B, Clears staging area, Discards all working directory changes
+
+2. Mixed Reset (Default):
+    `git reset B` - 
+    HEAD moves to B, changes after B are kept in unstaged area
+
+3. Soft Reset:
+    `git reset --soft B` 
+    HEAD moves to B, changes after B are kept in staged area
+
+------------------------------------------------------------------------------------------------------------------------
+
+Git Revert:
+    It is used to undo the changes or going back to the previous commit 
+    It does not delete the commits from the history, instead it creates a new commit that reverses the changes of the specified commit.
+    It is a safe way to undo changes in a public branch because it undo the changes and preserves the commit history.
+    'git revert <commit-hash>'
+
+Example:
+    If your commit history looks like this:
+    A -- B -- C -- D (HEAD)
+    If you do git revert D, Then your HEAD will be at E
+    A -- B -- C -- D -- E (HEAD)
+    and E will be a new commit and D changes will be removed.
 
 ------------------------------------------------------------------------------------------------------------------------

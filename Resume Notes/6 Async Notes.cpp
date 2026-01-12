@@ -2,7 +2,8 @@
 ASYNC Notes:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-@Async : It is used to run a method in a background thread.
+@Async: 
+It is used to run a method asynchronously
 
 Helps offload non-critical, time-consuming tasks like:
 	Email Send, Logging, Generating Report
@@ -19,12 +20,12 @@ public class AsyncConfig {
     
     @Bean(name = "taskExecutor")
     public Executor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();		
-        executor.setCorePoolSize(5);						//4 threads will always be available for operations
-        executor.setMaxPoolSize(10);						//Max threads can be created upto 10 not more than that
-        executor.setQueueCapacity(20);						//Tasks can be in queue for upto 500 tasks after that reject
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);        // Threads always kept alive
+        executor.setMaxPoolSize(10);        // Max threads allowed
+        executor.setQueueCapacity(20);      // Tasks queued before creating extra threads
         executor.setThreadNamePrefix("AsyncThread-");
-        executor.initialize();							//Initialize the properties 
+        executor.initialize();
         return executor;
     }
 }
@@ -45,6 +46,7 @@ public class BackgroundService {
     public void logUserActivity(String userId) {
         // log to database
     }
+
 }
 
 CompletableFuture :

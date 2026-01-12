@@ -2,31 +2,20 @@
 New Spring Security Configs ( Security Filter Chain ):
 -------------------------------------------------------------------------------------------------------------
 
-Features:
-
-Component based Configuration, Not inheritance
-Lambda DSL, Cleaner Syntax, No more .and()
-Multiple Filter chains
-RequestMatchers() instead of antMatchers()
-Oath2 and JWT First class supports
-Easier to mock SecurityFilterChain than Override methods
-
--------------------------------------------------------------------------------------------------------------
-
-Authorization:
+Authorization Configuration:
 
 Code:
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Explicitly disable CSRF
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .anyRequest().authenticated()
-                )
-                .formLogin(withDefaults())
-                .logout(withDefaults());
+            .csrf(csrf -> csrf.disable())                   // Explicitly disable CSRF
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/user/**").hasRole("USER")
+                    .anyRequest().authenticated()
+            )
+            .formLogin(withDefaults())
+            .logout(withDefaults());
 
         return http.build();
     }
@@ -34,7 +23,8 @@ Code:
 -------------------------------------------------------------------------------------------------------------
 
 InMemory Authorization:
-    In this we hardcode the credentials and store in the InMemory of application
+    Hardcode the Credentials
+    Used for testing
 
 Code:
     @Bean
@@ -45,16 +35,16 @@ Code:
 
         UserDetails user = User.withUsername("arun")
                 .password(passwordEncoder().encode("1234")).roles("USER").build();
+
         return new InMemoryUserDetailsManager(admin,user);
     }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
-User Based Authentication:
+Database-Based Authentication:
     In this we fetch the user from the database and validate it
 
 
-//User Entity:
 public class User implements UserDetails {
 
     @Id
@@ -65,19 +55,18 @@ public class User implements UserDetails {
     private String password;
 
     //join user and role table in new common table
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "roles_id")
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     @OneToOne(mappedBy = "user")
     private Student student;
 }
 
-//Role Entity:
 Role:
     Roles are not hardcoded in variables, Make a Db for all the roles
     Roles and User are in many to many relationship so, we create common table for them
@@ -91,10 +80,10 @@ public class Role {
     private String name;
 }
 
-//Student Entity:
 Student:
     Student is mapped to user in one to one relationship
-    Student is the owning entity because we are saving student and user will 
+    Student is the owning entity because we are saving student and user will be automatically saved
+
 public class Student{
 
     @Id

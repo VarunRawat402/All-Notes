@@ -3,9 +3,13 @@ Linked List:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Linear data structure where elements are stored in nodes
-Each node contains data and a reference to the next node.
+Each node → data + reference of next node
+
 Dynamically sized - grows/shrinks at runtime
 Does not require contiguous memory allocation
+
+Syntax:
+    LinkedList<String> ll = new LinkedList<>();
 
 Time Complexity:
 
@@ -16,7 +20,7 @@ Access:     O(n) — cannot directly access index
 
 1. Singly Linked List:
     Each node points only to next node
-    Can traverse only in forward direction
+    Traversal only forward
 
 2. Doubly Linked List:
     Each node points to both next and previous nodes
@@ -27,34 +31,29 @@ Access:     O(n) — cannot directly access index
     Forms a circular chain
 
 4. Doubly Circular Linked List:
-    Combination of doubly and circular
-    Last node points to first, first points to last
+    Combination of doubly + circular
+    First ↔ Last connected both ways
 
-Note: Java's LinkedList class implements Doubly Linked List
+Note:
+Java’s LinkedList is implemented as a Doubly Linked List
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Key Points:
 
-Better for frequent insertions/deletions → no shifting of elements
-Dynamic size
-Slow random access → must traverse
-More memory usage → each node stores pointers
-No requirement for contiguous memory
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Syntax:
-    LinkedList<String> ll = new LinkedList<>();
+Best for frequent insertions/deletions, No element shifting required
+Slow random access
+Higher memory usage (extra references)
+No contiguous memory needed
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 1. Adding Elements:
 
-list.add("Apple");                   // Add at end
-list.addFirst("Orange");             // Add at beginning
-list.addLast("Banana");              // Add at end (same as add())
-list.add(1, "Mango");                // Add at specific index
+list.add("Apple");        // Add at end
+list.addFirst("Orange");  // Add at beginning
+list.addLast("Banana");   // Add at end
+list.add(1, "Mango");     // Add at index
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -73,20 +72,21 @@ list.clear();                        // Remove all elements
 
 3. Accessing Elements:
 
-String first = list.getFirst();      // Get first element
-String last = list.getLast();        // Get last element
-String element = list.get(2);        // Get element at index
-String peek = list.peek();           // Retrieve but don't remove first element
-String poll = list.poll();           // Retrieve and remove first element
+list.getFirst();        // Get first element
+list.getLast();         // Get last element
+list.get(2);            // Get element at index
+list.peek();            // Retrieve but don't remove first element
+list.poll();            // Retrieve and remove first element
+
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 4. Searching & Checking:
 
-boolean hasApple =  list.contains("Apple");          // Check if element exists
-int index =         list.indexOf("Apple");           // Find first occurrence index
-int lastIndex =     list.lastIndexOf("Apple");       // Find last occurrence index
-int size =          list.size();                     // Get number of elements
-boolean isEmpty =   list.isEmpty();                  // Check if empty
+list.contains("Apple");          // Check if element exists
+list.indexOf("Apple");           // Find first occurrence index
+list.lastIndexOf("Apple");       // Find last occurrence index
+list.size();                     // Get number of elements
+list.isEmpty();                  // Check if empty
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 

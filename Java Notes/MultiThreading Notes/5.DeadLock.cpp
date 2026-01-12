@@ -2,56 +2,53 @@
 DeadLock:
 -------------------------------------------------------------------------------------------------------------------------------
 
-Deadlock is a situation where two or more threads are blocked forever
-waiting for each other to release a resource
-Everyone's holding something, waiting for someone else — and no one lets go.
+Deadlock happens when two or more threads are blocked forever
 
-P1 → holds R1 → waiting for R2
-P2 → holds R2 → waiting for R1
+Thread 1 → holds R1 → waits for R2
+Thread 2 → holds R2 → waits for R1
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-You cannot remove deadlock using synchronized keyword because synchronized is:
-    Non-interruptible: once a thread starts waiting, it waits forever
-    Blocking: no timeout, no backoff
-    No try-acquire option: you either get the lock or you dont — but you cant “give up and try later”
+synchronized can cause deadlock
+synchronized cannot recover from deadlock once it happens
+
+Reason:
+    No tryLock
+    No timeout
+    No interrupt while waiting
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Thread 1 Locks the lock1 Object and now want to lock lock2 Object
-Thread 2 Locks the lock2 Object and now want to lock lock1 Object
+Deadlock Example:
+
+Thread-1 holds lock1, waits for lock2
+Thread-2 holds lock2, waits for lock1
 Results in Deadlock situation
-
-You can remove the Deadlock using TryLock()
 
 Code:
 public class SimpleDeadlock {
+
     static final Object lock1 = new Object();
     static final Object lock2 = new Object();
 
     public static void main(String[] args) {
-        // Thread 1: locks lock1, then tries to lock lock2
+
         Thread t1 = new Thread(() -> {
             synchronized (lock1) {
-                System.out.println("Thread 1: Locked lock1");
-                
-                try { Thread.sleep(100); } catch (InterruptedException ignored) {}
-                
+                System.out.println("Thread 1 locked lock1");
+                sleep(100);
                 synchronized (lock2) {
-                    System.out.println("Thread 1: Locked lock2");
+                    System.out.println("Thread 1 locked lock2");
                 }
-            }   
+            }
         });
 
-        // Thread 2: locks lock2, then tries to lock lock1
         Thread t2 = new Thread(() -> {
             synchronized (lock2) {
-                System.out.println("Thread 2: Locked lock2");
-
-                try { Thread.sleep(100); } catch (InterruptedException ignored) {}
-
+                System.out.println("Thread 2 locked lock2");
+                sleep(100);
                 synchronized (lock1) {
-                    System.out.println("Thread 2: Locked lock1");
+                    System.out.println("Thread 2 locked lock1");
                 }
             }
         });
@@ -63,7 +60,7 @@ public class SimpleDeadlock {
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Removing Deadlock Using Try Lock():
+TryLock() ( remvoes deadlock ):
 
 o/p:
 Nikhil Locked the Cafeteria
@@ -161,4 +158,4 @@ public class DemoApplication {
     }
 }
 
-
+-------------------------------------------------------------------------------------------------------------------------------

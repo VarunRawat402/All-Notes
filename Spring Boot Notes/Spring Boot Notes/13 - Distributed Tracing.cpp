@@ -2,56 +2,90 @@
 Distributed Tracing:
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Distributed Tracing tracks a request as it flows across multiple microservices.
-It helps identify performance issues, latency, and bottlenecks in a distributed system.
+Distributed Tracing tracks a single request as it travels across multiple microservices.
+
+It helps to:
+    Identify latency
+    Find performance bottlenecks
+    Debug failures across services
+
+API Gateway → Service A → Service B → Service C
+
+
+Core Concepts:
+
+Trace
+    A complete request journey
+    Identified by traceId
+    Same traceId is shared across all services
+
+Span
+    A single operation inside a service
+    Each service call creates its own span
+    Identified by spanId
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Zipkin:
 Zipkin is a distributed tracing tool used to visualize and monitor how requests travel through microservices.
 
-Zipkin Run Command:
+Run Zipkin (Docker):
 docker run -p 9411:9411 openzipkin/zipkin:2.23
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Zipkin URL ( UI ):
+Zipkin ( UI ):
 http://localhost:9411/zipkin/
+
+From the UI you can:
+    Search traces by service name
+    See request latency
+    Visualize call dependency graph
+
 
 Steps to Implement:
 1: Add tracing dependencies to all microservices.
 2: Add tracing properties to each service so that trace IDs and span IDs are generated and exported to Zipkin.  
 
-Dependency:
-    <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-observation</artifactId>
-    </dependency>
+// <!-- Core observation API -->
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-observation</artifactId>
+</dependency>
 
-    <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-tracing-bridge-otel</artifactId>
-    </dependency>
+// <!-- Tracing bridge (OpenTelemetry / Brave) -->
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-tracing-bridge-brave</artifactId>
+</dependency>
 
-    <dependency>
-        <groupId>io.opentelemetry</groupId>
-        <artifactId>opentelemetry-exporter-zipkin</artifactId>
-    </dependency>
+// <!-- Tracing bridge (OpenTelemetry / Brave) -->
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-tracing-bridge-otel</artifactId>
+</dependency>
 
-    <dependency>
-        <groupId>io.github.openfeign</groupId>
-        <artifactId>feign-micrometer</artifactId>
-    </dependency>
+// <!-- Zipkin exporter -->
+<dependency>
+    <groupId>io.opentelemetry</groupId>
+    <artifactId>opentelemetry-exporter-zipkin</artifactId>
+</dependency>
 
-    <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-tracing-bridge-brave</artifactId>
-    </dependency>
+// <!-- Feign tracing support -->
+<dependency>
+    <groupId>io.github.openfeign</groupId>
+    <artifactId>feign-micrometer</artifactId>
+</dependency>
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Application.Properties File:
-    management.tracing.sampling.probability=1.0
-    logging.pattern.level=%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+
+// # Always sample traces (for learning / dev)
+management.tracing.sampling.probability=1.0
+
+// # Add traceId and spanId to logs
+logging.pattern.level=%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------

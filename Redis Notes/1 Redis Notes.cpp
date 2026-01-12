@@ -2,30 +2,26 @@
 Lecture 15: REDIS INTRODUCTION:
 -----------------------------------------------------------------------------------------
 
-To connect Redis to a specific port:
-	redis-cli -p 6380
+To connect Redis:
+	redis-cli -h <host-name> -p <port> -a <password>
 
-To connect Redis to a specific host:
-	redis-cli -h { Host Name } -p { Port No } -a { Password }
-
-Cloud Redis usually requires a password.
-Port number is typically the number shown in the connection string.
+Cloud Redis usually requires authentication
+Port is taken from the connection string
 
 ----------------------------------------------------------------------------------------------------------------------------	
 
-Redis is an in-memory data used for DB, Caching and Message Broker
-Always store data with an expiry time to keep cache clean and avoid memory issues.ate
+Redis is an in-memory data used for:
+	Database
+	Caching (primary use)
+	Message broker (Pub/Sub, Streams)
 
-When Redis Cache Memory Is Full:
-	1: Increase memory / add more Redis nodes.
-	2: Evict (delete) existing keys based on eviction policies.
+When Redis Memory Is Full:
+	1: Increase memory / add Redis nodes
+	2: Evict existing keys (based on eviction policy)
 
-Eviction Policy Example: 
-	volatile-lru = Deletes Least Recently Used keys only if they have an expiry time.
-	Ex: D1 - 8 Days Expiry		        D2 - 5 Days Expiry		--> D2 will be deleted
-    	D1 - No Expiry date				D2 - No Expiry date 	--> No data will be deleted and insertion will fail		
-	If keys have no expiry, nothing is deleted → insertion fails.
-	This is why expiry time is important.
+Always store cache data with expiry to avoid memory issues.
+If keys have no expiry, nothing is deleted → insertion fails when memory fulls.
+This is why expiry time is important.
 
 ----------------------------------------------------------------------------------------------------------------------------
 
@@ -48,15 +44,28 @@ Disadvantages:
 ----------------------------------------------------------------------------------------------------------------------------
 
 Data Types in Redis:
+	Data is stored in RAM → very fast
 
-Redis stores everything as strings internally.
-It returns integers for convenience but stores them as strings.
+Redis persists data to disk using:
+	RDB (snapshots)
+	AOF (append-only log)
 
-Keys : 
-	Always strings.
+Disadvantages:
+	Startup is slower (data loaded from disk → RAM)
+	Duplicate storage
+	1GB on disk, 1GB again in RAM
 
-Values: 
-	Strings, List<Strings> , Hash<String,String> , set<String> .. etc etc
+Redis stores everything internally as strings
+Keys:
+	Always String
+
+Values
+	String
+	List
+	Set
+	Hash
+	Sorted Set
+	Streams
 
 ----------------------------------------------------------------------------------------------------------------------------	
 Redis Commands:

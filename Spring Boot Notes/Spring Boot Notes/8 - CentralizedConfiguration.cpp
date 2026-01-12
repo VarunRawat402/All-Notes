@@ -2,71 +2,62 @@
 Centralized Configuration:
 ------------------------------------------------------------------------------------------------------------------------------
 
-A Config Server allows all microservices to fetch their configuration from a single centralized location (Git or local folder). 
-This avoids manually updating configuration in each service.
+All microservices fetch configuration from one central place
+Config is stored in Git (recommended) or local folder
+Changes config without redeploying all services
 
-How to setup the Centralized Configuration:
+------------------------------------------------------------------------------------------------------------------------------
 
 Config Server:
-    A dedicated Spring Boot application that exposes configuration stored in Git (remote/local).
+    A Spring Boot application
+    Reads configuration from Git / local
+    Exposes config via HTTP endpoints
 
-1: Dependecies:
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-config-server</artifactId>
-    </dependency>
-
-
-2: Annotations:
-    @SpringBootApplication
-    @EnableConfigServer
-    public class ConfigServerApplication {
-        public static void main(String[] args) {
-            SpringApplication.run(ConfigServerApplication.class, args);
-        }
-    }
-
+1: Add spring cloud config server Dependecy:
+2: Annotate application with @EnableConfigServer:
 3: Application properties:
     server.port=8888
     spring.application.name=config-server
-    spring.cloud.config.server.git.uri=https://github.com/your-repo/configurations          //Git url
+    spring.cloud.config.server.git.uri=https://github.com/your-repo/configurations          //URL to fetch config from
     spring.cloud.config.server.git.clone-on-start=true                                  
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-Config Client:
+Config Client
+    Any microservice
+    Fetches its configuration from Config Server on startup
 
-1: Dependecies:
-    //Spring Cloud Config Client
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-starter-config</artifactId>
-    </dependency>
-
+1: Add spring cloud starter config
 2: Application properties:
-    spring.application.name=service1
-    spring.config.import=optional:configserver:http://localhost:8888               //url of the Config server
+    spring.application.name=user-service
+    spring.config.import=optional:configserver:http://localhost:8888                        //URL of the config server
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Configuration File Naming and Profiles:
+
+user-service.properties
+user-service-dev.properties
+user-service-prod.properties
+
+Active Profile ( Client Side ):
+spring.profiles.active=dev              //Config Server will load user-service-dev.properties
 
 ------------------------------------------------------------------------------------------------------------------------------
 
 Practical Setup (Using Git Repo):
 
-Goal: Load config from Git using Config Server, and Limit Service fetches its config through the server.
+1: Create git-config folder, create user-service.properties config file
+    git-config/                 
+    └── limit-ms.properties
 
-1. Git Repo Setup:
-
-Create a folder named git-config.
-Inside it, create the file limit-ms.properties.
-(The file name must match the microservice name: spring.application.name=limit-ms)
-Run:
+2: Initial Git:
     git init
     git add .
     git commit -m "Initial config"
 
-2: Config Server Setup (Local Git Path)
-spring.cloud.config.server.git.uri=file:///C:/Users/User/Desktop/CentralizedConfigMS/git-localconfig-repo
-
-Note: Even on Windows, forward slashes must be used in the URI.
+3: Config Server property:
+spring.cloud.config.server.git.uri=file:///C:/Users/User/Desktop/git-config
 
 ------------------------------------------------------------------------------------------------------------------------------
 

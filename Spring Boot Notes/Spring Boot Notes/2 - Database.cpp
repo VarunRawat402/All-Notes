@@ -3,13 +3,12 @@
 ---------------------------------------------------------------------------------------------------------------
 
 H2:
-    H2 is an in-memory, embedded relational database, mainly used for development and testing.
-    It provides a lightweight, quick setup database without installing MySQL or PostgreSQL.
+    H2 is an in-memory, mainly used for development and testing.
 
 ---------------------------------------------------------------------------------------------------------------
 
-Spring JDBC:
-    JDBC (Java Database Connectivity) allows interacting with relational databases using raw SQL queries.
+JDBC:
+    JDBC allows interacting with relational databases using raw SQL queries.
     You manually write SQL for CRUD operations.
     Unlike Spring Data JPA (which uses Hibernate and ORM), JDBC gives full control over SQL.
 

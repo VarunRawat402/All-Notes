@@ -2,124 +2,121 @@
 AOP:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Definition:
-Spring AOP allows you to separate cross-cutting concerns from the main business logic.
+AOP separates common code from business logic.
+    Logging
+    Transactions
+    Auditing
+    Metrics
 
-Cross-cutting concerns = features needed across multiple modules (logging, security, transactions, performance monitoring, etc.).
-Instead of writing the same code in every class, AOP lets you define these concerns once and apply them automatically wherever needed.
-
-How AOP Works
-    Write the common logic as an Aspect
-    Define Pointcuts to specify where the aspect should run
-    The AOP Weaver injects this behavior into the target methods at runtime
+How AOP Works (Simple Flow)
+    Write common logic → Aspect
+    Decide where it should run → Pointcut
+    Spring AOP weaves this logic into target methods at runtime
 
 Types of AOP Tools:
 
 1: Spring AOP:
-Most commonly used
-Works only on Spring Beans
+    Most commonly used
+    Works only on Spring Beans Class
 
 2: AspectJ:
-Fully featured AOP framework
-Works on any Java class
+    Fully featured AOP framework
+    Works on any Java class
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Implementation:
+Basic AOP Example (Logging):
+    Logs before every method of UserService
 
 @Configuration
 @Aspect
+@Slf4j
 public class LoggingAspect {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    // Applied before any method inside UserService
-    @Before("execution(* com.example.Spring_AOP.Services.UserService.*(..))")
+    @Before("execution(* com.example.service.UserService.*(..))")
     public void logMethod() {
         logger.info("Method called...");
     }
 }
 
-
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 AOP Terminology:
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Compile-Time Concepts:
 
 1: Advice: 
-The code you want to execute (logging, authentication, validation, etc.).
-logger.info("Method executing: {}", joinPoint);
+    The actual code you want to run
+    logger.info("Method executing");
 
 
 2: PointCut:
-An expression that defines where the advice should run.
-Example: 
-intercept all methods inside UserService:
-@Before("execution(* com.example.Spring_AOP.Services.UserService.*(..))")
-
+    Expression that decides where advice runs
+    @Before("execution(* com.example.service.UserService.*(..))")
 
 3: Aspect:
-A combination of ( Advice + Pointcut ).
+Combination of Advice + Pointcut
 
 4: Weaver
 The framework that applies the advice to matching pointcuts.
 This process is called Weaving.
 
-Runtime Concept:
-
-1: JoinPoint:
-Represents the specific method execution where the advice is applied.
+5: JoinPoint:
+    Represents the actual method execution
 
 From JoinPoint you can get:
-    joinPoint.getSignature()
     joinPoint.getSignature().getName()
     joinPoint.getArgs()
     joinPoint.getTarget()
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Important AOP Annotations:
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Important Annotations:
+@Before: 
+    Runs Before method  
+    (Logging, security)
 
-@Before	: Runs before method execution   ( Logging, security checks )
+@After: 
+    Runs after method
+    (Cleanup)
 
-@After: Runs after method execution (regardless of success/failure)	(Final cleanup, auditing)
+@AfterReturning: 
+    Runs if method returns successfully	
+    (Capture result value)
 
-@AfterReturning: Runs only if method returns successfully	(Capture return value)
+@AfterThrowing: 
+    Runs if method throws exception	
+    (Error logging)
 
-@AfterThrowing: Runs if method throws exception	(Error logging / compensation logic)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Code For All the Annotations:
 
 @Aspect
 @Configuration
 public class LoggingAspect {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     @Before("execution(* com.example.service.UserService.*(..))")
-    public void logBefore(JoinPoint joinPoint) {
-        logger.info("BEFORE: {}", joinPoint.getSignature().getName());
+    public void logBefore(JoinPoint jp) {
+        logger.info("BEFORE: {}", jp.getSignature().getName());
     }
 
     @After("execution(* com.example.service.UserService.*(..))")
-    public void logAfter(JoinPoint joinPoint) {
-        logger.info("AFTER: {}", joinPoint.getSignature().getName());
+    public void logAfter(JoinPoint jp) {
+        logger.info("AFTER: {}", jp.getSignature().getName());
     }
 
-    @AfterReturning(
-        value = "execution(* com.example.service.UserService.getUserById(..))",
-        returning = "result"
+    @AfterReturning(value = "execution(* com.example.service.UserService.getUserById(..))", returning = "result"
     )
-    public void logAfterReturning(JoinPoint joinPoint, Object result) {
-        logger.info("AFTER RETURNING: {} - Result: {}", joinPoint.getSignature().getName(), result);
+    public void logAfterReturning(JoinPoint jp, Object result) {
+        logger.info("RETURNED: {}", result);
     }
 
-    @AfterThrowing(
-        value = "execution(* com.example.service.UserService.*(..))",
-        throwing = "ex"
+    @AfterThrowing(value = "execution(* com.example.service.UserService.*(..))", throwing = "ex"
     )
-    public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) {
-        logger.error("AFTER THROWING: {} - Exception: {}", joinPoint.getSignature().getName(), ex.getMessage());
+    public void logAfterThrowing(JoinPoint jp, Throwable ex) {
+        logger.error("EXCEPTION: {}", ex.getMessage());
     }
 }
 
@@ -128,139 +125,110 @@ public class LoggingAspect {
 @Around Annotations:
 
 Most powerful advice because it:
-    Runs before and after the method
+    Runs before and after
     Can modify arguments
-    Can change return values
+    Can change return value
     Can handle exceptions
-    Gives full control through ProceedingJoinPoint
 
-Example 1: Log Execution Time
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Example 1 : Execution Time Logging
 
 Code:
-@Aspect
-@Configuration
-public class LoggingAspect {
+@Around("execution(* com.example.service.UserService.*(..))")
+public Object logExecutionTime(ProceedingJoinPoint jp) throws Throwable {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    long start = System.currentTimeMillis();            //start time
+    Object result = jp.proceed();                       // execute method
+    long end = System.currentTimeMillis();              //end time
 
-    @Around("execution(* com.example.service.UserService.*(..))")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    logger.info("{} took {} ms",
+            jp.getSignature().getName(),
+            end - start);
 
-        long start = System.currentTimeMillis();                    //Start the time
-        logger.info("START: {}", joinPoint.getSignature().getName());
-        Object result = joinPoint.proceed();                        //Execute the Method
-        long end = System.currentTimeMillis();                      //End the time
-
-        logger.info("END: {} - Time: {} ms", joinPoint.getSignature().getName(), end - start);      //Log the time taken
-
-        return result;
-    }
-}
-
-
-Example 2: Modify Return Value:
-    We can access the result and modify it
-
-@Around("execution(* com.example.service.UserService.getUserById(..))")
-public Object modifyReturnValue(ProceedingJoinPoint joinPoint) throws Throwable {
-    Object result = joinPoint.proceed();
-    logger.info("Original result: {}", result);
-
-    return "result*2";               // override original value
+    return result;
 }
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Common Point Cut:
-To avoid repeating long package paths in every aspect
-Create and define pointcuts in one class.
+Example 2: Modify Return Value:
+    We can access the result and modify it
+    value return here, will return by the actual method
 
-How to Implement:
-We Create a CommonPointCutClass:
-We define PointCuts in this class
-We use these PointCuts methods in the Aspect class by using their path
+@Around("execution(* com.example.service.UserService.getUserById(..))")
+public Object modifyReturnValue(ProceedingJoinPoint joinPoint) throws Throwable {
+
+    Object result = joinPoint.proceed();
+    return result*10;                               //Modified result value
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Common Pointcuts (Avoid Repetition):
+    To avoid repeating long package paths in every aspect
+    Create and define pointcuts in one class.
 
 public class CommonPointCutClass {
 
-    // Bean-level pointcut (any bean name containing 'Service')
-    //IOC container will have all the beans like service so it will intercept all the methods of those beans
+    // All beans with name containing Service
     @Pointcut("bean(*Service*)")
     public void serviceLayer() {}
 
-    // Package-level pointcut ( all methods in Services package and sub-packages )
-    @Pointcut("execution(* com.example.Spring_AOP.Services..*(..))")
+    // All methods in User-Service class
+    @Pointcut("execution(* com.example.service.UserService.*(..))")
     public void serviceLayer1() {}
 }
 
-Aspect Class:
-
-@Aspect
-@Configuration
 public class LoggingAspect {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Before("com.example.Spring_AOP.CommonPointCutClass.serviceLayer1()")
     public void logBefore(JoinPoint joinPoint) {
-        logger.info("BEFORE: {} - {}", joinPoint.getSignature().getName(), System.currentTimeMillis());
-    }
-
-    @AfterReturning(
-        value = "com.example.Spring_AOP.CommonPointCutClass.serviceLayer1()",
-        returning = "result"
-    )
-    public void logAfterReturning(JoinPoint joinPoint, Object result) {
-        logger.info("AFTER: {}", result);
     }
 }
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Custom Annotation:
-Till now we learned how to use PointCut on packages,Class and method
-Lets say I want to use a PointCut on 10 different methods how can I do it.
+    You want AOP on selected methods only, not entire package or Entire Service
 
-1: Give 10 different paths:
-    @Pointcut("execution(* Services.UserService.getUser(..)) || 
-            execution(* Services.StudentService.getStudent(..)) || 
-            execution(* Services.PaymentService.processPayment(..)) || 
-            execution(* Services.AdminService.deleteUser(..))")
-    public void specificMethods() {}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-2: Use Naming Convention:
-All the methods that start with loggable will get intercepted in Services package
-But lets just say our methods dont have the same naming conventions
-@Pointcut("execution(* Services..loggable*(..))")
+Step 1: Create Annotation:
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Loggable {}
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Step 2: Pointcut Using Annotation:
+
+@Pointcut("@annotation(com.example.Loggable)")
 public void loggableMethods() {}
 
-3: Custom Annotations ( Most Imp )
-We will make a custom annotation 
-We will pass the path of the annotation in the PointCut
-We will pass that PointCut path on the @Before @After methods with logic(Aspect)
-We will use that annotation on methods we want to be intercepted
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Annotation Class code:
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public @interface Loggable {}
+Step 3: Aspect Logic:
 
-CommonPoint Class code:
-    @Pointcut("@annotation(com.example.Spring_AOP.Loggable)")
-    public void loggableMethods() {}
+public class LoggingAspect {
 
-Aspect Class Code:
-    @Before("com.example.Spring_AOP.CommonConfig.loggableMethods()")
-    public void logStarting(){
-        logger.info("Method is executed");
+    @Before("com.example.CommonPointCutClass.loggableMethods()")
+    public void logStarting() {
+        //
     }
+}
 
-Service class code:
-    @Service
-    public class UserService {
-        @Loggable
-        public void getUser() {}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        public void updateUser() {}  // Not logged
-    }
+Step 4: Use Annotation:
+
+@Service
+public class UserService {
+
+    @Loggable
+    public void getUser() {}
+
+    public void updateUser() {}         // Not logged
+}
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

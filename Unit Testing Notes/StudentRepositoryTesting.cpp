@@ -1,6 +1,12 @@
 --------------------------------------------------------------------------------------------------------------------------------
-Complete Testing code for Testing a student Object in Repository:
+Complete Repository Testing - Student Entity
 --------------------------------------------------------------------------------------------------------------------------------
+
+Purpose:
+    Test JPA Repository layer only
+    Uses in-memory H2 database
+    Each test runs in transaction + auto rollback
+
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
@@ -31,48 +37,40 @@ class StudentRepositoryTest {
         studentRepository.save(nandni);
     }
 
+    //Test 1: Check if Students Are Saved in DB 
     @Test
-    public void checkIfGlobalStudentIsSaved(){
+    void checkIfStudentsAreSaved() {
 
-        //Fetching the Students
-        Optional<Student> saved1 = studentRepository.findById(1);
-        Optional<Student> saved2 = studentRepository.findById(2);
+        Optional<Student> saved1 = studentRepository.findById(varun.getId());
+        Optional<Student> saved2 = studentRepository.findById(nandni.getId());
 
-        //Checking saved Data
-        assertNotNull(saved1);
-        assertNotNull(saved2);
-        assertNull(saved1.get(),"Saved1 Student should be empty");
+        assertTrue(saved1.isPresent());
+        assertTrue(saved2.isPresent());
     }
 
+    //Test 2: ID Generation Check
     @Test
     public void idGenerationOfStudents(){
 
-        //Creating the student
-        Student s1 = Student.builder().name("nikhil").course("Btech").age(24).build();
-        Student s2 = Student.builder().name("Arun").course("EEE").age(31).build();
+        Student s1 = Student.builder().name("Eren").course("Btech").age(24).build();
+        Student s2 = Student.builder().name("Grisha").course("Btech").age(31).build();
 
-        //saving them in Repo
         Student save1 = studentRepository.save(s1);
         Student save2 = studentRepository.save(s2);
 
-        //Checking if temp Students are saved successfully or not
-        assertNotNull(save1);
-        assertNotNull(save2);
-
-        //Checking if the id is null
         assertThat(save1.getId()).isNotNull();
         assertThat(save2.getId()).isNotNull();
 
-        //Checking if the id is as expected
-        assertThat(save1.getId()).isEqualTo(3);
-        assertThat(save2.getId()).isEqualTo(4);
     }
 
+    //Test 3: Validate Field Values
     @Test
-    public void checkFeildValues(){
+    void checkFieldValues() {
+
         assertThat(varun.getAge()).isEqualTo(24);
         assertThat(nandni.getCourse()).isEqualTo("Taxation");
         assertThat(varun.getName()).isNotBlank();
     }
-
 }
+
+--------------------------------------------------------------------------------------------------------------------------------

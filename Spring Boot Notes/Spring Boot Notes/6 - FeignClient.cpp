@@ -2,164 +2,130 @@
 Rest Template:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RestTemplate is used to make HTTP calls from one microservice to another microservice
+Used to make HTTP calls from one microservice to another
 RestTemplate is blocking (synchronous).
-Use WebClient for New Projects
+Deprecated for new projects
+Use WebClient instead for modern apps
 
-1: Synchronous Operations: 
-Each request waits for the response. One request = one thread until its done.
-
-2: Template Methods: 
-Provides built-in methods like getForObject, postForObject, exchange, etc.. reducing boilerplate code.
-
-3: Error Handling: 
-Has a default error handler and lets you plug in custom handlers for 4xx/5xx responses.
-        
-4: Data Conversion: 
-Converts JSON/XML ↔ Java objects using message converters. Supports custom converters too.
-
-5: Interceptors: 
-Lets you add interceptors to modify requests (headers, tokens) or log request/response.
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Example:
 
 RestTemplate restTemplate = new RestTemplate();
-
-// getForObject performs GET and converts the response to the given type
-String result = restTemplate.getForObject("http://example.com/api/resource",String.class);
+String result = restTemplate.getForObject("http://example.com/api/resource",String.class);      //get the resource and convert it to string
 System.out.println(result);
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-RestTemplate → Blocking
-Spring WebFlux (WebClient) → Non-Blocking
-Feign Client is blocking by defualt but we can make it non blocking with customization
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 FEIGN CLIENT:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Feign is used to call other microservices just by writing an interface.
-Works great with Eureka because it can call services by service name.
+No manual RestTemplate code, Clean and readable code
+Works very well with Eureka, Built-in load balancing support
+
 
 Steps to implement it:
 
-1: Add the spring cloud starter openfeign Dependency
-
-2: You create an interface of the microservice you need to communicate with.
-3: Add @FeignClient(name = "SERVICE-NAME").
-4: Add methods with request mappings.
-5: Feign automatically makes the HTTP call.
-5: Add @EnableFeignClients Annotation in the main Class.
+1: Add OpenFeign dependency
+2: Create an interface of microservice you need to communicate with
+3: Annotate with @FeignClient
+4: Define methods using Spring MVC annotations
+5: Enable Feign in main class
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Example:
 
-@FeignClient(name = "ADDRESS")
-public interface AddressClient {
+Interface:
+    @FeignClient(name = "address-service")
+    public interface AddressClient {
+
         @GetMapping("/address/{id}")
-        public Address getAddress(@PathVariable("id") int id);
-}
-
-Controller class code:
-
-@GetMapping(/employee/{id})
-
-        public EmployeeResponse getEmployee(@PathVariable("id") int id) {
-        emp employee = repository.findById(id).orElse(null);
-
-        EmployeeResponse employeeResponse = modelMapper.map(employee, EmployeeResponse.class);
-        Address address = addressClient.getAddress(id);
-        employeeResponse.setAddress(address);
-
-        return employeeResponse;
-}
-
-Main code:
-    @SpringBootApplication
-    @EnableDiscoveryClient
-    @EnableFeignClients
-    public class EmployeeApplication {
-
-        public static void main(String[] args) {
-            SpringApplication.run(EmployeeApplication.class, args);
-            System.out.println("Employee Service is started");
-        }
-
-        
+        Address getAddress(@PathVariable("id") int id);
     }
+
+Service:
+    public Employee getEmployee(int id) {
+
+        Employee employee = repository.findById(id);
+
+        Address address = addressClient.getAddress(id);
+        employee.setAddress(address);
+
+        return employee;
+    }
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Load Balancer:
-It is used to distribute the load between multiple microservice so not any server gets overloaded
-old -> Netflix Ribbon
-New -> Spring cloud load balancer
+    Distributes requests across multiple service instances
+    old -> Netflix Ribbon
+    New -> Spring cloud load balancer
 
 Code:
 @FeignClient(name = "address-service")
 @RibbonClient(name = "address-service")
 public interface AddressClient {
-
-    @GetMapping("/address/{id}")
-    public AddressResponse getAddressByEmployeeId(@PathVariable("id") int id);
 }
 
-application.properties:
-//The first things is name of the ribbon client { address-service } should be same 
-address-service.ribbon.listOfServers = http://localhost:8081,http://localhost:8082
+application.properties: 
+address-service.ribbon.listOfServers = http://localhost:8081,http://localhost:8082          //The first things is name of the ribbon client { address-service } should be same
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Server-Side Load Balancing + Load Balancing:
-A load balancer sits between the client and the service.
+Client-Side Load Balancing ( Uses Spring Cloud Load Balancer ):
+The client itself finds service instances and balances requests.
+
+Flow:
+    Client → Eureka (gets all instance IPs)
+    Client → Caches instance list
+    Chooses one instance
+    Sends request directly
+
+Examples: Feign + Eureka + Spring Cloud LoadBalancer
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Server-Side Load Balancing ( Uses External Load Balancer):
+    Load balancer sits between client and services
+    Client never knows service instances
+
 Examples: NGINX, AWS ELB, F5
 
 Flow:
 Client → Load Balancer
-Load Balancer → Discovery Service (gets instance list)
-Load Balancer → Picks an instance
-Load Balancer → Forwards request to that instance
-Client never sees service instances.
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Client-Side Discovery + Load Balancing:
-The client itself finds service instances and balances requests.
-
-
-Flow:
-Client → Discovery Service (gets all instance IPs)
-Client → Caches instance list
-Client → Picks instance
-Client → Sends request directly to that service
-Examples: Ribbon, Spring Cloud LoadBalancer, Feign with Eur
+Load Balancer → Eureka (gets instance list)
+Load Balancer → Service
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Web Client:
-WebClient is Springs modern, reactive HTTP client introduced in Spring 5
+    Replacement for RestTemplate
+    Modern HTTP client
+    Non-Blocking & Reactive
 
-Setup:
+CREATE WEB CLIENT:
 
-// Add to pom.xml for Spring Boot
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-webflux</artifactId>
-</dependency>
-
-// Create WebClient instance
-WebClient webClient = WebClient.create();  // Default
-// OR with base URL
+WebClient webClient = WebClient.create();
+or 
 WebClient webClient = WebClient.builder()
-    .baseUrl("https://api.example.com")
-    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-    .build();
+        .baseUrl("https://api.example.com")
+        .defaultHeader(HttpHeaders.CONTENT_TYPE,
+                       MediaType.APPLICATION_JSON_VALUE)
+        .build();
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Mono:
-Returns 0 or 1 item
-Optional or CompletableFuture
+
+Returns 0 or 1 value
+Similar to:
+    Optional
+    CompletableFuture
 
 Flux:
-Returns 0 or N items
-List or stream
+
+Returns 0 to N values
+Similar to:
+    List
+    Stream
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------

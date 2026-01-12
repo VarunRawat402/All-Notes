@@ -6,13 +6,13 @@ Junit 4 and Junit 5 Annotations:
 
 @Test                   : Marks a method as a test case.
 
-@BeforeEach             : Runs before each test method (JUnit 5).
+@BeforeEach             : Runs before each test method.
 
 @AfterEach              : Runs after each test method
 
-@BeforeAll              : Runs once before all tests (must be static).
+@BeforeAll              : Runs once before all tests (static).
 
-@AfterAll               : Runs once after all tests (must be static).
+@AfterAll               : Runs once after all tests (static).
 
 @DisplayName            : Sets a custom readable name for a test.
 
@@ -31,31 +31,17 @@ Junit 4 and Junit 5 Annotations:
 Database Testing Annotations:
 
 In SpringBootTest, If you make changes in the DB, It will stay in the DB
+If you want to rollback changes in SpringBootTest you can use @Transactional
+
 In DataJpaTest, If you make changes in DB, it will get rollbacked after every test
-
-In SpringBootTest, rollback does not happen, So If you want rollback you can use @Transactional annotation
-In DataJpaTest, rollback happens automatically So If you want to persist the data you can use @Commit annotation
-
-@Transactional:
-Rolls back DB changes after the test completes.
-Used when you want SpringBootTest to behave like DataJpaTest regarding rollback.
-
-@Commit : 
-Disables rollback and commits DB changes.
-Useful for multi-step DB tests where next tests depend on persisted data.
-
-@Sql : 
-Executes SQL scripts before test execution.
-Script may contain inserts, deletes, schema setup, etc.
+If you dont want to rollback changes you can use @Commit annotation
 
 --------------------------------------------------------------------------------------------------------------------------------
-
 Parameterized Tests:
-Tests that run the same logic with different inputs automatically. 
-
+    Tests that run the same logic with different inputs automatically. 
 --------------------------------------------------------------------------------------------------------------------------------
 
-1: Basic Value Injection (For simple values):
+1: Single Parameter (ValueSource):
 
 Ex:
 
@@ -66,14 +52,14 @@ public void isEven(int num){
 }
 
 @ParameterizedTest
-@ValueSource(strings = {"","varun","arun"})
-public void isEven(String s){
+@ValueSource(strings = {"varun","arun"})
+void isNotBlank(String s) {
     assertThat(s).isNotBlank();
 }
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-2: CSV Inputs (For multiple parameters):
+2: Multilevel Parameter (CsvSource):
 
 @ParameterizedTest
 @CsvSource({"3,9", "4,16", "5,25"})
@@ -83,7 +69,7 @@ void testSquare(int input, int expected) {
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-3: From Files (For large datasets)
+3: File-Based Parameters (CsvFileSource):
 
 @ParameterizedTest
 @CsvFileSource(resources = "/testdata.csv")
@@ -101,10 +87,8 @@ Check if all the given names is present in the DB or not:
 @ValueSource(strings = {"varun","nandni"})
 public void checkUserNames(String name){
     List<Student> l1 = studentRepository.findAll();
-    
-    assertTrue(l1.stream()
-    .anyMatch(student -> student.getName().equals(name))
-    ,"Student with name"+name+"did not found");
+
+    assertTrue(l1.stream().anyMatch(student -> student.getName().equals(name)) ,"Student with name"+name+"did not found");
 }
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -120,26 +104,3 @@ public void nameTest(String name){
 }
 
 --------------------------------------------------------------------------------------------------------------------------------
-
-Differnce between JUNIT4 and JUNIT5:
-
-JUNIT4:
-    Single Monolithic Library
-    Uses @Before, @After, @BeforeClass, @AfterClass.
-    Uses @Ignore to disable tests.tests
-    Parameterized tests require external runners.
-
-JUNIT5:
-    Combination of Platform, Jupiter, and Vintage.
-    Uses @BeforeEach, @AfterEach, @BeforeAll, @AfterAll.
-    Uses @Disabled.
-    Built in ParameterizedTest
-
---------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-

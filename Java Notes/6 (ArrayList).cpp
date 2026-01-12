@@ -15,20 +15,20 @@ Syntax:
 Difference Between Arrays and ArrayList:
 
 Size:
-Arrays → Fixed size, cannot change after creation.
-ArrayList → Dynamic size, grows and shrinks automatically.
+Array → fixed size
+ArrayList → dynamic size
 
-Length/Size:
-Arrays → Use length property.
-ArrayList → Use size() method.
+Length / Size:
+Array → length
+ArrayList → size()
 
-Mutability:
-Arrays → Cannot add/remove elements easily; must manage indexes manually.
-ArrayList → Supports add, remove, update operations easily.
+Operations:
+Array → add/remove difficult, manual index handling
+ArrayList → easy add, remove, update
 
 Performance:
-Arrays → Slightly faster, lower memory overhead.
-ArrayList → Higher overhead due to dynamic resizing and extra features.
+Array → faster, less memory overhead
+ArrayList → slightly slower due to resizing and extra features
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -55,65 +55,40 @@ CopyOnWriteArrayList:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 ArrayList():
-    Ex:
 
-    List<String> l1 = new ArrayList<>();
+List<String> l1 = new ArrayList<>();
     l1.add("Milk");
     l1.add("Eggs");
     l1.add("Bread");
 
-    for(String item:l1){
-
-        //We are adding butter while reading the list so it will give us an exception
-        if(item.equals("Eggs")){
-            l1.add("Butter");
-        }
-        System.out.println(item);
+for(String item : l1){
+    if(item.equals("Eggs")){
+        l1.add("Butter"); // ❌ ConcurrentModificationException
     }
+}
+
 
 CopyOnWriteArrayList():
-    Ex:
 
-    List<String> l1 = new ArrayList<>();
+List<String> l1 = new CopyOnWriteArrayList<>();
     l1.add("Milk");
     l1.add("Eggs");
     l1.add("Bread");
 
-    for(String item:l1){
-
-        //Butter is added to the new list and after the loop l1 is pointing to the new list
-        if(item.equals("Eggs")){
-            l1.add("Butter");
-            System.out.println("Added butter in the list while reading");
-        }
-        System.out.println(item);
+for(String item : l1){
+    if(item.equals("Eggs")){
+        l1.add("Butter"); // ✅ Safe
     }
+}
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Methods of ArrayList:
 
 1: add():
-Syntax:
-    add( Index, Element ) = add element at the given index.
-    add( Element ) = add element at the last.
-
 2: get():
-Syntax:
-    get( Index ) = get the element at the given index.
-
 3: remove():
-Syntax:
-    remove( Index ) = remove the element of the given index.
-
 4: set():
-Syntax:
-    set( Index, Element ) = replace the element at the given index with the given element.
-
-5: Sort():
-Syntax: 
-    List<Integer> l1 = new ArrayList<>();
-    Collections.sort(l1);
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 ArrayList vs Arrays.asList vs List.of:
@@ -122,13 +97,6 @@ ArrayList vs Arrays.asList vs List.of:
 ArrayList():
 Mutable , Allows Null
 Fast, Not ThreadSafe
-
-Ex:
-List<String> list = new ArrayList<>();
-list.add("A");
-list.add("B");
-list.remove("A");  // ✅ Works fine
-System.out.println(list); // [B]
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -139,20 +107,18 @@ Allows null, Not Thread Safe
 
 Ex:
 List<String> list = Arrays.asList("A", "B", "C");
-list.set(1, "X");  // ✅ Works fine (modifying elements)
-// list.add("D");  // ❌ Throws UnsupportedOperationException
-System.out.println(list); // [A, X, C]
+list.set(1, "X");       // ✅ Works fine (modifying elements)
+// list.add("D");       // ❌ Throws UnsupportedOperationException
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 List.of():
-Immutable, No null
+Immutable, No null allowed
 Thread Safe 
 
 Ex:
 List<String> list = List.of("A", "B", "C");
-// list.set(1, "X");  // ❌ Throws UnsupportedOperationException
-// list.add("D");  // ❌ Throws UnsupportedOperationException
-System.out.println(list); // [A, B, C]
+// list.set(1, "X");    // ❌ Throws UnsupportedOperationException
+// list.add("D");       // ❌ Throws UnsupportedOperationException
 
 -----------------------------------------------------------------------------------------------------------------------------------------

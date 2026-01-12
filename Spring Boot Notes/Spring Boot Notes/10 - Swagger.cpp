@@ -2,21 +2,20 @@
 Swagger:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Swagger is a tool/framework for documenting RESTful APIs.
-Used Swagger to create clear, interactive documentation for the APIs you developed.
-This documentation allows other developers to easily understand how to use the API
+Swagger is a toolset for documenting, visualizing, and testing REST APIs.
+OpenAPI is used to document the API
 
-Open API automatically generates the API Documentation for all the APIs of the application
-and we can see them on the swagger ui URL.
-
-Swagger UI : Swagger tool to visualize and interact with your rest API
-    ( URL : localhost:8080/swagger-ui.html)
+Swagger UI is a tool to visualize it:
+    See all endpoints
+    View request/response models
+    Execute APIs directly from browser
+    ( URL : localhost:8080/swagger-ui/index.html )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 Open API Annotations:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: @OpenAPIDefinition : Used at application level
+1: @OpenAPIDefinition : Used to define global API metadata.
 
 @OpenAPIDefinition(
     info = @Info(
@@ -37,14 +36,17 @@ public class MyApp { }
 
 2: @Tag & @Operation
 
-@Tag = Used to describle the controller classes
-@Operation = Used to describe the APIs / controller methods
+@Tag        = Controller Class description
+@Operation  = APIs method description
 
-@Tag(name = "User", description = "Operations related to users")
+@Tag(name = "User", description = "User-related operations")
+@RestController
 public class UserController {
 
-    @Operation(summary = "Get all users", description = "Returns a list of users")
+    @Operation(summary = "Get all users", description = "Returns list of users")
+    @GetMapping("/users")
     public List<User> getAllUsers() {
+        return List.of();
     }
 }
 
@@ -54,20 +56,22 @@ public class UserController {
 
 @Operation(summary = "Get user by ID")
 @GetMapping("/{id}")
-public User getUserById( @Parameter(description = "ID of the user to retrieve", required = true) @PathVariable Long id ){
+public User getUserById( @Parameter(description = "User ID", required = true) @PathVariable Long id) {
+    return new User();
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-4: @ApiResponses and @ApiResponse : Used to define possible response for the API
+4: @ApiResponses and @ApiResponse : Used to define possible HTTP responses of the API.
 
-@Operation(summary = "Delete a user")
-@ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+@Operation(summary = "Delete user")
+@ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Deleted successfully"),
     @ApiResponse(responseCode = "404", description = "User not found"),
-    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @ApiResponse(responseCode = "500", description = "Server error")
 })
-public ResponseEntity<Void> deleteUser() {
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -77,13 +81,13 @@ public ResponseEntity<Void> deleteUser() {
 @Schema(description = "User entity")
 public class User {
 
-    @Schema(description = "Unique identifier of the user", example = "1")
+    @Schema(description = "User ID", example = "1")
     private Long id;
 
-    @Schema(description = "Name of the user", example = "Alice")
+    @Schema(description = "User name", example = "Alice")
     private String name;
 
-    @Schema(description = "Email address", example = "alice@example.com")
+    @Schema(description = "User email", example = "alice@example.com")
     private String email;
 }
 
@@ -111,23 +115,22 @@ public String getSecureData() { ... }
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Code for Swagger:
-
-Student Controller:
+Student Controller
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/students")                                                    // Common URL
+@RequestMapping("/students")                                                    
 @Tag(name = "Student", description = "Operations related to students")          // Controller Name
 public class StudentController {
 
     private final StudentService studentService;
 
     @PostMapping("")
-    @Operation(summary = "Create a new Student", description = "Saves a new student in the Database")               // API Description
-    @ApiResponses(value = {                                                                                         // Possible Responses from the API
-            @ApiResponse(responseCode = "201",description = "Student created successfully"),        
-            @ApiResponse(responseCode = "500", description = "Internal Server Error"),
-            @ApiResponse(responseCode = "400", description = "Invalid Student data provided")
+    @Operation(summary = "Create new Student", description = "Saves student in DB")                                 // API Description
+    @ApiResponses({                                                                                                 //Possible responses from API
+        @ApiResponse(responseCode = "201", description = "Student created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid student data"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })                                                                                                              //Schema to provide for the API
     public ResponseEntity<String> saveStudent(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Student Object that needs to be created",
             content = @Content(schema = @Schema(implementation = Student.class)),required = true) @RequestBody Student student){        
@@ -135,28 +138,31 @@ public class StudentController {
         return ResponseEntity.status(200).body("Student has been created");
     }
 
+    // GET STUDENT BY ID
     @GetMapping("/id/{id}")
-    @Operation(summary = "Get Student By Id", description = "Takes the student Id and returns the student")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Student Found"),
-            @ApiResponse(responseCode = "500",description = "Internal Server Error"),
-            @ApiResponse(responseCode = "404",description = "Student with given Id does not exist"),
-            @ApiResponse(responseCode = "400",description = "Invalid Format")
+    @Operation(summary = "Get Student By Id", description = "Fetch student using student ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Student found"),
+        @ApiResponse(responseCode = "404", description = "Student not found"),
+        @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<Student> getStudentById( @Parameter(name = "id", description = "Id of the student", required = true) @PathVariable int id){
-        Student s = studentService.getStudentById(id);
-        if(s==null){
+    public ResponseEntity<Student> getStudentById( @Parameter(description = "ID of the student", required = true) @PathVariable int id){
+        Student student  = studentService.getStudentById(id);
+        if(student ==null){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(s);
+        return ResponseEntity.ok(student );
     }
 
+    // GET ALL STUDENTS
     @GetMapping("")
-    @Operation(summary = "Get all Students", description = "Returns all the students present in the Database")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Successfully Retrieved all students"),
-            @ApiResponse(responseCode = "500",description = "Internal Server Error"),
-            @ApiResponse(responseCode = "204",description = "No student found, Empty Database"),
+    @Operation(summary = "Get all Students",description = "Retrieve all students from the database"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Students retrieved successfully"),
+        @ApiResponse(responseCode = "204", description = "No students found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<Student>> getAllStudent(){
         List<Student> students = studentService.getAllStudent();
@@ -166,12 +172,14 @@ public class StudentController {
         return ResponseEntity.ok(students);
     }
 
+    // GET STUDENTS BY COURSE
     @GetMapping("/course/{course}")
-    @Operation(summary = "Return student by course", description = "Takes the course and returns the student which have the same course")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Returns the students with given course"),
-            @ApiResponse(responseCode = "500", description = "Internal Server error"),
-            @ApiResponse(responseCode = "404", description = "No student with given course is found")
+    @Operation(summary = "Get Students by Course",description = "Fetch students enrolled in a specific course"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Students found"),
+        @ApiResponse(responseCode = "204", description = "No students found for given course"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<Student>> getStudentByCourse( @Parameter(name = "course", description = "Course of the student", required = true) @PathVariable Course course){
         List<Student> students = studentService.getStudentByCourse(course);
@@ -191,49 +199,3 @@ They support a broader range of tools and integrations.
 OpenAPI is the evolution of Swagger, providing a more comprehensive and flexible specification for defining APIs.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
-
-@ApiOperation(value = "Create a user")
-@PostMapping("/")
-public User createUser(@RequestBody User user) {
-    return user;
-}
-
-@Operation(summary = "Create a user",
-    requestBody = @RequestBody(
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = User.class),
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                value = "{\"name\":\"John\",\"email\":\"john@example.com\"}"
-            )
-        )
-    ),
-    responses = {
-        @ApiResponse(responseCode = "201", description = "User created"),
-        @ApiResponse(responseCode = "400", description = "Invalid input")
-    }
-)
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-@PostMapping("/")
-public User createUser(@RequestBody User user) {
-    return user;
-}
-
-@SecurityScheme(
-    name = "bearerAuth",
-    type = SecuritySchemeType.HTTP,
-    scheme = "bearer",
-    bearerFormat = "JWT"
-)
-@RestController
-@RequestMapping("/users")
-public class UserController {
-
-    @Operation(summary = "Get user by ID", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
-        return new User(id, "John Doe");
-    }
-}

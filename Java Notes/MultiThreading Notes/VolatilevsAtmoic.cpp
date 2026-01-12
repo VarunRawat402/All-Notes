@@ -4,7 +4,7 @@ Volatile vs Atomic :
 
 Thread visibility Problem:
 
-In Java, each thread keep a cached copy of shared variables in its own working memory.
+In Java, each thread caches variables values in its own working memory.
 
 This means:
 A thread may read a value once from main memory.
@@ -18,27 +18,43 @@ This issue is known as the visibility problem.
 Volatile:
 
 volatile solves visibility, not atomicity.
-When a variable is declared volatile, all threads always see the latest written value.
-It prevents caching the value in thread-local memory.
-It does not make operations like i++, i += 1, or check-then-act atomic.
-
+When a variable is declared volatile, All threads always see the latest value
+Prevents thread-local caching
+It does not make operations atomic like i++, i += 1, or check-then-act.
 Used for boolean flags
-Best used for read and write operations not modify
+
+Example: 
+    volatile boolean running = true;
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Atomic:
-Atomic classes (AtomicInteger, AtomicLong, AtomicReference) solve atomicity + visibility.
 
-They provide lock-free thread-safe operations like:
+Atomic solves visibility and atomicity.
+Use CAS (Compare-And-Swap)
+Lock-free and thread-safe
+
+Common Atomic Classes:
+    AtomicInteger
+    AtomicLong
+    AtomicBoolean
+    AtomicReference
+
+Safe atomic operations
     incrementAndGet()
-    compareAndSet()
     addAndGet()
-    These operations are atomic, meaning no race conditions.
+    compareAndSet()
+
+These operations are atomic, meaning no race conditions.
+
+Example:
+AtomicInteger count = new AtomicInteger(0);
+count.incrementAndGet();  // Thread-safe
+
+-------------------------------------------------------------------------------------------------------------------------------
 
 Best used for modifing states
-
-“volatile guarantees visibility but not atomicity. Atomic types guarantee both visibility and atomicity. 
-Therefore, volatile is safe only for reads, while AtomicInteger is safe for operations like increment.”
+    volatile guarantees visibility but not atomicity. Atomic types guarantee both visibility and atomicity. 
+    Therefore, volatile is safe only for reads, while AtomicInteger is safe for operations like increment.
 
 -------------------------------------------------------------------------------------------------------------------------------

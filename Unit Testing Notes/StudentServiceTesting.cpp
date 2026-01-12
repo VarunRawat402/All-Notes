@@ -1,17 +1,21 @@
 --------------------------------------------------------------------------------------------------------------------------------
-Testing of Student Service Layer using Mockito
+Testing Student Service Layer using Mockito:
 --------------------------------------------------------------------------------------------------------------------------------
+
+Purpose:
+    Test Service layer in isolation
+    Replace Repository with mock
+    No database, no Spring context, pure unit test
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
 
-    @Mock                   //Mocking the Repository
+    @Mock                                                           //Mocking the Repository
     private StudentRepository studentRepositoryMock;
 
-    @InjectMocks            //Injecting the Mock Repository in Service-+
+    @InjectMocks                                                    //Injecting the Mock Repository in Service-+
     private StudentService studentService;
 
-    //Initializing the mock students here so every function can use it
     private Student varun;
     private Student nandini;
 
@@ -31,27 +35,26 @@ public class StudentServiceTest {
                 .build();
     }
 
-    //Check if student is getting fetched or not using ID
+    //Test 1: Fetch Student by ID
     @Test
-    public void getStudentById(){
+    void getStudentById() {
+
         when(studentRepositoryMock.findById(1)).thenReturn(Optional.of(varun));
-        Student s1 = studentService.getStudentById(1);
-        assertNotNull(s1);
+        Student student = studentService.getStudentById(1);
+
+        assertNotNull(student);
+        assertEquals("varun", student.getName());
     }
 
-    //Check if the username is getting fetchec correctly
+    //Test 2: Validate Course
     @Test
-    public void validateUsername(){
-        when(studentRepositoryMock.findById(1)).thenReturn(Optional.of(varun));
-        String name = studentService.getUserName(1);
-        assertEquals("varun",name);
-    }
+    void validateCourse() {
 
-    //Check if course is getting fetched correctly
-    @Test
-    public void validateCourse(){
         when(studentRepositoryMock.findById(1)).thenReturn(Optional.of(varun));
         String course = studentService.getCourse(1);
-        assertEquals("Btech",course);
+
+        assertEquals("Btech", course);
     }
 }
+
+--------------------------------------------------------------------------------------------------------------------------------

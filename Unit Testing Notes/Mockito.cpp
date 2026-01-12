@@ -1,104 +1,39 @@
---------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 Mockito:
---------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 
-1: Tests should focus on a single class (unit) without depending on real external resources like databases, APIs, or services.
-Mockito replaces these dependencies with fake (mock) objects.
+Mockito is used for unit testing where dependencies are replaced with mocks to isolate and test a single class.
 
-2: Allows verification of:
-    Whether a method was called
-    How many times it was called
-    With which parameters
+Mocks:
+    Run in-memory
+    Avoid slow I/O operations (DB, HTTP calls, external services)
+    Help simulate edge cases like null values, errors, and exceptions
 
-3: Mocks run in-memory, avoiding slow I/O operations (e.g., HTTP calls, DB queries).
-
-4: Helps simulate rare or hard-to-reproduce scenarios like null returns, errors, and exceptions.
-
---------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 Mockito Uses:
---------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 
-Databases: Mock repository classes instead of hitting a real DB.
-APIs/Web Services: Mock RestTemplate, FeignClient, or WebClient calls.
-Third-Party Libraries: Mock AWS SDK clients, payment gateways, SMS/email services, etc.
+Mockito Uses:
 
---------------------------------------------------------------------------------------------------------------------------------
+Databases: 
+    Mock Repository classes instead of hitting a real DB
 
-MOCK:
-How to mock the Data:
+APIs / Web Services: 
+    Mock RestTemplate, FeignClient, WebClient
 
-//This will return the Student object by their Id
-//Used optional here coz mock functions returns in optional
-Repository:
-public interface StudentRepository extends JpaRepository<Student,Integer> {
-    Optional<Student> findById(int id);
-}
+Third-Party Services: 
+    Mock AWS SDK, payment gateways, SMS/email services
 
-//This will fetch the student by the studentID using Repository 
-//and returns the name of the student
-Student Service:
-@Service
-public class StudentService {
-
-    private final StudentRepository studentRepository;
-
-    StudentService(StudentRepository studentRepository){
-        this.studentRepository = studentRepository;
-    }
-
-    public String getName(int id){
-        Student student = studentRepository.findById(id).orElse(null);
-        return student.getName();
-    }
-
-}
-
---------------------------------------------------------------------------------------------------------------------------------
-
-Student Service Test:
-public class StudentServiceTest {
-
-    //Created StudentRepository,StudentService instance 
-    @Autowired
-    StudentRepository studentRepositoryStub;
-    @Autowired
-    StudentService studentService;
-
-    @BeforeEach
-    void setup() {
-
-        // Creating a stubbed StudentRepository using mock which will mock all the Respository functions
-        studentRepositoryStub = mock(StudentRepository.class);
-
-        //Initializing the studentService with stubRepository so we can use the stub data
-        studentService = new StudentService(studentRepositoryStub);
-    }
-
-    //Testing the application
-    //Now StudentService will use Stub Student Repository and whatever fake data it returns
-
-    @Test
-    void testFindStudentById() {
-        String name  = studentService.getName(1);
-        assertEquals("Varun Rawat", name); 
-
-    }
-
-    @Test
-    void testFailedTest(){
-        when(studentRepositoryStub.findById(1)).thenReturn(Optional.of(new Student(1, "Varun Rawat")));
-        String name  = studentService.getName(1);
-        assertNotEquals("Varun", name);
-    }
-}
-
---------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 
 MOCKITO Annotations:
-We can make mock testing more simple by using annotation
-We can use @Mock to mock the Layer and @InjectMocks to inject the mock dependencies
+    Mockito provides annotations to reduce boilerplate code.
 
-Student Service Test:
+@Mock           → Creates mock object
+@InjectMocks    → Injects mocks into the class under test
+
+
+Student Service Test (Using Annotations):
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
@@ -111,56 +46,57 @@ public class StudentServiceTest {
 
     @Test
     void testSuccessfulTest() {
-        when(studentRepositoryStub.findById(1)).thenReturn(Optional.of(new Student(1, "Varun Rawat")));
-        String name  = studentService.getName(1);
+        when(studentRepositoryStub.findById(1))
+            .thenReturn(Optional.of(new Student(1, "Varun Rawat")));
+
+        String name = studentService.getName(1);
         assertEquals("Varun Rawat", name);
     }
 
     @Test
-    void testFailedTest(){
-        when(studentRepositoryStub.findById(1)).thenReturn(Optional.of(new Student(1, "Varun Rawat")));
-        String name  = studentService.getName(1);
+    void testFailedTest() {
+        when(studentRepositoryStub.findById(1))
+            .thenReturn(Optional.of(new Student(1, "Varun Rawat")));
+
+        String name = studentService.getName(1);
         assertNotEquals("Varun", name);
     }
 }
 
---------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 
-Testing Controller Layer APIS:
+Testing Controller Layer APIs:
 
 @AutoConfigureMockMvc:
-    Automatically configures a MockMvc instance for testing web layers
-    Integration testing of controllers without the overhead of a real server
+    Configures MockMvc automatically
+    Used to test controllers without starting a real server
 
-private MockMvc mockMvc
-    Main testing utility for Spring MVC
-    Send HTTP requests (GET, POST, PUT, DELETE)
-    Verify responses (status, content, headers)
-    Test JSON serialization/deserialization
-    Validate controller behavior
+MockMvc:
+    Sends HTTP requests (GET, POST, PUT, DELETE)
+    Verifies status, response body, headers
+    Validates JSON serialization/deserialization
 
-@MockitoBean:
-    Allows you to mock dependencies and define their behavior during tests
+@MockBean:
+    Replaces a Spring Bean with a mock during tests
+    Used mostly in controller tests
+
+----------------------------------------------------------------------------------------------------------------------------------------
 
 Code:
 
 @Test
 public void testGetStudent() throws Exception {
-    // Arrange - set up mock behavior
-    when(studentService.getStudentById(1L))
-        .thenReturn(new Student(1L, "John Doe"));
+
+    when(studentService.getStudentById(1L)).thenReturn(new Student(1L, "John Doe"));
     
-    // Act & Assert - perform HTTP request and verify
-    mockMvc.perform(get("/students/1"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("John Doe"));
+    mockMvc.perform(get("/students/1")).andExpect(status().isOk()).andExpect(jsonPath("$.name").value("John Doe"));
     
-    // Verify mock interaction
     verify(studentService).getStudentById(1L);
 }
 
 verify():
-    It is used to check weather this function gets called or not with given parameters
+    Ensures a method was called
+    Can verify call count and parameters
 
---------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 

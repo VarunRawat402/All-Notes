@@ -22,31 +22,30 @@ List<Student> students = EmployeeDatabase.getAllStudents();
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Print Students:
+// Print Students:
 students.stream().forEach(x->System.out.println(x));
 
-Print Student name and salary:
+// Print Student name and salary:
 students.stream().forEach(x->System.out.println(x.getName() + " : " + x.getSalary()));
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Print student names who belongs to "Computer Science" department:
+// Print student names who belongs to "Computer Science" department:
 students.stream().filter(x->x.getDepartment().equals("Computer Science")).forEach(x->System.out.println(x.getName()));
 
-Print student names who belongs to "Computer Science" department & salary > 65000:
+// Print student names who belongs to "Computer Science" department & salary > 65000:
 students.stream().filter(x->x.getDepartment().equals("Computer Science") && x.getSalary()>65000).forEach(x->System.out.println(x.getName()));
 
-Print student names who belongs to "Computer Science" department & salary > 65000 & salary < 76000:
+// Print student names who belongs to "Computer Science" department & salary > 65000 & salary < 76000:
 students.stream().filter(x->x.getDepartment().equals("Computer Science") && x.getSalary()>65000 && x.getSalary()<76000).forEach(x->System.out.println(x.getName() + x.getSalary()));
 
-Get Students who belong to department = "Computer Science" and collect in Map with id and name of students:
+// Get Students who belong to department = "Computer Science" and collect in Map with id and name of students:
 Map<Integer, String> m1 = students.stream().filter(x -> x.getDepartment().equals("Computer Science")).collect(Collectors.toMap(Student::getId, Student::getName));
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Get all the department:
 List<String> l1 = students.stream().map(x -> x.getDepartment()).collect(Collectors.toList());               //All the dept, contains duplicate
-Set<String> l1 = students.stream().map(x -> x.getDepartment()).collect(Collectors.toSet());                 //Unique depts
 List<String> l1 = students.stream().map(x -> x.getDepartment()).distinct().collect(Collectors.toList());    //distinct() to get unique elements
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,18 +87,18 @@ long female = students.stream().filter(x -> x.getGender().equals("Female")).coun
 GroupingBy:
 Used to group students based on attribute:
 
-Group Students based on Gender:
+// Group Students based on Gender:
 Map<String, List<Student>> collect = students.stream().collect(Collectors.groupingBy(Student::getGender));
 
-Group Student Names based on Gender:
+// Group Student Names based on Gender:
 		Map<String, List<String>> l1 = students.stream()
 				.collect(Collectors.groupingBy(Student::getGender
 						, Collectors.mapping(Student::getName, Collectors.toList())));
 
-Group Student based on gender and give count of each gender:
+// Group Student based on gender and give count of each gender:
 Map<String, Long> l1 = students.stream().collect(Collectors.groupingBy(Student::getGender, Collectors.counting()));
 
-Group Students based on salary and give names of the students:
+// Group Students based on salary and give names of the students:
 Map<Double, List<String>> l1 = students.stream().collect(Collectors.groupingBy(Student::getSalary, Collectors.mapping(Student::getName, Collectors.toList())));
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -107,7 +106,7 @@ Map<Double, List<String>> l1 = students.stream().collect(Collectors.groupingBy(S
 FindFirst:
 Used to find the first element from the elements
 
-Find first student with "Development" department if not present throw an exception:
+// Find first student with "Development" department if not present throw an exception:
 		Student student = students.stream().filter(x -> x.getDepartment().equals("Development")).findFirst().orElseThrow(() -> new IllegalArgumentException("No student with this department"));
 		System.out.println(student);
 
@@ -126,7 +125,7 @@ noneMatch()
 Limit:
 Used to limit the values 
 
-Find Top 3 highest salary Students:
+// Find Top 3 highest salary Students:
 List<Student> collect = students.stream().sorted(Comparator.comparing(Student::getSalary).reversed()).limit(3).collect(Collectors.toList());
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -134,17 +133,17 @@ List<Student> collect = students.stream().sorted(Comparator.comparing(Student::g
 Skip:
 When u want to skip first some elements:
 
-Get student and skip first 5:
+// Get student and skip first 5:
 List<String> collect = students.stream().map(x -> x.getName()).skip(5).collect(Collectors.toList());
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Take out average salary based on employee gender:
+// Take out average salary based on employee gender:
 collect= students.stream().collect(Collectors.groupingBy(Student::getGender, Collectors.averagingDouble(Student::getSalary)));
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Java 8 Program to get Highest paid Employee in Each department using stream api:
+// Java 8 Program to get Highest paid Employee in Each department using stream api:
 Map<String, Optional<Student>> collect = students.stream().collect(Collectors.groupingBy(Student::getDepartment, Collectors.maxBy(Comparator.comparing(Student::getSalary))));
 collect.forEach((dept,student)->{
     System.out.println(dept + " : " + student.get().getName() + " : " + student.get().getSalary());

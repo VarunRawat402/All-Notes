@@ -20,8 +20,7 @@ DI completely depends on IoC, because IoC must create and store the object first
 
 Why Main() is static:
 
-main is static so JVM can call it immediately, without creating any object, making it the universal entry point for every Java program.
-
+main() is static so JVM can call it immediately, without creating any object.
 If it were not static:
     JVM would need to create an object, but it would not know which constructor to call.
     That would create a circular problem.
@@ -32,7 +31,7 @@ Command line runner :
 
 It is an interface
 It lets u run code after spring application context is fully started
-You need to override the run() method in CommandLineRunner
+@Override the run() method in CommandLineRunner
 
 Main():
 It is static and runs before spring creates beans, load configs, autowire dependency
@@ -65,59 +64,26 @@ public class Customer {
 }
 
 ----------------------------------------------------------------------------------------------------------------------
-Types of Singleton:
-----------------------------------------------------------------------------------------------------------------------
-
-Eager Initialization:
-Creates the single instance with class
-
-class EagerSingleton {
-
-    private static final EagerSingleton instance = new EagerSingleton();
-    private EagerSingleton() {}
-    public static EagerSingleton getInstance() {
-        return instance;
-    }
-}
-
-----------------------------------------------------------------------------------------------------------------------
-
-lazy Initialization:
-Creates the single instance when it is asked
-
-class LazySingleton {
-
-    private static LazySingleton instance;
-    private LazySingleton() {}
-    public static LazySingleton getInstance() {
-        if (instance == null) {
-            instance = new LazySingleton();
-        }
-        return instance;
-    }
-}
-
--------------------------------------------------------------------------------------------------------------------------------
 
 How can a Singleton be broken (reflection, clone, serialization)
 
 Clone:
-If the class implements Cloneable, clone() can produce a new instance.
+    If the class implements Cloneable, clone() can produce a new instance.
 
 Fix:
-Override clone() and prevent cloning:
-@Override
-protected Object clone() throws CloneNotSupportedException {
-    throw new CloneNotSupportedException();
-}
+    Override clone() and prevent cloning:
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
 
 Serialization:
-Serialization creates a new object during deserialization.
+    Serialization creates a new object during deserialization.
 
-Implement readResolve() to return the original instance:
-private Object readResolve() {
-    return INSTANCE;
-}
+    Implement readResolve() to return the original instance:
+    private Object readResolve() {
+        return INSTANCE;
+    }
 
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -133,7 +99,6 @@ Option 2:
 
     Use @Slf4j on top of the class
     log.info("message");
-
 
 ----------------------------------------------------------------------------------------------------------------------
 

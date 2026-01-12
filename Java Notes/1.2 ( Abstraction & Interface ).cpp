@@ -1,74 +1,93 @@
 -------------------------------------------------------------------------------------------------------------------------------
 Abstraction:
-
-Abstraction hides unnecessary implementation details and exposes only the essential features.
-It helps in providing structure, improving code reusability, and increasing security.
+    Hides unnecessary implementation details and exposes only essential features.
+    Helps in structure, code reusability, and security.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-How to Achieve Abstraction in Java?
-
 1: Abstract Classes (abstract keyword) :
 
-    Can have abstract + normal + static methods
-    Can have instance + static variables
+    abstract + normal + static methods
+    instance + static variables
     Can have a constructor
-    Multiple Inheritance Not supported
+    Multiple inheritance not supported
     Cannot create object of absrtact class
 
 2: Interfaces (interface keyword) :
 
-    Can have abstract + default + static methods 
-    Only public static final (constants)
+    abstract + default + static methods 
+    Variables are public static final (constants)
     Cannot have a constructor
-    Multiple Inheritance Supported (A class can implement multiple interfaces)
-    You can create objects with interface references
-    Object can assess methods of those who the object is reference to
+    Multiple Inheritance Supported
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+When to Use Abstract Class vs Interface:
+
+1: Use Abstract Class When:
+    You want to share code among closely related classes
+    You have common properties/attributes for subclasses
+    You want to provide some default method implementations
+
+Example:
+    Animal → abstract class, with name field and run() method
+    Subclasses Dog and Cat inherit common behavior
+    Key Rule: Abstract class = “is-a” relationship + shared implementation
+
+2: Use Interface When:
+    You want to define a contract without implementation
+    Classes are unrelated but should implement common behavior
+    You want multiple inheritance
+    You want to allow flexible design and loose coupling
+
+Example:
+    PaymentMethod → interface
+    CreditCard and UPI implement interface → Cart can work with any payment type
+    Key Rule: Interface = “can-do” relationship + multiple inheritance
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Abstract Class Code:
 
 abstract class Animal {
-
     String name;
     static int price = 1000;
 
-    Animal(String name){                                //Constructor
-        this.name=name;
+    Animal(String name) {                       // Constructor
+        this.name = name;
     }
 
-    public void run(){                                  //Normal method
+    abstract void eat();                        // Abstract method
+
+    public void run() {                         // Normal method
         System.out.println("I am running");
     }
 
-    abstract void eat()                                 //abstract method
-
-    static void fly(){                                  //static method
+    static void fly() {                         // Static method
         System.out.println("I am flying");
     }
-
 }
 
-public class Dog extends Animal{
-
+class Dog extends Animal {
     String breed;
 
+    Dog(String name, String breed) {
         super(name);
-        this.breed=breed;
+        this.breed = breed;
     }
 
     @Override
-    void eat(){
-        System.out.println( name + " is eating");
+    void eat() {
+        System.out.println(name + " is eating");
     }
 }
-    
-Dog dog = new Dog("PetDog", "Golden Retreiver");
-dog.eat()                                   //Dog is barking
-dog.run();                                  //I am running
-Animal.fly();                               //I am flying
-Animal a1 = new Animal("Shiro")             //Wrong as you cannot create object of abstract class
+
+Animal a1 = new Animal("Shiro");                    //ERROR, Cannot create object of abstract class
+
+Dog dog = new Dog("PetDog", "Golden Retriever");
+dog.eat();                                          // PetDog is eating
+dog.run();                                          // I am running
+Animal.fly();                                       // I am flying
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -76,16 +95,13 @@ Interface Code:
 
 interface Vehicle {
 
-    //abstract method
-    void start(); 
+    void start();                                           // Abstract method
 
-    //default method (has implementation)
-    default void stop() {
+    default void stop() {                                   // Default method
         System.out.println("Vehicle is stopping");
     }
 
-    //static method
-    static void service() {
+    static void service() {                                 // Static method
         System.out.println("Vehicle is being serviced");
     }
 }
@@ -96,159 +112,102 @@ class Car implements Vehicle {
     }
 }
 
-public class Main {
-    public static void main(String[] args) {
-
-        Car c = new Car();
-        c.start();
-        c.stop();                           // ✅ Calling default method
-        Vehicle.service();                  // ✅ Calling static method
-    }
-}
+Car c = new Car();
+c.start();                                  // Car is starting
+c.stop();                                   // Vehicle is stopping
+Vehicle.service();                          // Vehicle is being serviced
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Note:
-If Interface A has an abstract method fun() and Interface B extends A and adds greet()
-then Student must implement both methods.
+If Interface A has method fun() and Interface B extends A with greet(),
+→ Student class implementing B must implement both methods
 
-interface A{
-    void fun();
-}
+interface A { void fun(); }
+interface B extends A { void greet(); }
 
-interface B extends A{
-    void greet();
-}
+class Student implements B {
 
-class Student implements B{
-
-    fun(){
-        //Implementation of fun
+    public void fun(){ 
+        /* implementation */ 
     }
 
-    greet(){
-        //Implementation of greet
+    public void greet(){ 
+        /* implementation */ 
     }
 }
 
 -------------------------------------------------------------------------------------------------------------------------------
-
-Example of Tight Coupling vs Loose Coupling using Interfaces
-Two payment types → CreditCard and UPI
-Cart class is responsible for performing payment using these methods
-
------------------------------------------------------------------------------------------------------------------------------------------
+Tight Coupling vs Loose Coupling
+-------------------------------------------------------------------------------------------------------------------------------
 
 Without Interface → Tight Coupling
 
-Cart must create separate doPayment() methods for each payment type
-If we add 10 payment types → we must write 10 methods
 Cart depends directly on all payment classes
-Any new payment class requires updating Cart → bad design
+Adding a new payment type → need to modify Cart → bad design
 
 Ex:
-
-public class CreditCard {
-    public void pay() {
-        System.out.println("Payment is done by Credit Card");
-    }
+class CreditCard { 
+    void pay(){ 
+        System.out.println("Payment by Credit Card");
+    } 
+}
+class UPI { 
+    void pay(){ 
+        System.out.println("Payment by UPI"); 
+    } 
 }
 
-public class UPI {
-    public void pay() {
-        System.out.println("Payment is done by UPI");
+class Cart {
+    void doPayment(CreditCard c) { 
+        c.pay(); 
     }
-}
-
-public class Cart {
-
-    void doPayment(CreditCard creditCard) {
-        creditCard.pay();
+    void doPayment(UPI u) { 
+        u.pay(); 
     }
-
-    void doPayment(UPI upi) {
-        upi.pay();
-    }
-}
-
-Main:
-public static void main(String[] args) {
-
-    CreditCard c1 = new CreditCard();
-    UPI u1 = new UPI();
-
-    Cart cart = new Cart();
-    cart.doPayment(c1);
-    cart.doPayment(u1);
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 With Interface → Loose Coupling:
 
-All payment types implement a single interface PaymentMethod
-Cart now depends only on PaymentMethod, not on every payment class
-Adding new payment types → no change needed in Cart
-This is the recommended flexible design
+All payment types implement PaymentMethod
+Cart depends only on interface, not on concrete classes
+Adding new payment types → no changes to Cart
 
-public interface PaymentMethod {
-    void pay();
+interface PaymentMethod { 
+    void pay(); 
 }
 
-public class CreditCard implements PaymentMethod{
-    @Override
-    public void pay() {
-        System.out.println("Payment is done by creditCard");
+class CreditCard implements PaymentMethod {
+    public void pay() { 
+        System.out.println("Payment by Credit Card"); 
     }
 }
 
-public class UPI implements PaymentMethod{
-    @Override
-    public void pay() {
-        System.out.println("Payment is done by UPI Id");
+class UPI implements PaymentMethod {
+    public void pay() { 
+        System.out.println("Payment by UPI"); 
     }
 }
 
-public class Cart {
-
-    void doPayment(PaymentMethod paymentMethod){
+class Cart {
+    void doPayment(PaymentMethod paymentMethod) {
         paymentMethod.pay();
     }
 }
 
-
-Main:
-
-public class HelloApplication {
-	public static void main(String[] args) {
-
-		CreditCard c1 = new CreditCard();
-		UPI u1 = new UPI();
-		
-		Cart cart1 = new Cart();
-		cart1.doPayment(c1);
-		cart1.doPayment(u1);
-	
-	}
-}
+// Usage
+Cart cart = new Cart();
+cart.doPayment(new CreditCard());
+cart.doPayment(new UPI());
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Note: Best Practice — Use Constructor Injection
+Best Practice — Constructor Injection
+    Pass the payment method once in constructor, reuse in all methods
 
-Instead of passing payment method in every function call, pass it once in the constructor.
-
-Without constructor injection (bad):
-    cart.doPayment(c1);
-    cart.doPlaceOrder(c1);
-    cart.doCancelOrder(c1);
-
-
-With constructor injection (good):
-
-Ex:
-public class Cart {
-
+class Cart {
     PaymentMethod paymentMethod;
 
     Cart(PaymentMethod paymentMethod) {
@@ -260,7 +219,9 @@ public class Cart {
     }
 }
 
+// Usage
 Cart cart = new Cart(new CreditCard());
-cart.doPayment();                           // Uses the same payment method
+cart.doPayment();  // Uses the same payment method
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------

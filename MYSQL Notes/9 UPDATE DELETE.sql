@@ -1,34 +1,18 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 UPDATE:
-    It is used to update the records in Database
+    Used to modify existing records in a database table.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Syntax:
-UPDATE table_name
-SET column1 = value1, column2 = value2 
-WHERE condition;
-
---Set is used to modify the col and its value
---Where is used to tell which record will get modify by these values
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
--- Update the price by 10%:
+-- Update the price of all products by 10%
 update products set price = price*1.10 where product_id > 0;
 
--- Update the price and quantity of Coffee Maker:
+-- Update price and stock quantity of Coffee Maker
 update products set price = 100, stock_quantity = 10 where product_id = 3;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DELETE:
     It is used to delete records
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Syntax:
-DELETE FROM table_name
-WHERE condition;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -52,11 +36,6 @@ TRUNCATE:
     -- It keeps the structure
     -- After truncate next record will start with 1
     -- Rollback is not possible with truncate
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Syntax:
-    TRUNCATE TABLE table_name
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -115,3 +94,5 @@ Caution:
 -- Trigger DELETE + INSERT triggers
 -- Reset AUTO_INCREMENT values unexpectedly
 -- Cause data loss if not used carefully
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -96,10 +96,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 -------------------------------------------------------------------------------------------------------------
 
 User Entity:
-Only User entity will implement the UserDetails and override the methods
-Only User entity will be validated in authentication 
-User entity is mapped to every entity 
-User will be the foreign key in all the entities
+
+Implement the userDetails Interface
+User will be validated in loadUserByUsername()
+Mapped to every entity
 
 @Entity
 public class User {
@@ -158,7 +158,6 @@ public class RegistrationService {
         user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setRoles(Set.of(new Role("ROLE_STUDENT")));
-        userRepo.save(user);
         
         Student student = new Student();
         student.setUser(user);

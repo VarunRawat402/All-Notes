@@ -2,42 +2,33 @@
 Thread Methods:
 -------------------------------------------------------------------------------------------------------------------------------
 
-start():    
-    Creates a new thread and calls run() method
-    start does not mean run now, it means it gives the thread to scheduler in a queue and 
-    scheduler decides which thread to run first
-    So If Thread 1 and Thread 2 are getting start one after another does not mean thread 1 will run first
+run()           : Normally calls the run method, does not create thread
 
--------------------------------------------------------------------------------------------------------------------------------
+start()         : Creates a new thread, Internally calls run()
 
-run() : Normally calls the run method like a normal call
+sleep()         : Pauses the thread for given time ( milliseconds )
 
-sleep() : Pauses the thread for given time ( milliseconds )
+join()          : Tells the current thread to wait until another thread finishes
 
-join() : Tells the current thread to wait until another thread finishes
+isAlive()       : Returns true if thread is still running
 
-join(1000) : Waits for another thread to finish or until this specific Time
+getId()         : To get the Thread unique Id
 
-isAlive() : Returns true if thread is still running
-
-setName() & getName() : To Set and Get the threads name
-
-getId() : To get the Thread unique Id
-
-getPriority() / setPriority() : Gets or sets thread priority (1 to 10).
-
-yield() : Tells the current thread to pause and let others run (suggestion to the scheduler).
+yield()         : Tells the current thread to pause and let others run (suggestion to the scheduler).
 
 isInterrupted()	: Checks if a thread has been interrupted.
 
 currentThread()	: Static method — returns a reference to the currently running thread.
 
+setName() & getName()           : To Set and Get the threads name
+
+getPriority() / setPriority()   : Gets or sets thread priority (1 to 10).
+
 -------------------------------------------------------------------------------------------------------------------------------
 
 Code:
 
-p
-ublic class DemoApplication {
+public class DemoApplication {
     public static void main(String[] args) throws InterruptedException {
 
         Student student = new Student();            //Create Object of Student class
