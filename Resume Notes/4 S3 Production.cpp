@@ -51,36 +51,10 @@ public class S3Config {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Database Entity to Map the file, user and S3 Key:
-
-@Entity
-@Table(name = "files")
-public class FileEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String originalFileName;
-    private String s3Key;
-    private String uploadedBy; // optional: track user
-    private LocalDateTime uploadedAt = LocalDateTime.now();
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Repository:
-
-@Repository
-public interface FileRepository extends JpaRepository<FileEntity, Long> {
-    Optional<FileEntity> findByOriginalFileNameAndUploadedBy(String originalFileName, String uploadedBy);
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
 S3 Service:
 
-@Service
+@Service 
+@RequiredArgsConstructor
 public class S3Service {
 
     private final S3Client s3Client;
@@ -89,12 +63,6 @@ public class S3Service {
 
     @Value("${aws.s3.bucket}")
     private String bucketName;
-
-    public S3Service(S3Client s3Client, S3Presigner presigner, FileRepository fileRepository) {
-        this.s3Client = s3Client;
-        this.presigner = presigner;
-        this.fileRepository = fileRepository;
-    }
 
     // Upload file and save mapping in DB
     public FileEntity uploadFile(MultipartFile file, String uploadedBy) throws IOException {
@@ -118,15 +86,16 @@ public class S3Service {
 
     // Generate pre-signed URL for download
     public String generatePresignedUrl(String s3Key, Duration expiry) {
+
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                                                             .bucket(bucketName)
                                                             .key(s3Key)
                                                             .build();
 
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                                                                       .signatureDuration(expiry)
-                                                                       .getObjectRequest(getObjectRequest)
-                                                                       .build();
+                                                                        .signatureDuration(expiry)
+                                                                        .getObjectRequest(getObjectRequest)
+                                                                        .build();
 
         return presigner.presignGetObject(presignRequest).url().toString();
     }
@@ -215,7 +184,7 @@ public class S3Controller {
                              .filter(f -> uploadedBy == null || f.getUploadedBy().equals(uploadedBy))
                              .collect(Collectors.toList());
 
-
+    }
     public void deleteFile(String key) {
         // Delete from S3
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()

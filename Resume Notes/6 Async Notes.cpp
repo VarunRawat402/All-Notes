@@ -5,14 +5,15 @@ ASYNC Notes:
 @Async: 
 It is used to run a method asynchronously
 
-Helps offload non-critical, time-consuming tasks like:
-	Email Send, Logging, Generating Report
-
 Implementation:
 1: Create a Async Class with @Configuration and @EnableAsync Annotation
-2: Use @Async Annotation on top of the method
+2: Use @Async on methods you want to run asynchronously
 3: You have to call the method with another service, You cannot call from where its defined
-4: Async function should be void or CompletableFuture nothing else.
+4: Async function return void or CompletableFuture nothing else.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+1: Async Class:
 
 @EnableAsync
 @Configuration
@@ -32,44 +33,49 @@ public class AsyncConfig {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Service Code:
+2: Service Class:
 
 @Service
 public class BackgroundService {
 
     @Async("taskExecutor")
     public void sendOtp(String phone) {
-        // call SMS API
+        //Send OTP
     }
 
     @Async("taskExecutor")
     public void logUserActivity(String userId) {
-        // log to database
+        //Log Data
     }
 
+    @Async("taskExecutor")
+    public CompletableFuture<String> processData() throws InterruptedException {
+        Thread.sleep(2000); // heavy work
+        return CompletableFuture.completedFuture("done");
+    }
+
+    String result = service.processData().get();  // waits
 }
 
-CompletableFuture :
-
-@Async("taskExecutor")
-public CompletableFuture<String> processData() throws InterruptedException {
-    Thread.sleep(2000); // heavy work
-    return CompletableFuture.completedFuture("done");
-}
-
-String result = service.processData().get();  // waits
 
 ------------------------------------------------------------------------------------------------------------------------------------------------\
 
-We moved from sequential message processing to parallel consumption using Kafka partitions and listener concurrency
+We moved from sequential message processing to parallel consumption
 By processing messages faster, consumer lag reduced, which directly lowered end-to-end event latency.
-We ensured all consumers were in the same consumer group so partitions were evenly distributed and no instance stayed idle.
 
-We avoided blocking operations inside the Kafka listener and moved heavy processing to async/service layers, using Async functions
-    Kafka assigns one thread per partition
-    That thread is now busy
-    New messages for that partition wait
-    Consumer lag increases
-    Latency increases
+Kafka assigns 1 thread per partition in a consumer group.
+That consumer thread processes messages sequentially to maintain ordering.
+
+If the @KafkaListener performs heavy operations (DB calls, external API calls, long computations):
+The consumer thread becomes busy and blocked.
+
+While the thread is busy:
+    New messages for that partition cannot be processed
+    Messages start waiting in Kafka
+
+This leads to:
+    Consumer lag increase
+    Higher end-to-end latency
+    Slower system throughput
 
 ------------------------------------------------------------------------------------------------------------------------------------------------

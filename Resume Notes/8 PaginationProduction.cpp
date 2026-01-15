@@ -13,7 +13,7 @@ public class StudentController {
     
     // Cache allowed fields for sort validation
     private static final Set<String> ALLOWED_SORT_FIELDS = 
-        Set.of("id", "name", "age", "email", "createdAt", "updatedAt");
+        Set.of("id", "name", "email", "createdAt", "updatedAt");
     
     @GetMapping
     public ResponseEntity<Map<String, Object>> getStudents(
@@ -21,29 +21,21 @@ public class StudentController {
             @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
-            @RequestParam(required = false) Integer age,
-            @RequestParam(required = false) String position,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String name) {
         
-        // 1. VALIDATE INPUTS (Production critical!)
+        //Validate Sort Feild and direction
         validateSortField(sortBy);
         validateSortDirection(direction);
         
-        // 2. BUILD PAGEABLE (Safe calculation)
+        //Create Sort and Pageable Object
         Sort sort = buildSort(sortBy, direction);
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         
-        // 3. CALL SERVICE
-        Page<StudentDTO> result = studentService.searchStudents(
-            pageable, 
-            StringUtils.trimToNull(name),
-            age,
-            StringUtils.trimToNull(position),
-            StringUtils.trimToNull(email)
-        );
+        //Call Customer Service
+        Page<StudentDTO> result = studentService.searchStudents(pageable, name, email);
         
-        // 4. BUILD RESPONSE (With pagination metadata)
+        //Build response with all the page data and metadata
         Map<String, Object> response = buildPageResponse(result, page, size);
         
         return ResponseEntity.ok(response);
@@ -51,16 +43,13 @@ public class StudentController {
     
     private void validateSortField(String sortBy) {
         if (!ALLOWED_SORT_FIELDS.contains(sortBy.toLowerCase())) {
-            throw new IllegalArgumentException(
-                String.format("Invalid sort field '%s'. Allowed: %s", 
-                    sortBy, String.join(", ", ALLOWED_SORT_FIELDS))
-            );
+            throw new IllegalArgumentException("Invalid Sorting feild");
         }
     }
     
     private void validateSortDirection(String direction) {
         if (!direction.equalsIgnoreCase("asc") && !direction.equalsIgnoreCase("desc")) {
-            throw new IllegalArgumentException("Sort direction must be 'asc' or 'desc'");
+            throw new IllegalArgumentException("Invalid Sort Direction");
         }
     }
     
@@ -70,9 +59,9 @@ public class StudentController {
             : Sort.by(sortBy).ascending();
     }
     
-    private Map<String, Object> buildPageResponse(Page<StudentDTO> page, int requestedPage, int size) {     //We need to pass page meta data too to tell FE about all the extra things of the data but just not the data only
+    private Map<String, Object> buildPageResponse(Page<StudentDTO> page, int requestedPage, int size){
+
         Map<String, Object> response = new LinkedHashMap<>();
-        
         response.put("data", page.getContent());
         response.put("currentPage", requestedPage);
         response.put("pageSize", size);
@@ -80,7 +69,6 @@ public class StudentController {
         response.put("totalPages", page.getTotalPages());
         response.put("hasNext", page.hasNext());
         response.put("hasPrevious", page.hasPrevious());
-        
         return response;
     }
 }
@@ -97,52 +85,31 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     
-    public Page<StudentDTO> searchStudents(
-            Pageable pageable, 
-            String name, 
-            Integer age, 
-            String position, 
-            String email) {
+    public Page<StudentDTO> searchStudents(Pageable pageable, String name, String email) {
         
-        log.debug("Searching students with filters - name: {}, age: {}, position: {}, email: {}", 
-            name, age, position, email);
+        log.debug("Searching Customers with filters - name: {}, email: {}", name, email);
         
         try {
-            Specification<Student> spec = buildSpecification(name, age, position, email);
-            Page<Student> page = studentRepository.findAll(spec, pageable);
+            Specification<Student> spec = buildSpecification(name, email);                          //Create Specification Object
+            Page<Student> page = studentRepository.findAll(spec, pageable);                         //Pass Specification and Pageable Object to Repository method
             
             log.info("Found {} students matching criteria", page.getTotalElements());
-            
-            return page.map(studentMapper::toDTO);
-            
+            return page.map(studentMapper::toDTO);                                                  //Map Customers to CustomerDTO
+
         } catch (Exception e) {
             log.error("Error searching students with filters", e);
             throw new ServiceException("Failed to search students", e);
         }
     }
     
-    private Specification<Student> buildSpecification(String name, Integer age, String position, String email) {
-        return Specification.where(hasName(name))                           //instead of collection all the predicates in 1 arrayList and passing the whole arraylist at the end and chaining them 1 by 1
-                .and(hasAge(age))                                           //we create multiple function to create predicates of each value and chain them using where() builder
-                .and(hasPosition(position))                                 //with this we dont need to do if(list.isEmpty())-> cb.conjunction(), it will do it automatically
-                .and(hasEmail(email));                                      //with chaining at the end extra where 1=1 is done but not in this
-    }
+    private Specification<Student> buildSpecification(String name, String email) {      //We create each feild predicate with seperate function and chain them using .and()            
+        return Specification.where(hasName(name))                                       //With this we dont need to check for empty predicate, it will handle empty automatically                                                     
+                .and(hasEmail(email));                                                  //With this, if we want to add another predicate we can just create seperate method and pass here
+    }                                                                                   
     
-    private Specification<Student> hasName(String name) {                   //This returns Specification<Student> Object not predicate
-        return (root, query, cb) -> {                                       //but it will automatically create predicate when we pass it in the Specification.where()
-            if (StringUtils.isBlank(name)) return null;
-            return cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"); //lower() converts database value to lowercase too to match john -> JOHN, jOhn, jOHn etc
-        };
-    }
-    
-    private Specification<Student> hasAge(Integer age) {
-        return (root, query, cb) -> age != null ? cb.equal(root.get("age"), age) : null;
-    }
-    
-    private Specification<Student> hasPosition(String position) {
-        return (root, query, cb) -> {
-            if (StringUtils.isBlank(position)) return null;
-            return cb.like(cb.lower(root.get("position")), position.toLowerCase() + "%");
+    private Specification<Student> hasName(String name) {                               //Creates specification object using predicate
+        return (root, query, cb) -> {                                       
+            return cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"); 
         };
     }
     
@@ -252,16 +219,15 @@ public class GlobalExceptionHandler {
 Optimization:
 
 1. enforce maxPageSize (e.g., 100) in production:
-
-It caps the result to return only 100 pages of content, if dont find add more specific filter 
+    It caps the result to return only 100 pages of content
 
 2. Index the columns used in filtering and sorting
-When u create index, it sorts the data and make lookup easy for searching 
-Dont work with %john%
-Works with only john%
+    When u create index, it sorts the data and make lookup easy for searching 
+    Dont work with %john%
+    Works with only john%
 
 3. Avoid LIKE '%...%' when possible:
-What it is: Using % at the start of a LIKE search prevents the database from using indexes.
+What it is  : Using % at the start of a LIKE search prevents the database from using indexes.
 What it does: Queries become full table scans, which are slow for millions of rows.
 
 4: Fetch only ResponseDTO feilds using projection:

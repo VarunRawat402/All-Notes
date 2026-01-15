@@ -12,8 +12,51 @@ User Creation Service Notes:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-3: User Kafka Entity:
-    This is sent to kafka topics 
+1. User Creation:
+
+Client sends a UserRequestDTO.
+DTO is validated and converted into a User entity.
+A UserCreatedEvent is created from the User.
+A UserOutboxEntity is created to store the event for Kafka publishing.
+User and UserOutboxEntity are saved in the same database transaction → ensures atomicity (either both are saved or none).
+The UserCreatedEvent is stored in the UserOutboxEntity to be published to Kafka.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+2. Outbox Scheduler (Asynchronous Kafka Publishing):
+
+Scheduler periodically fetches UserOutboxEntity rows with PENDING or PROCESSING status from the repository.
+Row-level locking is used with skip locked rows to prevent multiple pods from processing the same event.
+Fetched entities are marked as PROCESSING and saved back to the database.
+Events are sent to Kafka asynchronously using addCallback():
+On success → status marked as SENT
+On failure → retry count incremented and status marked as PENDING
+If retry count exceeds MAX_RETRIES → status marked as FAILED
+FAILED events can be retried manually or by the scheduler at a later time.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+3. Synchronous Alternative (Optional):
+
+Kafka messages can be sent synchronously using kafka.send().get():
+Allows retry with backoff and recover methods.
+Disadvantage: .get() is blocking → slows down processing for large batches.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Key Points / Highlights
+
+Atomicity: User and Outbox entity saved in the same transaction.
+Reliable delivery: Outbox pattern ensures events are not lost if service crashes.
+Concurrency safe: Row locking + skip locked rows prevent multiple pods from publishing the same event.
+Retry mechanism: Handles temporary Kafka failures with retry count and backoff.
+Idempotency: Consumer ensures duplicate events are not processed.
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+1: UserCreatedEvent:
+    kafka Event which will be sent to kafka
 
 public class UserCreatedEvent {
 
@@ -34,29 +77,39 @@ public class UserCreatedEvent {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-4: OutBox Entity:
-Processed by scheduler to send messages to kafka
+2: OutBox Entity:
+    Processed by scheduler to send kafka event
 
-@Entity
-@Table(name = "outbox_event")
-public class OutboxEvent {
+public class EventOutbox{
 
     @Id
-    private UUID eventId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String topic;
+    private String userId;
+    private String eventType;
 
     @Lob
-    private UserCreatedEvent payload;
+    private String payload;
 
     @Enumerated(EnumType.STRING)
-    private Status status; 
+    private Status status;
+
+    private int retryCount;
+    private Instant nextRetryAt;
+
+    public enum Status {
+        PENDING,
+        PROCESSING,
+        SENT,
+        FAILED
+    }
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-5: Service Layer:
-Create and save User in DB + Outbox entity
+3: Service Layer:
+    Save User and UserOutboxEntity
 
 @Service
 public class UserService {
@@ -86,12 +139,12 @@ public class UserService {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-6: OutBox Repository:
-Used to make row locking so multiple pods cannot use single row together
-Prevents multiple pods publishing the same event
+4: OutBox Repository:
+    Used to make row locking so multiple pods cannot use single row together
+    Prevents multiple pods publishing the same event
 
 public interface OutboxRepository extends JpaRepository<OutboxEvent, UUID> {
-
+//This fetch rows and locks the fetched rows and skips the locked rows 
     @Query(
       value = """
         SELECT * FROM outbox_event
@@ -104,14 +157,137 @@ public interface OutboxRepository extends JpaRepository<OutboxEvent, UUID> {
     List<OutboxEvent> fetchForPublishing();
 }
 
+or 
+
+public interface EventOutboxRepository extends JpaRepository<EventOutbox, Long> {
+//This locks the fetched rows only not skips the locked rows
+    @Lock(LockModeType.PESSIMISTIC_WRITE)                   //locks the row 
+    @Query("""
+        SELECT e FROM EventOutbox e
+        WHERE e.status IN ('PENDING', 'PROCESSING')
+          AND (e.nextRetryAt IS NULL OR e.nextRetryAt <= CURRENT_TIMESTAMP)
+        ORDER BY e.createdAt
+    """)
+    List<EventOutbox> fetchBatch(Pageable pageable);
+}
+
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-7: Kafka Scheduler:
-Used to send user information to kafka topics using outbox Entity
+5: Kafka Scheduler:
+    Send Kafak Events to kafka topic, runs every 2 seconds
+    Kafka Events will be sent asynchronously with callBack mechanism to handle success and failure
+    Cannot use @Retryable and @Recover here as its asynchronous way of sending messages
+    Failed message will be manually retried after fixing the issue
+
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class OutboxPublisher {
+
+    private static final int MAX_RETRIES = 10;
+
+    @Scheduled(fixedDelay = 2000)
+    @Transactional
+    public void publish() {
+
+        List<EventOutbox> events =
+                repository.fetchBatch(PageRequest.of(0, 50));
+
+        for (EventOutbox event : events) {
+
+            event.setStatus(EventOutbox.Status.PROCESSING);
+            repository.save(event);
+
+            kafkaTemplate
+                .send("user_create", event.getAggregateId(), event.getPayload())
+                .addCallback(
+                    result -> handleSuccess(event),
+                    ex -> handleFailure(event, ex)
+                );
+        }
+    }
+
+    private void handleSuccess(EventOutbox event) {
+        event.setStatus(EventOutbox.Status.SENT);
+        repository.save(event);
+    }
+
+    private void handleFailure(EventOutbox event, Throwable ex) {
+
+        int retries = event.getRetryCount() + 1;
+        event.setRetryCount(retries);
+
+        if (retries >= MAX_RETRIES) {
+            event.setStatus(EventOutbox.Status.FAILED);
+        } else {
+            event.setStatus(EventOutbox.Status.PENDING);
+            event.setNextRetryAt(Instant.now().plusSeconds(backoff(retries)));
+        }
+
+        repository.save(event);
+
+        log.error("Kafka publish failed for outbox id {}", event.getId(), ex);
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+Consumer:
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Wallet Consumer Code:
+// idempotency is checked with save() DB operation using unique key { user Id }
+// If user is saved, we get error then continue dont process the message
+
+@KafkaListener(topics = "user_created", groupId = "wallet-service")
+@Transactional
+public void consume(UserCreatedEvent event) {
+
+    try {
+        walletRepository.save(
+            new Wallet(
+                UUID.randomUUID(),
+                event.getUserId(),
+                BigDecimal.ZERO
+            )
+        );
+    } catch (DataIntegrityViolationException e) {
+        // duplicate event → wallet already exists
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Email Consumer Code:
+// Stores userId / eventId in redis
+// If userId is present skip the operation
+// If not perform the operation
+
+public boolean markIfFirst(UUID eventId) {
+    return Boolean.TRUE.equals(
+        redisTemplate.opsForValue()
+          .setIfAbsent(eventId.toString(), "1", Duration.ofDays(1))
+    );
+}
+
+@KafkaListener(topics = "user_created", groupId = "email-service")
+public void consume(UserCreatedEvent event) {
+
+    if (!redisService.markIfFirst(event.getEventId())) {
+        return; // duplicate
+    }
+
+    emailService.sendWelcomeMail(event.getEmail());
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Synchronous way of sending mesasges to kafka with Retry and Recover mechanism:
 
 @Component
 public class OutboxScheduler {
 
+//Synchronous blocking way of sending message to kafka
     @Retryable(
     retryFor = KafkaException.class,
     maxAttempts = 3,
@@ -144,209 +320,4 @@ public class OutboxScheduler {
     }
 }
 
-//This is for async non blocking way of sending message to kafka
-//and updating the outbox status based on success / failurex
-kafkaTemplate.send(topic, key, payload)
-    .addCallback(
-        success -> {
-            event.markSent();
-            outboxRepository.save(event); // transactional optional
-        },
-        failure -> {
-            event.markFailed();
-            outboxRepository.save(event);
-        }
-    );
-
-
 ------------------------------------------------------------------------------------------------------------------------------------------------
-Consumer:
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Wallet Consumer Code:
-// No Redis or DB is used to perform idempotency
-// idempotency is checked using DB operation using unique key { user Id }
-
-@KafkaListener(topics = "user_created", groupId = "wallet-service")
-@Transactional
-public void consume(UserCreatedEvent event) {
-
-    try {
-        walletRepository.save(
-            new Wallet(
-                UUID.randomUUID(),
-                event.getUserId(),
-                BigDecimal.ZERO
-            )
-        );
-    } catch (DataIntegrityViolationException e) {
-        // duplicate event → wallet already exists
-    }
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Email Consumer Code:
-// Stores eventId in redis or DB 
-// If eventId is present skip the operation
-// If not perform the operation
-
-public boolean markIfFirst(UUID eventId) {
-    return Boolean.TRUE.equals(
-        redisTemplate.opsForValue()
-          .setIfAbsent(eventId.toString(), "1", Duration.ofDays(1))
-    );
-}
-
-@KafkaListener(topics = "user_created", groupId = "email-service")
-public void consume(UserCreatedEvent event) {
-
-    if (!redisService.markIfFirst(event.getEventId())) {
-        return; // duplicate
-    }
-
-    emailService.sendWelcomeMail(event.getEmail());
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-Retry and Backoff :
-
-When your @KafkaListener method or consumer throws an exception
-Spring Kafkas error handler catches it
-After the configured backoff delay
-The same @KafkaListener method is invoked again
-With the same record (same partition, same offset) so it can process the same message again
-
-Flow:
-
-@KafkaListener method runs
-↓
-Exception thrown
-↓
-ErrorHandler waits (backoff)
-↓
-@KafkaListener method runs AGAIN (same message)
-↓
-Success → offset committed
-OR
-Retries exhausted → send to DLT → offset committed
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-Monitoring:
-
-When work is done asynchronously (Kafka, queues, background jobs), failures are not visible to the user immediately.
-So the system must actively track and surface failures.
-
-1: Business-level failures (most important):
-Email not sent + Wallet not created + Notification not delivered
-These are business failures, not infra failures.
-
-2: Technical signals:
-Kafka consumer lag + Retry count + DLT growth rate + Processing latency
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Implementation:
-
-1: Structured logging:
-log.error("Wallet creation failed for userId={}", userId, ex);
-
-2: Metrics:
-Wallet creation failed counter
-Email not sent failed counter
-
-3: Dead Letter Topic monitoring:
-Alert if DLT count > threshold
-Alert if growth rate spikes
-
-Example:
-If more than 10 wallet-creation events go to DLT in 5 minutes → alert
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-Prioritization:
-
-Not all async work is equally important.
-    Wallet creation → critical
-    Welcome email → non-critical
-    Marketing email → lowest priority
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-How prioritization is done in real systems:
-
-1. Separate Kafka topics / queues:
-wallet_create_topic     (high priority)
-email_notification_topic (low priority)
-
-2. Separate consumer groups / resources:
-Wallet Consumer: 6 instances
-Email Consumer: 2 instances
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-In async systems, we actively monitor business-level failures like wallet creation or email delivery using logs, metrics, and DLT alerts. 
-We also prioritize critical async tasks by isolating them into separate topics and consumer groups with higher resources and stricter retry policies, while non-critical tasks like marketing emails run with lower priority.
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-https://chatgpt.com/c/69481aea-c948-8323-9f4d-2ddafd2624fb
-+
-
-------------------------------------------------------------------------------------------------------------------------------------------------\
-Ordering of Keys in Kafka:
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Why ordering matters:
-
-USER_CREATED  → USER_UPDATED → USER_DELETED
-
-USER_UPDATED → USER_CREATED
-What breaks:
-    Consumer receives UPDATE before CREATE
-    User does not exist → error / inconsistent state
-
-Messages with the same key go to the same partition, therefore are ordered.
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-You must choose a business entity identifier as key:
-
-Good keys
-    userId
-    orderId
-    accountId
-
-Bad keys
-    random UUID
-    timestamp
-    null key
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Example:
-
-kafkaTemplate.send(
-    "user.created.v1",
-    userId.toString(),   // key
-    eventPayload         // value
-);
-
-All events for userId=101:
-
-partition-2:
-    USER_CREATED
-    USER_UPDATED
-    USER_DELETED
-
-What happens if you dont use key:
-kafkaTemplate.send("user.created.v1", payload);
-
-partition-1 → USER_CREATED
-partition-3 → USER_UPDATED
-Order broken ❌
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Full Production with testing:
-
-https://chat.deepseek.com/a/chat/s/e86bafab-7a40-4fea-aa17-ecddfec5c7d2

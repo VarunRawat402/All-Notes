@@ -46,20 +46,19 @@ Code:
 public class Customer {
 
     private static Customer customer;
+    private final int id;
+    private final String name;
 
-    private Customer(){
-        System.out.println("Singleton Customer is created");
+    private Customer(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
-    public static Customer getCustomer(){
-        if(customer==null){
-            customer = new Customer();
+    public static synchronized Customer getCustomer(int id, String name) {
+        if (customer == null) {
+            customer = new Customer(id, name);
         }
         return customer;
-    }
-
-    public void getMessage(){
-        System.out.println("Hello singleton instance of Customer");
     }
 }
 

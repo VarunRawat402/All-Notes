@@ -1,48 +1,17 @@
------------------------------------------------------------------------------------------------------------------------
-HOW TO FIX SLOW API:
------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+How to Fix Slow APIs / Database Query Optimization
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Database Query Optimization:
-
-Indexing - "I create indexes on frequently searched or joined columns to speed up lookups."
-Efficient Queries - "I avoid SELECT *, fetch only required columns, and use JOINs wisely."
-Caching - "I use caching mechanisms like Redis or Hibernate 2nd-level cache to reduce repeated database hits."
-Batch Operations - "For bulk inserts/updates, I use batch processing to reduce database round-trips."
-Avoid N+1 Problems - "In ORMs like Hibernate, I use JOIN FETCH or eager fetching to prevent multiple queries for related entities."
-
------------------------------------------------------------------------------------------------------------------------
-
-1: N+1 Problem DB Query Optimization:
-    When we fetch nested entites too we make n+1 queries to the DB
-    By default it uses lazy loading, use JPQL to eager loading
-    https://chatgpt.com/c/6939f8df-24c4-8320-861b-47816bac3008
-    EntityGraph
-
------------------------------------------------------------------------------------------------------------------------
-
-2: Avoid select * for DB:
-Avoid select * from student when fetching data
-fetch only data which is required
-
-Create a studentResponseDTO and fetch only data required by ResponseDTO
-It will return StudentDTO directly
-@Query("SELECT new com.example.dto.StudentDTO(s.name, s.age) FROM Student s")
-List<StudentDTO> getStudentBasicInfo();
-
------------------------------------------------------------------------------------------------------------------------
-
-3: Indexing:
-An index creates a B-tree structure that allows the database to locate matching rows directly using logarithmic search instead of full table scanning.
-It stores all the values in the sorted way with row number.
-
-Create index on user email:
-
-Mysql Way:
+1: Indexing:
+Speeds up lookups by avoiding full table scans.
+Creates a B-tree structure internally.
+Query without index : scans every row → O(N)
+Query with index    : tree traversal → O(log N)
 
 CREATE INDEX idx_user_email ON users(email);                    //Index of 1 col
 CREATE INDEX idx_user_name_status ON users(name, status);       //Index of multiple col
 
-SB Annotation Way:
+SB Annotation:
 @Table(
     indexes = {
         @Index(name = "idx_email", columnList = "email"),
@@ -51,27 +20,54 @@ SB Annotation Way:
 )
 public class User
 
-Indexing makes queries like this fast:
-SELECT * FROM users WHERE email = 'test@gmail.com';                 //use single index
-SELECT * FROM users WHERE name='John' AND status='ACTIVE';          //use composite index
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Explanation:
+2: Efficient Queries:
+Avoid SELECT *  → fetch only required columns.
+Use DTO projections instead of fetching entire entities
 
-Without index:
-Reads every row and check if email = "test@gmail.com";
-(logn)
+@Query("SELECT new com.example.dto.StudentDTO(s.name, s.age) FROM Student s")
+List<StudentDTO> getStudentBasicInfo();
 
-With index:
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Instead of scanning every row, it does:
-Jump to mid-point of tree, Compare value
-Go left or right, Repeat until found
-On found, gets the row number and returns it
-Time complexity becomes: O(log N)
+3: N+1 Problem:
 
------------------------------------------------------------------------------------------------------------------------
+Fetching nested entities lazily causes multiple queries.
+Fetching 1 Student and their 5 Courses  → 1 query for Student + 5 queries for Courses = 6 queries.
 
-4: Batch Operations - "For bulk inserts/updates, I use batch processing to reduce database round-trips."
+SELECT s FROM Student s JOIN FETCH s.courses WHERE s.id = :id
+Reduces the number of queries drastically.
 
------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+4: Batch Operations:
+Use batch inserts/updates for bulk operations.
+Reduces network/database round-trips.
+
+Bulk user registrations
+Bulk order processing
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+5: Caching:
+Reduce repeated DB hits for frequently accessed data.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+6: Pagination:
+Fetch only the required rows using LIMIT/OFFSET.
+Avoid returning huge datasets in single API call.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+7: Connection Pooling:
+Ensure DB connections are pooled (HikariCP in Spring Boot).
+Reduces overhead of opening/closing connections for every request.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+8: Asynchronous / Parallel Processing:
+Offload heavy operations to async tasks if real-time processing is not needed.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------

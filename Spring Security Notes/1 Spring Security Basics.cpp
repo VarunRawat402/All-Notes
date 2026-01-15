@@ -62,6 +62,8 @@ Key Components:
     → Represents authenticated user information
     → Contains username, password, authorities, account status
 
+----------------------------------------------------------------------------------------------------------------------------------------
+
 Authentication Flow:
 → User submits login form.
 → UsernamePasswordAuthenticationFilter extracts credentials.

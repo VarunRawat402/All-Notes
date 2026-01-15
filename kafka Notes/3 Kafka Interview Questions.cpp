@@ -251,3 +251,27 @@ Old Kafka messages are reprocessed by resetting consumer offsets,
 replaying from a DLT, or using a new consumer group, depending on whether full or selective reprocessing is needed
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+Kafka Listener Concurrency:
+
+spring.kafka.listener.concurrency=4
+By default, a Kafka listener processes messages synchronously, one message at a time
+
+Concurrency creates multiple consumer threads inside a single application instance.
+
+With concurrency 1  → 1 thread reads 4 partitions one by one
+With concurrency 4  → 4 threads read 4 partitions in parallel
+
+If consumer takes 1 sec to process 1 message
+Without concurrency     → 4 messages take ~4 sec
+With concurrency 4      → 4 messages take ~1 sec
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Disadvantages of Using Spring Kafka Concurrency:
+
+1: Concurrency is limited by the JVM and core size, It takes a load on CPU
+2: If one instance goes down, all threads stop → single point of failure
+3: Kubernetes scales pods better than increasing threads in one JVM
+
+------------------------------------------------------------------------------------------------------------------------------------------------

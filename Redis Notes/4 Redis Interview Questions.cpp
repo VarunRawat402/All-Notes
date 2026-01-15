@@ -67,9 +67,11 @@ Storing frequently accessed data in memory using different patterns for handling
 
 1: Cache-Aside (Lazy Loading):
 Application checks Redis first  →  if key not found   →  fetch from DB  →  populate Redis.
+It is implemented by manually putting and getting the cache in method
 
 2: Read-Through:
 Cache automatically loads from DB on a cache miss
+It is implemented using @Cacheable annotation
 
 3: Write-Through:
 Writes go to both DB and cache simultaneously.
