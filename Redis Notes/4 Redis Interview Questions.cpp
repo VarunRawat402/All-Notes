@@ -3,42 +3,48 @@ Redis Interview Questions:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is Redis:
-Redis is an in-memory data store that can be used as a database, cache, and message broker.
+→ In-memory data store
+→ Used as database, cache, and message broker
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Why Redis is fast:
 
 In-memory storage:
-Redis stores all data in RAM, not on disk. 
-Accessing memory is thousands of times faster than disk.
+→ Data stored in RAM (not disk)
+→Accessing memory is thousands of times faster than disk.
 
 Single-threaded: 
-Redis uses a single-threaded, non-blocking I/O model
-so there is no context switching overhead, making reads/writes extremely fast.
+→ Single-threaded, non-blocking I/O
+→ No context switching
+→ Very fast reads & writes
 
 Efficient data structures: 
-Redis supports optimized structures like Strings, Hashes, Lists, Sets, Sorted Sets
-which allow operations to run in O(1) or O(log N) time.
+→ Redis supports optimized structures like Strings, Hashes, Lists, Sets, Sorted Sets
+→ Operations run in O(1) or O(log N)
 
 Pipelining & batching: 
-Redis can handle multiple commands in a single request, reducing network round-trips.
+→ Redis can handle multiple commands in a single request, reducing network round-trips.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis data structures:
 
 Strings: 
-    Cache small objects, counters, tokens, feature flags.
+→ Cache small values
+→ Counters, tokens, feature flags
 
 Hashes: 
-    Store complex objects like user profiles or cart items.
+→ Store objects / maps
+→ User profiles, cart items
 
 Lists: 
-    Implement queues for background jobs, notifications.
+→ Queues
+→ Background jobs, notifications
 
 Sets / Sorted Sets: 
-    Leaderboards, unique collections, real-time analytics.
+→ Unique values, rankings
+→ Leaderboards, analytics
 
 Hash Example:
 Map<String, Object> user = Map.of("name", "Varun", "age", 25);
@@ -53,17 +59,16 @@ String orderId = (String) redisTemplate.opsForList().leftPop("queue:orders");
 Difference between String and Hash in Redis:
 
 String: 
-Stores one value per key.
-Caching simple values like session IDs, JWT tokens, feature flags.
+→ One value per key
+→ Session IDs, JWT tokens, flags
 
 Hash:
-Stores map or object 
-Store user profiles, shopping cart contents, product information.
+→ Multiple fields per key
+→ User profiles, cart data, product info
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Caching Patterns:
-Storing frequently accessed data in memory using different patterns for handling cache hits, misses, updates, and expiration.
 
 1: Cache-Aside (Lazy Loading):
 Application checks Redis first  →  if key not found   →  fetch from DB  →  populate Redis.
@@ -87,6 +92,9 @@ Old or less-used keys are removed automatically when memory is full.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
+→ Redis is in-memory
+→ Without persistence → all data lost on restart
+
 RDB (Redis Database Backup / Snapshotting):
 
 Creates snapshots of the entire dataset at intervals ( every 5 minutes )
@@ -102,43 +110,63 @@ Slower than RDB, but more durable.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Redis is in-memory, so without RDB/AOF, all data is lost on restart.
-RDB: Good for backups, fast startup, minimal performance impact.
-AOF: Good for high durability, ensures almost no data loss.
+RDB: 
+    → Good for backups
+    → Fast restart
+    → Minimal performance impact
+    → Some data loss possible
+
+AOF:
+    → Logs every write operation
+    → High durability
+    → Near-zero data loss
+    → Slight performance overhead
+
 Combination: Many production systems use both RDB + AOF for speed + durability.
 
-Example:
-In an e-commerce Spring Boot app:
-    Product catalog and less critical data → RDB snapshots.
-    Shopping carts, orders, payments → AOF for near-zero data loss.
+RDB + AOF (Production Best Practice):
+→ RDB → fast recovery
+→ AOF → strong durability
+
+Example (E-commerce App):
+→ Product catalog / less critical data → RDB
+→ Cart, orders, payments → AOF
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Replication:
-Copying data from one Redis server (master) to one or more Redis servers (slaves/replicas).
+    Copies data from master → replicas
 
-Master handles writes, replicates data to replicas.
-Master sends data updates to replicas asynchronously.
-Replicas can serve read requests, reducing load on the master.
-When a new replica joins, master sends a full snapshot (RDB) first, then streams incremental updates.
+How it works:
+→ Master handles all writes
+→ Replicates data to replicas asynchronously
+→ Replicas handle read requests → reduces master load
+
+New replica joining:
+→ Master sends full RDB snapshot
+→ Then streams incremental updates
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Sentinel:
-Continuously monitors Redis master and replicas.
+    Continuously monitors master & replicas
 
 If the master fails:
+→ Promotes a replica to master automatically
+→ Reconfigures other replicas
+→ Notifies clients of new master
+→ No manual intervention required
     Promotes one replica to master automatically.
     Updates other replicas to follow the new master.
     Notifies client applications of the new master address.
     Provides high availability without manual intervention.
 
-Without Sentinel, you have to manual connect to redis master or redis replica
-If that specific replica crashes, then data is lost and you need to manually configure again
+→ Manual master/replica configuration
+→ On failure → downtime + reconfiguration
 
-With Sentinel, You connect to redis and master node through sentienl automatically
-Configure reads from replicas using LettuceConnectionFactory
-If master fails, it will automatically update to the current master
+→ With Sentinel, You connect to redis and master node through sentienl automatically
+→ Configure reads from replicas using LettuceConnectionFactory
+→ If master fails, it will automatically update to the current master
 
 @Bean
 public LettuceConnectionFactory redisConnectionFactory() {
@@ -158,41 +186,42 @@ public LettuceConnectionFactory redisConnectionFactory() {
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Locks:
-Redis locks are mechanisms to prevent multiple processes or threads from accessing the same resource simultaneously
+    Used to prevent multiple threads from accessing the same resource simultaneously
 
-SET key value NX PX timeout
-    NX ensures the key is set only if it doesnt exist (atomic operation).
-    EX sets a TTL so the lock auto-expires if the process crashes.
+Command:
+→ SET key value NX PX timeout
 
+Meaning:
+→ NX → set only if key does not exist (atomic)
+→ PX / EX → TTL → lock auto-expires if process crashes
 
-Prevents race conditions in distributed applications.
-Ensures mutual exclusion for critical sections
-Avoids duplicate processing when multiple instances of a service run concurrently.
-
-Give me example where we use redis locks and how its used 
+→ Prevents race conditions in distributed applications.
+→ Ensures mutual exclusion for critical sections
+→ Avoids duplicate processing when multiple instances of a service run concurrently.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------\
 
 Redis Pub Sub:
 
-Publisher sends messages to a channel.
-All subscribers connected at that moment receive the message.
-No persistence / No Replay
-Messages sent while a subscriber is offline are lost.
-Very low latency (<1ms), works entirely in memory.
+→ Publisher sends messages to a channel.
+→ All subscribers connected at that moment receive the message.
+→ No persistence / No Replay
+→ Messages sent while a subscriber is offline are lost.
+→ Very low latency (<1ms), works entirely in memory.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------\
 
 How do you protect DB when Redis is down:
-When Redis goes down, the cache layer is unavailable, and all requests may hit the database directly.
+    When Redis goes down, the cache layer is unavailable, and all requests may hit the database directly.
 
-Serve DB data safely without crashing the app.
-Limit requests to DB per user
-Use Ciruit Breaker pattern to avoid overwhelming DB
+→ Serve DB data safely (fallback logic)
+→ Rate limit requests per user
+→ Circuit Breaker pattern → prevent DB overload
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Cache Double Delete Strategy:
+    Prevents stale cache after DB update
 
 T1: UPDATE user (uncommitted)
 T2: SELECT user → A

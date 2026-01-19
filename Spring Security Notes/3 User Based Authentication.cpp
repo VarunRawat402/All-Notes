@@ -23,7 +23,8 @@ Code:
 -------------------------------------------------------------------------------------------------------------
 
 InMemory Authorization:
-    Hardcode the Credentials
+    No need to implement UserDetails or UserDetailsService for in memory authentication
+    Hardcode the credentials 
     Used for testing
 
 Code:
@@ -42,7 +43,8 @@ Code:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Database-Based Authentication:
-    In this we fetch the user from the database and validate it
+    Validates user from the Database
+    Needs to implement UserDetails and UserDetailsService
 
 
 public class User implements UserDetails {

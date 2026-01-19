@@ -2,6 +2,11 @@
 Logging
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+Logback.xml:
+It is used to configure logging in Spring Boot applications.
+It is used to save logs in external fields and to set log levels.
+
+
 Centralized Logging Systems:
     Logs from all services are aggregated to a central system.
     Helps in debugging, monitoring, and auditing.
@@ -15,6 +20,7 @@ Centralized Logging Systems:
     Stores logs as JSON documents (indexed).
     Provides fast querying, filtering, aggregation, and full-text search.
     Scales horizontally.
+    localhost:9200 to check if ES is running.
 
 Log Example:
 {
@@ -33,6 +39,7 @@ Log Example:
     Collects logs → parses → enriches → sends to Elasticsearch.
     Logs come in different formats (JSON, plain text).
     Adds metadata (service name, environment, host).
+    Logstash config file: Used to define source of logs, filters, and output destination.
 
 Application → Logstash → Elasticsearch
 

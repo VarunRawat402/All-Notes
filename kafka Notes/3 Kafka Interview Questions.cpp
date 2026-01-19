@@ -2,26 +2,25 @@
 Kafka Interview Questions:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Producer acknowledgments (spring.kafka.producer.acks):
-    How many brokers must confirm a write before the producer says successfull
-
+Producer Acknowledgments (spring.kafka.producer.acks):
+→ Defines how many brokers must confirm a write before producer marks it successful
 Producer → Leader → Replicas → Ack → Producer
 Producer waits for the ack from the leader and the in-sync replicas to return the message as sent
 
 spring.kafka.producer.acks:
-    acks=0 → No confirmation (fast, unsafe)
-    acks=1 → Leader confirms only
-    acks=all → Leader + all in-sync replicas (safest)
+    acks=0      → No confirmation (fast, unsafe)
+    acks=1      → Leader confirms only
+    acks=all    → Leader + all in-sync replicas (safest)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 min.insync.replicas:
-    Minimum number of in-sync replicas required to accept a write.
-    min.insync.replicas and acks work together 
+→ Minimum number of in-sync replicas required to accept a write
+→ Works together with acks
 
 3 brokers, RF=3, min.insync.replicas=2
-→ Write allowed only if 2 replicas are alive & in sync
-→ Else, write fails
+→ Write allowed only if ≥2 replicas are alive & in sync
+→ Else → write fails
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,19 +28,21 @@ What happens if a consumer crashes:
 
 If a Kafka consumer crashes, Kafka reassigns its partitions to another consumer in the same consumer group and continues message consumption.
 
-Kafka periodically receives heartbeats from consumers
-Heartbeat stops → broker waits for timeout → consumer marked dead → rebalance → partitions reassigned
+→ Kafka expects periodic heartbeats from consumers
+→ Heartbeat stops → timeout → consumer marked dead
+→ Rebalance triggered → partitions reassigned
 
 What Happens to Messages:
-    Offset committed → no reprocessing
-    Offset not committed → message reprocessed by another consumer
+    Offset committed        → no reprocessing
+    Offset not committed    → message reprocessed by another consumer
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is idempotent producer:
-When producer sends message to broker and it fails to ack then
-kafka retries sending the message automatically which could lead to duplicate messages
-Kakfa uses producerID + Sequence Number to avoid duplicate message
+    → Kafka retries automatically if ack fails
+    → Retries may cause duplicate messages
+    → Kafka avoids duplicates using:
+    → ProducerId + Sequence Number
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 At-most-once vs At-least-once vs Exactly-once;
@@ -205,18 +206,17 @@ public void consume(String message) {
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 What causes consumer lag:
-
-Consumer cannot keep up with producer rate
-Business logic is slow
-External API calls
-Heavy Database operations
+    → Producer faster than consumer
+    → Slow business logic
+    → External API calls
+    → Heavy DB operations
 
 Fix:
-Optimize processing
-Increase spring.kafka.listener.concurrency
-Use retry topics instead of blocking retries
-Increase Partitions
-Scale Kafka
+    → Optimize processing
+    → Increase listener concurrency
+    → Use retry topics
+    → Increase partitions
+    → Scale Kafka
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 

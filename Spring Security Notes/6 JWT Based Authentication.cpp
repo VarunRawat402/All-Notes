@@ -156,7 +156,7 @@ public class JwtUtil {
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
-                .getPayload();
+                .getPayload();  
     }
 
     //Extract Username from token
@@ -282,6 +282,53 @@ public class PublicController {
             return new ResponseEntity<>("Incorrect username or password", HttpStatus.BAD_REQUEST);
         }
     }
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Production Ready Jwt Util class:
+@Component
+public class JwtUtil {
+
+    private final Key key = Keys.hmacShaKeyFor(
+            Base64.getDecoder().decode("VERY_LONG_SECURE_SECRET_KEY")
+    );
+
+    public String generateToken(UserDetails user) {
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("roles", user.getAuthorities())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String extractUsername(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public boolean isTokenValid(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("Token expired");
+        } catch (SignatureException e) {
+            throw new RuntimeException("Invalid JWT signature");
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid JWT");
+        }
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }
 
 --------------------------------------------------------------------------------------------------------------------------------------------

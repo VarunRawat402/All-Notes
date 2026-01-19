@@ -2,6 +2,27 @@
 Spring Security & JWT Notes
 ---------------------------------------------------------------------------
 
+Flow of JWT Authentication:
+
+1. User → Client (Frontend):
+    User enters credentials (username/password) on login screen.
+    Client sends a login request to backend.
+    Validates credentials against DB.
+    If invalid → 401 Unauthorized
+    If valid → generates and returns JWT
+
+2. Client Stores JWT:
+
+3. Backend (JWT Validation)
+    Client calls secured APIs and attaches JWT
+    Extracts token from Authorization header
+    Verifies JWT Token
+    If invalid → 401 Unauthorized
+    If valid returns response
+    Client renders response data to the user.
+
+---------------------------------------------------------------------------
+
 JWT BEST PRACTICES AND IMPLEMENTATION:
 
 1: Use Strong Signing Algorithms

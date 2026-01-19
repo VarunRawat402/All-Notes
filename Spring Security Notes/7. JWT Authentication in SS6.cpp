@@ -1,29 +1,15 @@
 ----------------------------------------------------------------------------------------------------------------------------------------
 JWT TOKEN IN SS6:
-    In this we dont use jwts.builder() and jwts.parser() to create and parse the token
-    We use jwtEncoder and jwtDecoder to create and parse the token
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Dependency:
+In this we dont use jwts.builder() and jwts.parser() to create and parse the token
+We use jwtEncoder and jwtDecoder to create and parse the token
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-    </dependencies>
+Dependency:
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -41,12 +27,8 @@ spring:
           # public-key: classpath:public.pem
 
 jwt:
-  access-token-expiration: 900 # 15 minutes in seconds
-  refresh-token-expiration: 604800 # 7 days in seconds
-
-logging:
-  level:
-    com.example.jwt: DEBUG
+  access-token-expiration: 900                  //15 minutes in seconds
+  refresh-token-expiration: 604800              //7 days in seconds
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -59,14 +41,15 @@ public class JwtConfig {
     @Value("${spring.security.oauth2.resourceserver.jwt.secret-key}")
     private String jwtSecret;
 
-    //use NimbusJwtEncoder to create jwt token and sign the token using secrety key automatically
+    //Configure JwtEncoder with secrety key
     @Bean
     public JwtEncoder jwtEncoder() {
         SecretKey key = new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(key));
     }
 
-    //use NimbusJwtDecoder to validate jwt token with sign ing key automatically
+    //Configure JwtDecoder with secret key
+    @Bean
     public JwtDecoder jwtDecoder() {
         SecretKey key = new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(key).build();
@@ -76,9 +59,6 @@ public class JwtConfig {
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 JWT Util and Service:
-    Create jwtClaim object using JwtClaimSet
-    Use jwtEncoder to sign and create the token
-    Use jwtDecoder to validate and parse the token
 
 @Service
 @RequiredArgsConstructor
@@ -93,7 +73,12 @@ public class JwtService {
     @Value("${jwt.refresh-token-expiration:604800}")
     private long refreshTokenExpiration;
 
-    //Function to create JWT or Refresh token
+    //Create JWT Token, called by Login API
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateToken(userDetails, accessTokenExpiration, "access");
+    }
+
+    //create JWT token with claims
     private String generateToken(UserDetails userDetails, long expirationSeconds, String tokenType) {
 
         Instant now = Instant.now();
@@ -121,7 +106,7 @@ public class JwtService {
         return encodedJwt.getTokenValue();
     }
 
-    //Validate and parse the token
+    //Validate and parse token
     public Jwt validateAndParseToken(String token) {
         try {
 
@@ -134,12 +119,7 @@ public class JwtService {
         }
     }
 
-    //Create JWT Token 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, accessTokenExpiration, "access");
-    }
-
-    //Create Refresh Token
+    //Create Refresh Token, called by API
     public String generateRefreshToken(UserDetails userDetails) {
         return generateToken(userDetails, refreshTokenExpiration, "refresh");
     }

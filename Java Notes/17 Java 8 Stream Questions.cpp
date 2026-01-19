@@ -85,8 +85,20 @@ long female = students.stream().filter(x -> x.getGender().equals("Female")).coun
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 GroupingBy:
-Used to group students based on attribute:
+It is used to group on some attribute
+It returns Map where key is the attribute you are grouping on
+It takes three arguments:
+        1: key - It is used to group the elements
+        - Student::gender()
 
+        2: MapType - Type of map you want to group in
+                - LinkedHashMap::new
+
+        3: Collector - what you want to collect and on which collector
+                - Collectors.toList() or Collectors.mapping(Student::getName(),Collectors.toList())
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
 // Group Students based on Gender:
 Map<String, List<Student>> collect = students.stream().collect(Collectors.groupingBy(Student::getGender));
 

@@ -9,18 +9,30 @@ What is exception propagation?
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 STACK:
-    Method calls + Local variables +  Reference of objects + Primitive values
+    → Primitive values
+    → Local variables
+    → References of objects
+    → Method() calls
 
 HEAP:
-    objects + arrays + Instance variable
+    → Objects
+    → Arrays
+    → Instance variables
 
 Metaspace:
-    Class info ( class name, class structure ) + static variables
+    → Class info (class name, class structure)
+    → Static variables
 
 Example:
-int a = 10;                         //a and 10 both in stack
-String s = "Varun"                  //s in stack, Varun in heap
-Student s = new Student()           //s in stack, Object in heap
+
+int a = 10;         
+    → a and 10 stored in stack
+
+String s = "Varun"; 
+    → s in stack, "Varun" in heap
+
+static int b = 20; 
+    → b and 20 stored in metaspace
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -52,80 +64,23 @@ now .equals() method is used to get the correct value by checking each key with 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Garbage Collection:
-
-Garbage Collection is a JVM process that automatically frees heap memory by removing objects that are no longer reachable.
-    Prevent memory leaks
-    Efficient memory management
-
-How GC Works (High-level)
-    JVM identifies unreachable objects
-    Removes them from heap memory.
-    Frees memory for future object allocation.
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Finalize vs Try with resource:
+    Used to close the resources like file, database connection etc
 
 Finalize:
-It is a method we override in the class to close the resources
-GC calls finalize() automatically when object points to no reference
-Depricated now, because it can take hours, or GC may never call finalize() and resource will never gets closed.
+→ Method in Object class
+→ When object has no reference, GC may call finalize() automatically
+→ GC can call it after some time, or may never call it you dont know and resource will never gets closed.
 
 Try with resource:
-It is used to automatically close the resource after the try catch ends.
-In this you dont need to manually close the resource in the Finally
-Your class must implements Closeable or AutoCloseable interface and overrides the close() method
-Most classes already implement close() method
+→ method in AutoCloseable interface
+→ close() is automatically called after try block executes
+→ Works even if exception occurs
 
 Example:
 try (Resource res = new Resource()) {
     res.use();                              // Auto-closes after this block
 }
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-LifeCycle of Thread:
-
-NEW:
-    Thread object created, start() not called
-    Thread t1 = new Thread(() ->);
-
-RUNNABLE:
-    start() called
-    Waiting for CPU
-
-RUNNING:
-    Scheduler assigns CPU, and thread is running
-
-BLOCKED:
-    Thread is blocked because another thread holds the lock
-
-WAITING:
-    Thread is waiting for another thread to get completed
-    thread.join()  → waiting for another thread to finish
-
-TERMINTED:
-    Thread has finished execution
-    run() execution completed
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-map() vs peek():
-
-map()
-Takes each element and converts it into a new value
-
-peek()
-Observes data, Does not change elements
-Used for debugging/logging
-
-Example:
-List<String> result = names.stream()
-        .peek(n -> System.out.println("Before map: " + n))
-        .map(String::toUpperCase)
-        .peek(n -> System.out.println("After map: " + n))
-        .collect(Collectors.toList());
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -139,175 +94,128 @@ Class gets loaded into the memory when:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Why Do We Make a Constructor private:
-A private constructor is used to restrict object creation from outside the class.
+    A private constructor is used to restrict object creation from outside the class.
 
-1. Singleton Pattern:
-    Ensures only one instance of a class exists
+1. Singleton Pattern
+   └─ Only one instance of the class exists
 
-2. Utility Classes:
-    Utility classes contain only static methods
+2. Utility Classes
+   └─ Class has only static methods, no object needed
 
+3. Factory Methods
+   └─ Force usage of static method for object creation
 
-3. Factory Methods:
-    Constructor is private to force usage of static method for creation
-
-public class User {
-
-    private User() { }
-
-    public static User createUser() {
-        return new User();
-    }
-}
-
-4. Prevent Inheritance:
-    If a class has only private constructors, it cannot be extended
-    Subclass cannot call super()
+4. Prevent Inheritance
+   └─ Subclasses cannot call super(), class cannot be extended
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Concurrent Hashmap and Internal working:
-    ConcurrentHashMap is a thread-safe implementation of Map
+    → Thread-safe implementation of Map
+    → Alternative to Collections.synchronizedMap()
 
-Collections.synchronizedMap()   :
-    Using one global lock
-    Result: poor performance
+Collections.synchronizedMap():
+    → One global lock → poor concurrency
 
-Internal working:
-    No global lock
-    Lock only small portions
-    Reads are mostly lock-free
-    Writes use fine-grained locking
+ConcurrentHashMap:
+→ No global lock ✅
+→ Reads (get) 🔹 lock-free, very fast
+    → hash → bucket → read volatile value
+→ Writes (put) 🔹 fine-grained locking
+    → hash → bucket → lock bucket → insert/update → unlock
+    → Multiple threads can work on different buckets concurrently
 
-Thread-safe READ operation (get):
-
-What happens internally
-    Hash key → index
-    Read bucket without lock
-    Uses volatile fields to ensure visibility
-
-Why safe?
-    value is volatile
-    Memory visibility guaranteed
-    No modification → no locking required
-    Reads are non-blocking and very fast
-
-Thread-safe WRITE operation (put):
-
-Internal steps:
-    Compute hash
-    Find bucket index
-    Lock only that bucket
-    Insert or update node
-    Unlock bucket
-
-synchronized (bucketHeadNode) {
-   // modify only this bucket
-}
-
-Multiple threads can write when working with different buckets 
+Notes:
+→ volatile → guarantees memory visibility
+→ Reads dont need locks → very fast
+→ Writes lock only the affected bucket → high throughput
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Serialization vs Deserialization in Java:
 
-Serialization   : converting a Java object into a byte stream so it can be: saved to a file, sent over a network.
-Deserialization : converting the byte stream back into a Java object.
+Serialization   : Java object → byte stream 
+Deserialization : byte stream → Java object
 
-Serializable is a marker interface
-Marker Interface is a interface with no methods, It is used to tag the class so JVM Can apply special behavior to it.
-public interface Serializable {
-
-}
-You implement Serializable on classes whose objects need to be transferred or stored.
+Serializable is a marker interface (no methods).
+It is used to tag the class so JVM Can apply special behavior to it.
+Implement Serializable for objects that need to be transferred or stored.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Difference between ArrayList and LinkedList - when would you choose each?
+ArrayList vs LinkedList:
 
-ArrayList:
-    Dynamic array
-    Fast random access
-    Less memory overhead
-    Best for read-heavy operations
+ArrayList
+    → Dynamic array
+    → Fast random access (index-based) ✅
+    → Less memory overhead
+    → Best for read-heavy operations
 
 LinkedList
-    Doubly linked list
-    Fast insert/delete (middle/start)
-    No random access
-    More memory usage
+    → Doubly linked list
+    → Fast insert/delete at start/middle ✅
+    → No random access
+    → More memory usage
 
-When to choose ArrayList:
-    Returning list from REST API
-    DTO collections
-    Index-based loops
+When to use:
 
+ArrayList
+    → Returning list from REST API
+    → DTO collections
+    → Index-based loops
 
-When to choose LinkedList:
-    Task queues
-    Sliding window
-    BFS traversal
+LinkedList
+    → Task queues
+    → Sliding window
+    → BFS traversal
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-What are race conditions? Have you faced one in production:
+Race Conditions:
+    Occurs when multiple threads try to modify the same data concurrently → data corruption
 
-A race condition occurs when:
-    Multiple threads/processes access shared data
-    At least one modifies it
-    The final result depends on execution timing
-    This leads to inconsistent or incorrect behavior.
+Example: Wallet Balance Update
+→ 2 threads read balance = 100
+→ Thread A deducts 60 → new balance 40
+→ Thread B deducts 70 → new balance 30
+→ Final value depends on which thread writes last
 
-Real production-style example (common):
-
-Wallet balance update
-    balance = balance - amount; 
-
-Two concurrent transactions:
-    Both read balance = 100
-    Both deduct 60
-    Final balance = 40 ❌ (should fail one)
-
-1. Database-level locking (most common):
-    SELECT * FROM wallet WHERE user_id = ? FOR UPDATE;
+1. Pessimistic Locking:
+    → SELECT * FROM wallet WHERE user_id = ? FOR UPDATE;
 
 2: Atomic operations:
-    AtomicInteger count = new AtomicInteger();
-    count.incrementAndGet();
+    → AtomicInteger count = new AtomicInteger();
+    → count.incrementAndGet();
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is Thread starvation?
-Starvation happens when a thread is ready to run but is continuously ignored because other higher-priority threads keep taking resources.
+    When a thread is continuously ignored and other threads keep executing over it
 
 Common causes:
 
 1. Unfair locks
+
 2. Thread pool too small:
-    Pool has 2 threads
-    2 long-running tasks occupy them
-    Short tasks never execute
+    → Pool = 2 threads
+    → 2 long-running tasks occupy them
+    → Short tasks never execute
+
 3. Blocking operations inside threads:
-    Database calls
-    Network calls
-    Thread.sleep()
-    Threads stay busy → others starve.
+    → Database calls, Network calls, Thread.sleep()
+    → Threads stay busy → others starve
 
 How to prevent thread starvation:
-
-1. Proper thread pool sizing
+1. Good thread pool sizing
 2. Use fair locks when needed
 3. Avoid blocking calls
-    DB / REST calls inside tight synchronized blocks
-    Move blocking work outside
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Exception Swallow:
 
 An exception is swallowed when it is:
-    Caught only 
-    Only logged
+    Caught only or Only logged
     Not thrown or handled meaningfully
 
 Why exceptions should NOT be swallowed:
@@ -317,7 +225,6 @@ Why exceptions should NOT be swallowed:
     Root cause of exception is lost
 
 3. Breaks observability:
-
     Monitoring/alerts rely on thrown exceptions
     Swallowed errors never reach:
         Logs with stack traces
@@ -444,57 +351,13 @@ public void transfer(Long from, Long to, BigDecimal amount) {
 Difference between PUT and PATCH with a real API example:
 
 1. PUT:
-Replace the entire resource with the new representation.
-If fields are missing, they are considered null or defaulted (depending on implementation).
-
-Current:
-{
-  "username": "john_doe",
-  "email": "old_email@example.com",
-  "age": 25,
-  "address": "NYC"
-}
-
-Requested:
-{
-  "username": "john_doe",
-  "email": "john@example.com",
-  "age": 30
-}
-
-Result:
-{
-  "username": "john_doe",
-  "email": "john@example.com",
-  "age": 30,
-  "address": null    // removed because PUT replaces full resource
-}
+Updates the entire entity with the provided data
+If feilds are missing, they are considered null or defaulted
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 2. PATCH:
-Partially update a resource.
-Only the fields provided in the request are updated.
-
-Current:
-{
-  "username": "john_doe",
-  "email": "old_email@example.com",
-  "age": 25,
-  "address": "NYC"
-}
-
-Requested:
-{
-  "email": "john@example.com"
-}
-
-Result:
-{
-  "username": "john_doe",
-  "email": "john@example.com",
-  "age": 25,
-  "address": "NYC"   // unchanged
-}
+Updates only the speicified feilds which are provided
+If feilds are missing, they are left unchanged
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -3,35 +3,31 @@ Scenario Interview Questions:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you improve API performance:
-    Avoid Over Fetching, Fetch only Required feilds from DB ( DTOs )
-    Pagination for large data
-    Caching
-    Proper Indexing on frequently searched feilds
-    Avoid N+1 Queries
-    Use Async for non critical and long tasks
-    Rate limiting
+    → fetch only required fields (DTOs)
+    → Pagination for large datasets
+    → Caching frequently accessed data
+    → Proper indexing on frequently searched fields
+    → Avoid N+1 queries
+    → Use async for non-critical or long-running tasks
+    → Rate limiting
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you handle concurrent updates to the same database row:
 
 1: Pessimistic Locking / Database-level row lock:
-    DB locks the row
-    Other transactions trying to SELECT ... FOR UPDATE wait
-    Other reads may be blocked depending on isolation level
-    Transaction A updates balance and commits:
-    COMMIT
-    Transaction B now acquires the lock and updates
+    → DB locks the row
+    → Other transactions trying SELECT ... FOR UPDATE wait
+    → Transaction A updates balance → COMMIT
+    → Transaction B acquires lock → updates balance
 
 2: Optimistic Locking / Versioning:
-    Add a version column to your table:
-    Transaction A reads wallet (version = 1)
-    Transaction B reads wallet (version = 1)
-    Transaction A updates balance → increments version to 2:
-    Update succeeds because version = 1 matches
-    Transaction B tries to update balance → fails:
-    No rows updated → OptimisticLockException in JPA
-    Transaction B can retry or abort
+    → Add version column in table
+    → Transaction A reads wallet (version=1)
+    → Transaction B reads wallet (version=1)
+    → Transaction A updates balance → increments version=2 → succeeds
+    → Transaction B tries update → fails → OptimisticLockException
+    → Retry or abort
 
 CREATE TABLE wallet (
     id BIGINT PRIMARY KEY,
@@ -42,26 +38,20 @@ CREATE TABLE wallet (
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Connection pooling:
-It is a technique where a set of pre-created connections (DB / Redis / HTTP) is maintained and reused instead of creating a new connection for every request.
+    → Maintain a set of pre-created connections (DB/Redis/HTTP)
+    → Reuse connections instead of creating new ones per request
 
 Without pooling:
-    Every request opens a new connection
-    High latency
-    DB overload
+    → Each request opens new connection → high latency, DB overload
 
 With pooling:
-    Faster response time
-    Controlled number of connections
-    Better resource utilization
+    → Faster response
+    → Controlled connections → better resource utilization
 
-How Connection Pooling Works (Internals):
-    Application starts
-    Pool creates N connections (min size)
-    Request arrives
-    Thread borrows a connection from pool
-    Query executes
-    Connection is returned to pool
-    If no connection is available → thread waits (timeout) → After timeout → exception
+How It Works:
+    → App starts → pool creates N connections
+    → Request arrives → borrow connection → execute query → return to pool
+    → No connection available → thread waits → timeout → exception
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -70,59 +60,46 @@ What Causes Memory Leaks:
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Logging best practices:
+Logging Best Practices:
+    → Every log should answer → What happened? Where? Why?
 
-Every log should answer what happened, where, and why
-Production → INFO / WARN / ERROR
-
-Succesfull:
-    log.info("Order created", kv("orderId", orderId), kv("userId", userId));
+Success:
+    → log.info("Order created", kv("orderId", orderId), kv("userId", userId));
 
 Exception:
-    log.error("Failed to create order", e);
+    → log.error("Failed to create order", e);
+
+Production Level: INFO / WARN / ERROR
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Database is slow - what steps will you take:
+    → Confirm DB is bottleneck → compare API latency vs query time
+    → Check connection pool wait time
+    → Check CPU / Memory / Disk I/O on DB
 
-1. Confirm DB is the bottleneck:
-    Check API latency vs DB query time
-    Check connection pool wait time
-    Check CPU, memory, disk I/O on DB
+Slow Queries:
+    → Full table scans, missing indexes, N+1 queries
 
-2. Check slow queries:
-    Identify:
-        Full table scans
-        Missing indexes
-        N+1 queries
-
-3: Connection pool issues:
-    Increase pool size (within DB limits)
-    Close leaked connections
+Connection Pool Issues:
+    → Increase pool size (within DB limits)
+    → Close leaked connections
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you handle failure of services in a microservices ecosystem?
 
-Circuit Breaker         → stop cascading failures
-Fallback                → Returns fallback response instead of errors
-Retries                 → only for transient errors
-Health Checks           → Detects faulty services
-Monitoring & Tracing    → visibility and debugging
+→ Circuit Breaker → stop cascading failures
+→ Fallback → return fallback response
+→ Retries → only for transient errors
+→ Health Checks → detect faulty services
+→ Monitoring & Tracing → visibility & debugging
 
-What Are Transient Errors?
-Transient errors are temporary failures that resolve on their own after a short time.
-For transient errors Retries are used
+Transient Errors: temporary → retry
+    Network glitches, short service overload, DB deadlock
 
-Example:
-    Temporary network glitches
-    Short service overload
-    Database Deadlock
-
-Not Transient Errors:
-    Invalid input
-    Authentication / authorization failures
-    Missing resource (404)
+Non-Transient Errors: permanent → no retry
+    Invalid input, auth failures, 404
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -166,22 +143,17 @@ We follow a CI/CD-based deployment where code is built, tested, containerized, p
 How to Store Customer Sensitive Data:
 
 1. Account Information (Bank / Card / PII):
-    Never Store in Plain Text
-    Use Encryption (NOT hashing)
-    Hashing is not reversible
-    Use AES-256 (symmetric encryption)
-    Plain Data → Encrypt → Store in DB
-    Read → Decrypt → Use
+    → Never store in plain text
+    → Use encryption (AES-256)
+    → Encrypt → store → Decrypt → use
 
 2. Passwords
-    Never Encrypt and DecryptPasswords
-    Why hashing?
-        Passwords are used only for verification
-        No need to read original value
+    → Never encrypt/decrypt → hash only
+    → Hashing for verification → original value not needed
 
 3. Encryption Keys Management:
-    Never Store Keys in Code or Config Files
-    Use AWS KMS / Vault
+    → Never store keys in code/config
+    → Use AWS KMS / Vault
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -190,34 +162,24 @@ Saga Design Pattern:
     Maintains data consistency
 
 1. Choreography-Based Saga:
-
-No central coordinator.
-Services communicate using events
-Each service:
-    Performs its local transaction
-    Publishes an event
-    Listens to other service events
-On failure, compensating actions are triggered by listening to failure events
+    → No central coordinator
+    → Services communicate via events
+    → Each service performs local transaction → publishes event → listens to others
+    → On failure → compensating actions triggered
 
 Example:
-    Order Service → OrderCreatedEvent
-    Payment Service → PaymentCompletedEvent
-    Inventory Service → StockReservedEvent
-    Payment fails → PaymentFailedEvent → Order Service cancels order (compensating transaction).
+    → OrderCreatedEvent → PaymentCompletedEvent → StockReservedEvent
+    → Payment fails → PaymentFailedEvent → Order cancelled (compensation)
 
 2. Orchestration-Based Saga:
-
-Central orchestrator controls the flow.
-Orchestrator:
-    Calls services in order
-    Decides next step
-    Triggers compensations on failure
-Services do not talk to each other directly
+    → Central orchestrator controls flow
+    → Calls services in order → triggers compensations on failure
+    → Services do not talk to each other
 
 Example:
-    Orchestrator    → Order Service → create order
-    Orchestrator    → Payment Service → process payment
-    Orchestrator    → Inventory Service → reserve stock
-    Payment fails   → Orchestrator calls → Order Service → cancel order (compensation) 
-
+    → Orchestrator → Order Service → create order
+    → Orchestrator → Payment Service → process payment
+    → Orchestrator → Inventory Service → reserve stock
+    → Payment fails → Orchestrator triggers Order Service cancel
+    
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

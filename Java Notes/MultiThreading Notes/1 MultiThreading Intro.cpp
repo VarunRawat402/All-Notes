@@ -47,3 +47,29 @@ Context switching is the process of saving the state of one thread/process and l
 Happens when switching between tasks — including at the end of a time slice.
 
 -------------------------------------------------------------------------------------------------------------------------------
+
+LifeCycle of Thread:
+
+NEW:
+    Thread object created, start() not called
+    Thread t1 = new Thread(() ->);
+
+RUNNABLE:
+    start() called
+    Waiting for CPU
+
+RUNNING:
+    Scheduler assigns CPU, and thread is running
+
+BLOCKED:
+    Thread is blocked because another thread holds the lock
+
+WAITING:
+    Thread is waiting for another thread to get completed
+    thread.join()  → waiting for another thread to finish
+
+TERMINTED:
+    Thread has finished execution
+    run() execution completed
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

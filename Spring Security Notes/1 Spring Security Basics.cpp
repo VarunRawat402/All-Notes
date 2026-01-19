@@ -12,16 +12,17 @@ Lecture 1: SPRING SECURITY
 
 Spring Security Overview:
 
-1. Adding the Spring Security dependency automatically secures all controller APIs.
-2. If no username/password is configured, Spring Security generates a random password (UUID) at application startup.
-3. When any API is accessed, Spring Security redirects the user to the login page.
-4. After successful login, the user is redirected back to the originally requested API.
-5. Sessions are stored server-side. Once authenticated through any API, the user can access all other endpoints without re-logging in until the session expires.
+1: spring security automatically secures all the APIs when dependency is added
+2: If no username/password is configured, SS generates random password (UUID) when application starts
+3: When APIs are accessed, It will be re-directed to login page
+4: After login, Redirected back to API
+5: Session is stored in server
+6: Once user is authenticated through any API, user can access all the APIs without re-loggin again until session expires
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 Session:
-- When a user login the application for the first time, the server creates a session with user details.
+- When a user login the application for the first time, the server creates and store a session with user details
 - The session ends when it expires (default: 30 minutes) or when the user logs out.
 
 JSESSIONID:
@@ -39,11 +40,14 @@ Spring Security Filter Chain:
 Key Components:
 
 1. UsernamePasswordAuthenticationFilter:
-    → Intercepts login requests         → extracts username and password
-    → creates an authentication token   → Sends the token to the AuthenticationManager
+    → Intercepts login requests         
+    → extracts username and password
+    → creates an authentication token   
+    → Sends the token to the AuthenticationManager
 
 2. AuthenticationManager:
-    → Accepts the authentication token  → Delegates credential to AuthenticationProvider
+    → Accepts the authentication token  
+    → Delegates credential to AuthenticationProvider
 
 3. AuthenticationProvider:
     → Performs actual credential validation.

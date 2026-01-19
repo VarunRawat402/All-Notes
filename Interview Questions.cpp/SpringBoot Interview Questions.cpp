@@ -3,87 +3,59 @@ SpringBoot Interview Questions:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Spring Framework:
-    Requires a lot of manual configuration
-    You have to set up the application server, dependencies, and configurations yourself.
+    → Requires a lot of manual configuration
+    → Manually set up application server, dependencies, and configurations manually
 
 SpringBoot:
-    Automatically configures beans using dependencies based on pom.xml
-    Comes with embedded Tomcat/Jetty server
-    Pre-Defined Dependency like springboot starter Web
+    → Automatically configures beans using dependencies in pom.xml
+    → Embedded Tomcat/Jetty server included
+    → Pre-defined dependencies like spring-boot-starter-web
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Explain Spring Boot Starters. Can you give examples:
-    Spring Boot Starters are pre-defined dependency that group related dependencies together.
+    → Pre-defined dependencies that group related libraries together
 
-    spring-boot-starter-web
-    spring-boot-starter-data-jpa
-    spring-boot-starter-security
-    spring-boot-starter-actuator
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Difference between @Component, @Service, @Repository, @Controller.
-
-1. @Component:
-    General-purpose bean.
-    Use it when your class doesnt fit service, DAO, or controller.
-    No special behavior.
-
-2. @Service
-    Business logic layer (services).
-    Mostly for clarity: tells other developers, “this class does business work.”
-    Can be used for AOP / transactions.
-
-3. @Repository
-    Data access layer (DAO classes).
-    Special feature: converts database exceptions to Spring exceptions automatically.
-    Otherwise works like @Component.
-
-4. @RestController
-    Presentation layer (handles HTTP requests).
-    Works with Spring MVC.
-    @RestController is a special version for REST APIs.
-    If @Component is used, get and post will not work
+Examples:
+→ spring-boot-starter-web           → REST API / Web apps
+→ spring-boot-starter-data-jpa      → JPA / Hibernate
+→ spring-boot-starter-security      → Security features
+→ spring-boot-starter-actuator      → Monitoring and metrics
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Difference between CrudRepository, JpaRepository, and PagingAndSortingRepository.
 
 CrudRepository:
-    CRUD Methods
-    save(), findById(), findAll(), delete(), count(), etc.
+    → Basic CRUD methods
+    → save(), findById(), findAll(), delete(), count()
 
 PagingAndSortingRepository:
-    Extends CrudRepository with pagination and sorting support.
-    CURD methods + Pagination and Sorting
-    findAll(Sort sort)
-    findAll(Pageable pageable)
+    → Extends CrudRepository
+    → Adds pagination and sorting
+    → findAll(Sort sort), findAll(Pageable pageable)
 
 JpaRepository:
-    Extends PagingAndSortingRepository and adds JPA-specific methods.
-    CURD methods + Pagination and Sorting + extra methods
-    flush()
-    saveAndFlush()
-    deleteInBatch()
-    getOne() (lazy fetch)
+    → Extends PagingAndSortingRepository
+    → Adds JPA-specific methods
+    → flush(), saveAndFlush(), deleteInBatch(), getOne() (lazy fetch)
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 API Versioning:
-It is used to make changes to existing APIs without breaking existing clients and users 
+    → Used to update APIs without breaking existing clients
 
 Why API versioning is used
-Backward compatibility      : Old clients continue to work while new clients use updated APIs.
-Safe evolution              : You can add/remove fields or change behavior without impacting everyone.
-Independent client upgrades : Mobile apps, partners, and third-party consumers upgrade at different times.
+1: Backward compatibility → old clients continue to work
+2: Safe evolution → add/remove fields without impacting everyone
+3: Independent client upgrades → mobile apps, partners upgrade at different times
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: URI-based versioning (most common and simple):
-Easy to understand and debug
-Works well with caching and gateways
-URI Changes every version
+1. URI-based Versioning (most common):
+    → Easy to understand and debug
+    → Works well with caching & gateways
+    → URI changes every version
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -99,9 +71,8 @@ public class UserControllerV2 {
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-2. Header-based versioning:
-Client sends:
-    X-API-VERSION: 2
+2. Header-based Versioning:
+    → Client sends header → X-API-VERSION: 2
 
 
 @RestController
@@ -117,63 +88,87 @@ public class UserController {
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+Difference between @Component, @Service, @Repository, @Controller.
+
+1. @Component:
+    → General-purpose bean
+    → Use if class doesnt fit service, DAO, or controller
+    → No special behavior
+
+2. @Service
+    → Business logic layer
+    → Clarifies purpose to developers
+    → Can be used for AOP / transactions
+
+3. @Repository
+    → Data access layer (DAO classes)
+    → Converts database exceptions to Spring exceptions automatically
+    → Otherwise behaves like @Component
+
+4. @RestController
+    → Presentation layer, handles HTTP requests
+    → Works with Spring MVC
+    → Special version for REST APIs
+    → If only @Component is used → GET/POST wont work
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 @SpringBootApplication Annotation:
     It consist of 3 annotations
 
-1: @EnableAutoConfiguration:
-Automatically configures beans based on:
-    Dependencies in pom.xml
-    Properties in application.properties / application.yml
+1: @EnableAutoConfiguration
+    → Automatically configures beans based on dependencies & properties
+    → Example: spring-boot-starter-web → DispatcherServlet, Tomcat, etc.
 
-Example:
-If spring-boot-starter-web is present → configures DispatcherServlet, Tomcat, etc.
+2: @ComponentScan
+    → Scans package/sub-packages
+    → Creates beans for @Component, @Service, @Repository, etc.
 
-2: ComponentScan:
-Scans the package and subpackage to create bean who has annotatins like @Component, @Service etc etc 
+3: @Configuration
+    → Marks class as a source of bean definitions
+    → Allows use of @Bean methods
+    
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-3: Configuration:
-Marks the class as a source of bean definitions
-Allows use of @Bean methods
+Difference between @Component and @Configuration:
+
+@Component:
+    → Marks a class as Spring-managed bean
+    → Bean created automatically in Spring IOC container
+
+@Configuration:
+    → Marks class as configuration class
+    → Used to define @Bean methods
+    → Enforces singleton rule (Spring container manages single instance)
+
+Note:
+    → @Bean outside @Configuration class → new instance created each injection
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Constructor vs Setter Dependency Injection:
 
 Constructor Injection:
-    The object cannot be created without required dependencies.
-    Once the object is created, dependencies are immutable
-    Easy to pass mocks through the constructor.
-    Works well with @RequiredArgsConstructor in Lombok.
+    → Object cannot be created without required dependencies
+    → Dependencies are immutable once object is created
+    → Works well with Lombok @RequiredArgsConstructor
+    → Easy to pass mocks for testing
 
 Setter Injection:
-    Dependencies are injected after object creation
-    Dependencies are mutable
-    Dependencies can be changed or reconfigured at runtime.
-    Object may be used before dependencies are set → NullPointerException.
-    Must remember to call setter before test; mocks not forced.
+    → Dependencies injected after object creation
+    → Mutable → can be changed at runtime
+    → Object may be used before dependencies are set → NullPointerException possible
+    → Must call setter before tests
 
-Autowired:
-    Used by Spring to inject dependencies
-    Uses reflection internally
+@Autowired:
+    → Used by Spring to inject dependencies
+    → Uses reflection internally
+    → Single constructor → auto-injected
+    → Multiple constructors → specify which one to use
 
 Note:
 When you have 1 constructor of the class dependencies will automatically gets injected using constructor Injection
 When you have 2 constructors, we need to specify which constructor should be used to inject dependencies
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Difference between @Component and @Configuration.
-
-@Component:
-Marks a class as a simple Spring-managed bean.
-Automatically creates the bean of the class in Spring IOC container
-
-@Configuration:
-Defines a class Configuration class to create beans
-Used on classes in which we define @bean
-
-Note:
-We can create @Bean like this in any class but it wont enforces the singleton rule and we will get new instance everytime its injected
-In Configuration class it enforces it to be singleton
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
