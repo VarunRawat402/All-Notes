@@ -321,3 +321,16 @@ public class OutboxScheduler {
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+I tested the CustomerService by creating unit tests that mock the UserRepository and OutboxRepository.
+I verified that when createUser() is called, the user and outbox record are saved together, and if any exception occurs, the transaction rolls back.
+
+My friend tested the OutboxPublisher by mocking the KafkaTemplate and OutboxRepository.
+Mock KafkaTemplate
+Simulate:
+    Success callback → status becomes SENT
+    Failure callback → retryCount increments, status becomes PENDING or FAILED
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
