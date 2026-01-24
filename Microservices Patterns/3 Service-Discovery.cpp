@@ -1,44 +1,20 @@
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+Service Discovery:
+------------------------------------------------------------------------------------------------------------------------------
 
-Monolithic:
+Instead of hardcoding service addresses, services discover each other at runtime.
 
-Disadvantages:
-1: Scaling : Cannot scale individual components need to scale whole application 
-2: Adding Features is hard because everything is tightly coupled 
-3: As application grows, codebase becomes large and complex, Difficult to understand and maintain
-4: Deployment is challenging because even a small change requires redeploying the entire application.
+Client-Side Discovery:
+    Service registry maintains available instances.
+    Client calls registry to get service instance.
+    Client calls the instance directly.
+    Netflix Eureka
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-MicroServices:
-
-Application is divided into multiple small, independent services
-Services communicate with each other over the network (HTTP/REST, messaging)
-
-Developed independently, Deployed independently, Scaled independently
-Different services can use different technologies (Java, Node, DB, etc.)
-Failure of one service does not bring down the entire system
-
-Disadvantages:
-    Network Overhead
-    Latency, security, monitoring, and debugging become harder
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Spring Cloud:
-A framework that provides tools and libraries to build cloud-native microservices
-
-Solves common microservice problems like::
-    Service discovery
-    Load balancing
-    Fault tolerance
-    Configuration management
-
-
-Eureka (Service Discovery):
-Part of Netflix OSS
-Keeps a dynamic registry of all running microservices
-Helps services find and communicate with each other without hardcoding URLs
+Server-Side Discovery:
+    Client calls load balancer / API gateway.
+    Gateway calls registry and forwards request to a healthy instance.
+    Kubernetes (Kube-DNS, CoreDNS)
+    AWS ALB + ECS
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

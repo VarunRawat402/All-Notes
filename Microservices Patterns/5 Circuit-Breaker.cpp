@@ -1,10 +1,11 @@
 ------------------------------------------------------------------------------------------------------------------------------
-Circuit Breaker in Microservices (Resilience4j):
+Circuit Breaker in Microservices:
 ------------------------------------------------------------------------------------------------------------------------------
 
-Prevents cascading failures in microservices
-Stops calling a service that is slow or failing
-Improves resilience and fault tolerance
+→ Prevent cascading failures and improve system reliability.
+→ Services depend on each other → failure in one can break the chain
+→ Network failures, timeouts, or high load are common
+→ Without resilience, small errors can bring down the system
 
 ------------------------------------------------------------------------------------------------------------------------------
 How Circuit Breaker Works
@@ -27,7 +28,7 @@ Half-Open State (Testing the Waters)
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-@CircuitBreaker:
+Circuit Breaker ( @CircuitBreaker ):
     Automatically tracks failures
     Opens circuit when threshold is reached
     Calls fallback method instead of actual service
@@ -51,7 +52,7 @@ Code:
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Annotation Retry ( @Retry ):
+Retry ( @Retry ):
     Retries a failed request before giving up
     Useful when service fails temporarily
     If all retries fail → fallback is executed
@@ -63,7 +64,7 @@ Application.properties:
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Annotation RateLimiter ( @RateLimiter )
+RateLimiter ( @RateLimiter )
     Limits number of requests per time window
     Extra requests are rejected
     Protects service from traffic spikes
@@ -74,7 +75,7 @@ resilience4j.ratelimiter.instances.myRateLimiter.limit-refresh-period=8s
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Annotation BulkHead ( @BulkHead )
+BulkHead ( @BulkHead )
     Limits concurrent requests, Rejects extra calls
     Prevents thread pool exhaustion
     Isolates failures

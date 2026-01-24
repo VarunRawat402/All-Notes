@@ -2,7 +2,6 @@
 Array List:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-It is used to store collection of data.
 Default Capacity : 10 elements
 When capacity is exceeded, a new larger array is created internally and all elements are copied into it.
 
@@ -15,20 +14,20 @@ Syntax:
 Difference Between Arrays and ArrayList:
 
 Size:
-Array → fixed size
-ArrayList → dynamic size
+Array           → fixed size
+ArrayList       → dynamic size
 
 Length / Size:
-Array → length
-ArrayList → size()
+Array           → length
+ArrayList       → size()
 
 Operations:
-Array → add/remove difficult, manual index handling
-ArrayList → easy add, remove, update
+Array           → add/remove difficult, manual index handling
+ArrayList       → easy add, remove, update
 
 Performance:
-Array → faster, less memory overhead
-ArrayList → slightly slower due to resizing and extra features
+Array           → faster, less memory overhead
+ArrayList       → slightly slower due to resizing and extra features
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -53,20 +52,6 @@ CopyOnWriteArrayList:
     Thread-safe.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
-
-ArrayList():
-
-List<String> l1 = new ArrayList<>();
-    l1.add("Milk");
-    l1.add("Eggs");
-    l1.add("Bread");
-
-for(String item : l1){
-    if(item.equals("Eggs")){
-        l1.add("Butter"); // ❌ ConcurrentModificationException
-    }
-}
-
 
 CopyOnWriteArrayList():
 
@@ -96,14 +81,14 @@ ArrayList vs Arrays.asList vs List.of:
 
 ArrayList():
 Mutable , Allows Null
-Fast, Not ThreadSafe
+Fast, Not-ThreadSafe
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Arrays.asList():
 Fixed Size, Not Mutable
 Replace the element but not add and remove element
-Allows null, Not Thread Safe
+Allows null, Not-Thread Safe
 
 Ex:
 List<String> list = Arrays.asList("A", "B", "C");

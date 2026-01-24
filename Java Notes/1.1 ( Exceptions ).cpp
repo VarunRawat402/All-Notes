@@ -1,6 +1,5 @@
 -------------------------------------------------------------------------------------------------------------------------------
 Exception:
-An exception is an error that occurs during program execution, disrupting normal flow.
 -------------------------------------------------------------------------------------------------------------------------------
 
 1: Checked Exception :
@@ -8,8 +7,8 @@ An exception is an error that occurs during program execution, disrupting normal
     Must Handle them or compilation will fail
 
 Example: 
-IOException → Issues during file reading
-FileNotFoundException → File path does not exist
+IOException             → Issues during file reading
+FileNotFoundException   → File path does not exist
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -18,17 +17,14 @@ FileNotFoundException → File path does not exist
     Should be handled to avoid application crashes
 
 Example: 
-ArrayIndexOutOfBoundsException → Accessing invalid array index
-ArithmeticException → Illegal arithmetic operation (e.g., divide by zero)
+ArrayIndexOutOfBoundsException  → Accessing invalid array index
+ArithmeticException             → Illegal arithmetic operation (e.g., divide by zero)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Exception Handling:
-    Ensures the application continues running instead of crashing
 
 1. Try-Catch Block:
-    Place risky code inside try
-    If an exception occurs, it is caught in the catch block
 
     try {
         int result = 10 / 0;  // Exception
@@ -48,13 +44,11 @@ Exception Handling:
     Used to manually throw an exception inside a method.
 
 Ex:
-public class Main {
-    public static void checkAge(int age) {
-        if (age < 18) {
-            throw new IllegalArgumentException("You must be 18 or older.");
-        }
-        System.out.println("Welcome!");
+public static void checkAge(int age) {
+    if (age < 18) {
+        throw new IllegalArgumentException("You must be 18 or older.");
     }
+    System.out.println("Welcome!");
 }
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -66,7 +60,6 @@ public class Main {
 -------------------------------------------------------------------------------------------------------------------------------
 
 5: Custom Exception:
-    Create your own exceptions by extending Exception class
 
 Ex:
 class AgeException extends Exception {
@@ -76,20 +69,8 @@ class AgeException extends Exception {
 }
 -------------------------------------------------------------------------------------------------------------------------------
 
-Key Takeaways
-
-Checked exceptions      → compile-time → must handle
-Unchecked exceptions    → runtime → may crash app if unhandled
-finally                 → always executes → good for closing resources
-throw                   → to actually throw an exception
-throws                  → declares which exceptions a method might throw
-Custom exceptions       → extend Exception
-
--------------------------------------------------------------------------------------------------------------------------------
-
 Global Exception Handling (Spring Boot):
 
-//Used to handle exceptions globally in whole application
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -108,9 +89,6 @@ public class GlobalExceptionHandler {
     }
 }
 
-Custom Error Response:
-
-ErrorResponse Class:
 public class ErrorResponse {
     private String message;
     private int status;

@@ -18,71 +18,6 @@ Spring Context (ApplicationContext):
 So ApplicationContext = Container + extra features.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-@Qualifer vs @Primary:
-
-@Primary ( Default Bean Selection )
-    Default bean when multiple beans of same type exist
-    Used automatically unless another bean is chosen using @Qualifier.
-
-@Qualifier ( Choosing a Specific Bean )
-    Explicitly chooses which bean to inject
-    Overrides @Primary.
-
-Note:
-@Component/@Service/@Repository → the default bean name is the class name with lowercase first letter.
-@Bean                           → the default name is the method name.
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-@Qualifer vs @Primary Example:
-    Bean Name : debitPaymentService & creditPaymentService
-    Bean Type : PaymentService
-
-interface PaymentService {void pay();}
-
-@Primary
-public class DebitPaymentService implements PaymentService {
-    public void pay() {System.out.println("Paid using Debit Card");}
-}
-
-public class CreditPaymentService implements PaymentService {
-    public void pay() {System.out.println("Paid using Credit Card");}
-}
-
-@Service
-class TransportService {
-
-    @Autowired                              //Spring injects DebitPaymentService
-    private PaymentService paymentService;
-}
-
-@Service
-class TransportService {
-
-    @Autowired
-    @Qualifier("creditService")             //Spring injects CreditPaymentService
-    private PaymentService paymentService;
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-POJO VS Java Bean VS Spring Bean:
-
-POJO (Plain Old Java Object)
-    Simple Java class
-    No Spring dependency
-
-Ex:
-    public class Car {
-        private String brand;
-        
-        public Car(String brand) {
-            this.brand = brand;
-        }
-    }
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Dependency Injection Types:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -144,6 +79,93 @@ class Car {
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@PostConstruct (Executed After Bean Creation)
+    Run methods automatically after the bean is created and dependencies are injected.
+
+Used for:
+    Initialization
+    Resource setup
+
+@PreDestroy (Executed Before Bean Destruction)
+    Runs before the bean is removed from the Spring context.
+
+Used for:
+    Cleanup
+    Closing connections
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Real Application Example:
+
+@Component
+public class EmailService {
+    
+    private EmailClient client;
+
+    @PostConstruct
+    public void setup() {
+        client = new EmailClient();
+        client.connect();
+        System.out.println("📧 Email service is ready to send emails.");
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        client.disconnect();
+        System.out.println("📴 Email service is shutting down.");
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+@Qualifer vs @Primary:
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@Primary:
+    Default bean when multiple beans of same type exist
+    Used automatically unless another bean is chosen explicitly
+
+@Qualifier:
+    Explicitly chooses which bean to inject
+    Overrides @Primary.
+
+Note:
+@Component/@Service/@Repository → the default bean name is the class name with lowercase first letter.
+@Bean                           → the default name is the method name.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Example:
+    Bean Name : debitPaymentService & creditPaymentService
+    Bean Type : PaymentService
+
+interface PaymentService {void pay();}
+
+@Primary
+public class DebitPaymentService implements PaymentService {
+    public void pay() {System.out.println("Paid using Debit Card");}
+}
+
+public class CreditPaymentService implements PaymentService {
+    public void pay() {System.out.println("Paid using Credit Card");}
+}
+
+@Service
+class TransportService {
+
+    @Autowired                              //Spring injects DebitPaymentService
+    private PaymentService paymentService;
+}
+
+@Service
+class TransportService {
+
+    @Autowired
+    @Qualifier("creditService")             //Spring injects CreditPaymentService
+    private PaymentService paymentService;
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Types of Bean Scopes:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -189,44 +211,5 @@ Application Scope (For Web Applications):
 Used:
     Global config
     Caching
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-@PostConstruct (Executed After Bean Creation)
-    Run methods automatically after the bean is created and dependencies are injected.
-
-Used for:
-    Initialization
-    Resource setup
-
-@PreDestroy (Executed Before Bean Destruction)
-    Runs before the bean is removed from the Spring context.
-
-Used for:
-    Cleanup
-    Closing connections
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Real Application Example:
-
-@Component
-public class EmailService {
-    
-    private EmailClient client;
-
-    @PostConstruct
-    public void setup() {
-        client = new EmailClient();
-        client.connect();
-        System.out.println("📧 Email service is ready to send emails.");
-    }
-
-    @PreDestroy
-    public void shutdown() {
-        client.disconnect();
-        System.out.println("📴 Email service is shutting down.");
-    }
-}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

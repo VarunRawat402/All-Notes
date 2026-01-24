@@ -47,7 +47,6 @@ No synchronization needed → better performance
 
 4: HashCode Caching (Fast Performance in HashMap & HashSet):
 
-String hashcode is calculated once and cached, Improves lookup performance in collections
 Key → hashCode()
 Bucket index → hashCode % numberOfBuckets
 Inside bucket → .equals() is used to find exact key

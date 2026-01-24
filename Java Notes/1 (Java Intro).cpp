@@ -2,13 +2,13 @@
 JAVA 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Source Code → Code written in Hello.java
-Compiler → Present in JDK, converts source code to Bytecode.
-Bytecode → Stored in a .class file; platform-independent and can run on any OS with a JRE.
+Source Code     → Java code in .java file
+Bytecode        → .class file, platform independent
+Compiler        → Converts source code to byte code
 
-JDK (Java Development Kit) → Compiles .java → .class.
-JVM (Java Virtual Machine) → Reads bytecode, converts it to machine code, and executes the program.
-JRE (Java Runtime Environment) → Contains JVM + libraries needed to run Java programs; does not include compiler.
+JDK (Java Development Kit)      → Converts source code to byte code
+JVM (Java Virtual Machine)      → Reads bytecode, converts it to machine code, and executes the program.
+JRE (Java Runtime Environment)  → Contains JVM + libraries needed to run Java programs; does not include compiler.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -17,8 +17,8 @@ Data Types:
 Primitive : byte, short, int, long, char, boolean, float, double
 Non-Primitive : String, Array, Class, Object
 
-Default value of primitive = 0
-Default value of Non-primitive = null
+Default value of primitive        → 0, false
+Default value of Non-primitive    → null
 
 -------------------------------------------------------------------------------------------------------------------------------
 

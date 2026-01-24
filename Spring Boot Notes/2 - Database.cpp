@@ -55,22 +55,20 @@ public class JDBCRepository {
     }
 }
 
-
 ---------------------------------------------------------------------------------------------------------------
 
 JPA:
-JPA is a specification that defines how Java objects are mapped to database tables.
-It only provides interfaces and rules, not the implementation.
+    It is a specification that defines how java objects are mapped to database tables.
+    It only provides interfaces and rules, not the implementation.
 
 Hibernate:
-Hibernate is an ORM framework that implements JPA.
-Converts java objects to tables automatically, removes JDBC boiler plate code		
-Supports features like lazy loading, caching, criteria API, transaction management, etc.	
+    It is an ORM framework that implements JPA.
+    Converts java objects to tables automatically, removes JDBC boiler plate code		
+    Supports features like lazy loading, caching, criteria API, transaction management, etc.	
 
 
 @Repository
 public class JpaRepository {
-
 
     @Autowired
     EntityManager entityManager;

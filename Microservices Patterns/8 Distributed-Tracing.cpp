@@ -1,16 +1,16 @@
---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 Distributed Tracing:
---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 
-Distributed Tracing tracks a single request as it travels across multiple microservices.
+Distributed Tracing tracks a single request across multiple microservices.
 
-It helps to:
-    Identify latency
-    Find performance bottlenecks
-    Debug failures across services
+A single user action can trigger multiple services
+Failures or slowdowns may happen anywhere along the chain
+Logs alone arent enough to correlate events
 
-API Gateway → Service A → Service B → Service C
+User → API Gateway → Order Service → Payment Service → Inventory Service
 
+------------------------------------------------------------------------------------------------------------------------------
 
 Core Concepts:
 
@@ -22,7 +22,7 @@ Trace
 Span
     A single operation inside a service
     Each service call creates its own span
-    Identified by spanId
+    Identified by spanId    
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

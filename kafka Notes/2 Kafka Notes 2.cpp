@@ -3,9 +3,8 @@ Kafka Interview Questions:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Producer Acknowledgments (spring.kafka.producer.acks):
-→ Defines how many brokers must confirm a write before producer marks it successful
 Producer → Leader → Replicas → Ack → Producer
-Producer waits for the ack from the leader and the in-sync replicas to return the message as sent
+Producer waits for the ack from the leader and the in-sync replicas to mark the message as sent
 
 spring.kafka.producer.acks:
     acks=0      → No confirmation (fast, unsafe)
@@ -21,28 +20,6 @@ min.insync.replicas:
 3 brokers, RF=3, min.insync.replicas=2
 → Write allowed only if ≥2 replicas are alive & in sync
 → Else → write fails
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-What happens if a consumer crashes:
-
-If a Kafka consumer crashes, Kafka reassigns its partitions to another consumer in the same consumer group and continues message consumption.
-
-→ Kafka expects periodic heartbeats from consumers
-→ Heartbeat stops → timeout → consumer marked dead
-→ Rebalance triggered → partitions reassigned
-
-What Happens to Messages:
-    Offset committed        → no reprocessing
-    Offset not committed    → message reprocessed by another consumer
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-What is idempotent producer:
-    → Kafka retries automatically if ack fails
-    → Retries may cause duplicate messages
-    → Kafka avoids duplicates using:
-    → ProducerId + Sequence Number
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 At-most-once vs At-least-once vs Exactly-once;
@@ -205,7 +182,53 @@ public void consume(String message) {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-What causes consumer lag:
+Kafka Listener Concurrency:
+
+spring.kafka.listener.concurrency=4
+By default, a Kafka listener processes messages synchronously, one message at a time
+
+Concurrency creates multiple consumer threads inside a single application instance.
+
+With concurrency 1  → 1 thread reads 4 partitions one by one
+With concurrency 4  → 4 threads read 4 partitions in parallel
+
+If consumer takes 1 sec to process 1 message
+Without concurrency     → 4 messages take ~4 sec
+With concurrency 4      → 4 messages take ~1 sec
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Disadvantages of Using Spring Kafka Concurrency:
+
+1: Concurrency is limited by the JVM and core size, It takes a load on CPU
+2: If one instance goes down, all threads stop → single point of failure
+3: Kubernetes scales pods better than increasing threads in one JVM
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Question 1: What happens if a consumer crashes:
+
+If a Kafka consumer crashes, Kafka reassigns its partitions to another consumer in the same consumer group and continues message consumption.
+
+→ Kafka expects periodic heartbeats from consumers
+→ Heartbeat stops → timeout → consumer marked dead
+→ Rebalance triggered → partitions reassigned
+
+What Happens to Messages:
+    Offset committed        → no reprocessing
+    Offset not committed    → message reprocessed by another consumer
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Question 2: What is idempotent producer:
+    → Kafka retries automatically if ack fails
+    → Retries may cause duplicate messages
+    → Kafka avoids duplicates using:
+    → ProducerId + Sequence Number
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Question 3: What causes consumer lag:
     → Producer faster than consumer
     → Slow business logic
     → External API calls
@@ -220,7 +243,8 @@ Fix:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-How to reprocess old messages:
+Question 4: How to reprocess old messages:
+
 Reprocessing means consuming messages again that were already processed. 
 This is done by moving the consumer offset backward or republishing messages.
 
@@ -249,29 +273,5 @@ public void reprocess(String message) {
 
 Old Kafka messages are reprocessed by resetting consumer offsets, 
 replaying from a DLT, or using a new consumer group, depending on whether full or selective reprocessing is needed
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Kafka Listener Concurrency:
-
-spring.kafka.listener.concurrency=4
-By default, a Kafka listener processes messages synchronously, one message at a time
-
-Concurrency creates multiple consumer threads inside a single application instance.
-
-With concurrency 1  → 1 thread reads 4 partitions one by one
-With concurrency 4  → 4 threads read 4 partitions in parallel
-
-If consumer takes 1 sec to process 1 message
-Without concurrency     → 4 messages take ~4 sec
-With concurrency 4      → 4 messages take ~1 sec
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Disadvantages of Using Spring Kafka Concurrency:
-
-1: Concurrency is limited by the JVM and core size, It takes a load on CPU
-2: If one instance goes down, all threads stop → single point of failure
-3: Kubernetes scales pods better than increasing threads in one JVM
 
 ------------------------------------------------------------------------------------------------------------------------------------------------

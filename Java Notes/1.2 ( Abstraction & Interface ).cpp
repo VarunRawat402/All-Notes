@@ -1,8 +1,5 @@
 -------------------------------------------------------------------------------------------------------------------------------
 Abstraction:
-    Hides unnecessary implementation details and exposes only essential features.
-    Helps in structure, code reusability, and security.
-
 -------------------------------------------------------------------------------------------------------------------------------
 
 1: Abstract Classes (abstract keyword) :
@@ -16,7 +13,7 @@ Abstraction:
 2: Interfaces (interface keyword) :
 
     abstract + default + static methods 
-    Variables are public static final (constants)
+    public static final variables
     Cannot have a constructor
     Multiple Inheritance Supported
 
@@ -25,31 +22,29 @@ Abstraction:
 When to Use Abstract Class vs Interface:
 
 1: Use Abstract Class When:
-    You want to share code among closely related classes
-    You have common properties/attributes for subclasses
-    You want to provide some default method implementations
+    You want to share same code with multiple classes
+    You want to provide common properties and attributes to subclasses
+    You want to write some default implementation for subclassses
 
 Example:
     Animal → abstract class, with name field and run() method
     Subclasses Dog and Cat inherit common behavior
-    Key Rule: Abstract class = “is-a” relationship + shared implementation
 
 2: Use Interface When:
     You want to define a contract without implementation
-    Classes are unrelated but should implement common behavior
-    You want multiple inheritance
+    You want to provide common behavior for subclasses
     You want to allow flexible design and loose coupling
 
 Example:
     PaymentMethod → interface
     CreditCard and UPI implement interface → Cart can work with any payment type
-    Key Rule: Interface = “can-do” relationship + multiple inheritance
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Abstract Class Code:
 
 abstract class Animal {
+
     String name;
     static int price = 1000;
 
@@ -69,6 +64,7 @@ abstract class Animal {
 }
 
 class Dog extends Animal {
+
     String breed;
 
     Dog(String name, String breed) {
@@ -82,12 +78,7 @@ class Dog extends Animal {
     }
 }
 
-Animal a1 = new Animal("Shiro");                    //ERROR, Cannot create object of abstract class
-
 Dog dog = new Dog("PetDog", "Golden Retriever");
-dog.eat();                                          // PetDog is eating
-dog.run();                                          // I am running
-Animal.fly();                                       // I am flying
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -111,11 +102,6 @@ class Car implements Vehicle {
         System.out.println("Car is starting");
     }
 }
-
-Car c = new Car();
-c.start();                                  // Car is starting
-c.stop();                                   // Vehicle is stopping
-Vehicle.service();                          // Vehicle is being serviced
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -201,27 +187,5 @@ class Cart {
 Cart cart = new Cart();
 cart.doPayment(new CreditCard());
 cart.doPayment(new UPI());
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Best Practice — Constructor Injection
-    Pass the payment method once in constructor, reuse in all methods
-
-class Cart {
-    PaymentMethod paymentMethod;
-
-    Cart(PaymentMethod paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    void doPayment() {
-        paymentMethod.pay();
-    }
-}
-
-// Usage
-Cart cart = new Cart(new CreditCard());
-cart.doPayment();  // Uses the same payment method
-
 
 -----------------------------------------------------------------------------------------------------------------------------------------

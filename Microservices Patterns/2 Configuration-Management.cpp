@@ -1,20 +1,56 @@
 ------------------------------------------------------------------------------------------------------------------------------
-Centralized Configuration:
+Configuration Management Patterns:
 ------------------------------------------------------------------------------------------------------------------------------
 
-All microservices fetch configuration from one central place
-Config is stored in Git (recommended) or local folder
-Changes config without redeploying all services
+→ It handle how microservices manage configuration, secrets in a dynamic, distributed environment.
+→ Microservices run independently in multiple environments (dev, QA, prod)
+→ Configuration may change frequently (URLs, DB credentials, feature flags)
+→ Hardcoding configs → inflexible, error-prone, and insecure
+
+A. Externalized Configuration:
+    Move configs out of the service code
+    Store in config files, environment variables, or config servers
+
+B. Secrets Management:
+    Sensitive data (DB passwords, API keys) must be secured
+    Avoid storing in config files or code
+    AWS Secrets Manager
+    Kubernetes Secrets
+
+C. Centralized Configuration:
+    One central config source for all service 
+    Services fetch configs at startup (or dynamically)
+    Spring Cloud Config Server + Git backend
+
+D. Dynamic Configuration Refresh:
+    Services can reload configuration at runtime without redeploy
+    Useful for feature flags, timeouts, endpoints
+
+Code:
+    @RefreshScope
+    @Component
+    public class PaymentServiceConfig {
+        @Value("${payment.url}")
+        private String paymentUrl;
+    }
+
+------------------------------------------------------------------------------------------------------------------------------
+Centralized Configuration Implementation:
+------------------------------------------------------------------------------------------------------------------------------
+
+→ All microservices fetch configuration from one central place
+→ Config is stored in Git (recommended) or local folder
+→ Changes config without redeploying all services
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-Config Server:
-    A Spring Boot application
+1: Config Server:
     Reads configuration from Git / local
     Exposes config via HTTP endpoints
 
 1: Add spring cloud config server Dependecy:
 2: Annotate application with @EnableConfigServer:
+
 3: Application properties:
     server.port=8888
     spring.application.name=config-server
@@ -24,10 +60,10 @@ Config Server:
 ------------------------------------------------------------------------------------------------------------------------------
 
 Config Client
-    Any microservice
-    Fetches its configuration from Config Server on startup
+    Fetches configuration from Config Server on startup
 
 1: Add spring cloud starter config
+
 2: Application properties:
     spring.application.name=user-service
     spring.config.import=optional:configserver:http://localhost:8888                        //URL of the config server
@@ -35,10 +71,9 @@ Config Client
 ------------------------------------------------------------------------------------------------------------------------------
 
 Configuration File Naming and Profiles:
-
-user-service.properties
-user-service-dev.properties
-user-service-prod.properties
+    → user-service.properties
+    → user-service-dev.properties
+    → user-service-prod.properties
 
 Active Profile ( Client Side ):
 spring.profiles.active=dev              //Config Server will load user-service-dev.properties

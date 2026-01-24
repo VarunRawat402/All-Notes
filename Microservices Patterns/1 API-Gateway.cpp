@@ -2,26 +2,43 @@
 Api Gateway:
 ------------------------------------------------------------------------------------------------------------------------------
 
-Single entry point for all client requests in a microservices system.
-Clients never call microservices directly.
-Gateway forwards requests to the correct service
+→ Single entry point for all client requests
+→ Clients never call microservices directly.
+→ Gateway forwards requests to the correct service
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-Uses of API GATEWAY:
+Core Responsibilities:
 
-Routing: Client calls one URL, Gateway routes request to the correct service
+1. Request Routing:
+    Routes requests to the correct service.
 
-Service Discovery: Integrates with Eureka, Finds service IP + port dynamically
+2. Authentication & Authorization:
+    JWT / OAuth2 validation
+    Role-based access
+    Done once at gateway
 
-Load Balancing: Distributes requests across service instances, Uses Spring Cloud LoadBalancer
+3. Rate Limiting
+    Prevent abuse of requests
+    Example: 100 requests/min per user
 
-Security & Authentication: JWT / OAuth / API Key validation, Rejects invalid requests early
+4. Load Balancing
+    Routes traffic across multiple service instances
+    Uses service discovery (Eureka / Kubernetes)
 
-Rate Limiting & Throttling: Controls traffic spikes, Protects backend services
+5. Request / Response Transformation
+    Modify headers
+    Convert payloads
+    Add user 
+    
+6. Caching:
+    Cache frequent responses
+    Reduce backend load
 
-Logging & Monitoring: Central place to log incoming requests
-
+7. Logging & Monitoring
+    Central request logging
+    Tracing IDs
+    
 ------------------------------------------------------------------------------------------------------------------------------
 
 How to add API Gateway ( Service ):
@@ -86,10 +103,6 @@ Gateway Rewrites To:
     /currency/exchange/USD/INR
     Forwards to CurrencyExchange Service
 
-Regex Explained:
-
-
-
 Code:
 
 @Configuration
@@ -122,24 +135,3 @@ Authorization (Microservices)
     Optional re-validation for sensitive APIs
 
 ------------------------------------------------------------------------------------------------------------------------------
-
-Centralized JWT Authentication Across Multiple Microservices:
-
-1. Auth-Service
-    Contains User entity + User DB.
-    Handles login
-    Verifies username & password
-    Generates JWT
-
-2: API Gateway:
-    Gateway validates the incoming request using JWT token:
-        If invalid → reject request
-        If valid → forward to the appropriate service using path routing
-
-3. Microservices
-    Extract roles/claims from JWT
-    Authorize based on roles
-    Optionally validate token again for high-security endpoints
-
-------------------------------------------------------------------------------------------------------------------------------
-

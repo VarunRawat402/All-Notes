@@ -2,10 +2,9 @@
 Linked List:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Linear data structure where elements are stored in nodes
-Each node → data + reference of next node
+Each node   →   data + reference of next node
 
-Dynamically sized - grows/shrinks at runtime
+Dynamically sized
 Does not require contiguous memory allocation
 
 Syntax:
@@ -35,16 +34,7 @@ Access:     O(n) — cannot directly access index
     First ↔ Last connected both ways
 
 Note:
-Java’s LinkedList is implemented as a Doubly Linked List
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Key Points:
-
-Best for frequent insertions/deletions, No element shifting required
-Slow random access
-Higher memory usage (extra references)
-No contiguous memory needed
+In java LinkedList is implemented as a Doubly Linked List
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -87,13 +77,5 @@ list.indexOf("Apple");           // Find first occurrence index
 list.lastIndexOf("Apple");       // Find last occurrence index
 list.size();                     // Get number of elements
 list.isEmpty();                  // Check if empty
-
------------------------------------------------------------------------------------------------------------------------------------------
-
-Difference Between ArrayList and LinkedList:
-
-LL is better for insertions/deletions → no shifting
-get(index) is slower in LL → must traverse
-LL uses more memory → every node stores next/prev references
 
 -----------------------------------------------------------------------------------------------------------------------------------------

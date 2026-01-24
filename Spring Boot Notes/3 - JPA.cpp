@@ -23,9 +23,9 @@ Development: update
 REPOSITORY:
     Interface that gives CRUD + query methods.
 
-CrudRepository → basic CRUD
-PagingAndSortingRepository → pagination
-JpaRepository → CRUD + pagination + JPA features
+CrudRepository              → basic CRUD
+PagingAndSortingRepository  → pagination
+JpaRepository               → CRUD + pagination + JPA features
 
 Code:
 public interface PersonRepository extends JpaRepository<Person,Integer> {
