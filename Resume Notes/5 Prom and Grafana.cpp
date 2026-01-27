@@ -44,3 +44,22 @@ spring.kafka.consumer.properties.spring.json.type.mapping = txncreation:com.exam
 spring.kafka.producer.properties.spring.json.type.mapping=txnupdate:com.example.wallet.wallet.kafkaUtil.TxnUpdate
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+CQRS - chatgpt
+Saga Pattern - chatgpt→
+
+preauthorize postauthorize 
+https://chatgpt.com/c/6976111b-8e48-8322-9322-9398fae60e15
+
+ELK EFK 
+
+
+https://www.youtube.com/@ProgrammingTechie/playlists
+Unit testing spring boot
+
+https://www.youtube.com/watch?v=gJZhdEJvZmc
+Mail Notification
+
+
+https://www.youtube.com/watch?v=12uIIGh4abc
+camel metrics video
