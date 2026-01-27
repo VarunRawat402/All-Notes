@@ -2,11 +2,11 @@
 Distributed Tracing:
 ------------------------------------------------------------------------------------------------------------------------------
 
-Distributed Tracing tracks a single request across multiple microservices.
+→ Distributed Tracing tracks a single request across multiple microservices.
 
-A single user action can trigger multiple services
-Failures or slowdowns may happen anywhere along the chain
-Logs alone arent enough to correlate events
+→ A single user action can trigger multiple services
+→ Failures or slowdowns may happen anywhere along the chain
+→ Logs alone arent enough to correlate events
 
 User → API Gateway → Order Service → Payment Service → Inventory Service
 
@@ -15,22 +15,22 @@ User → API Gateway → Order Service → Payment Service → Inventory Service
 Core Concepts:
 
 Trace
-    A complete request journey
-    Identified by traceId
-    Same traceId is shared across all services
+    → A complete request journey
+    → Identified by traceId
+    → Same traceId is shared across all services
 
 Span
-    A single operation inside a service
-    Each service call creates its own span
-    Identified by spanId    
+    → A single operation inside a service
+    → Each service call creates its own span
+    → Identified by spanId    
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Zipkin:
-Zipkin is a distributed tracing tool used to visualize and monitor how requests travel through microservices.
+→ Zipkin is a distributed tracing tool used to visualize and monitor how requests travel through microservices.
 
-Run Zipkin (Docker):
-docker run -p 9411:9411 openzipkin/zipkin:2.23
+→ Run Zipkin (Docker):
+→ docker run -p 9411:9411 openzipkin/zipkin:2.23
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -38,9 +38,9 @@ Zipkin ( UI ):
 http://localhost:9411/zipkin/
 
 From the UI you can:
-    Search traces by service name
-    See request latency
-    Visualize call dependency graph
+    → Search traces by service name
+    → See request latency
+    → Visualize call dependency graph
 
 
 Steps to Implement:

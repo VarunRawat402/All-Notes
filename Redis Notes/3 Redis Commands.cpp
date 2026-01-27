@@ -5,56 +5,56 @@ Redis Commands:
 KEYS In REDIS:
 
 1: SET (set key value):
-	set name varun
+	→ set name varun
 
 2: GET (get key): 
-	Ex: get name		//varun
+	→ get name		//varun
 
 3: DEL ( del key ):
-	Ex: del name
+	→ del name
 
 4: SETEX (seconds expiry):
-	Sets data with expiry date ( Seconds )
+	→ Sets data with expiry date ( Seconds )
 	Ex: setex name 90 varun
 
 5: PSETEX (milliseconds expiry):
-	Sets data with expiry date ( Milliseconds )
+	→ Sets data with expiry date ( Milliseconds )
 	Ex: setex name 90 varun
 
 6: TTL ( check remaining expiry )	
-	Returns remaining expirty time
+	→ Returns remaining expirty time
 	Ex: ttl name
 
 7: INCR / INCRBY ( INCR key / INCRBY key amount ):
-	Increment the Value 
+	→ Increment the Value 
 	Ex: incr age 					//age 22 --> 23
 	Ex: incrby age 20				//age 22 --> 42
 	
-	Convert the age string to int , increment it and then save it again as a string
+	→ Convert the age string to int , increment it and then save it again as a string
 
 8: DECR / DECRBY ( DECR key / DECRBY key amount ):
-	Increment the Value 
+	→ Increment the Value 
 	Ex: decr age 					//age 22 --> 21
 	Ex: decrby age 20				//age 22 --> 2
 
 ----------------------------------------------------------------------------------------------------------------------------
 
 LIST In REDIS:
-A Redis List is an ordered collection of strings.
+	→ A Redis List is an ordered collection of strings.
 
 1: LPUSH / RPUSH
-	Add element in list from both left and right
+	→ Add element in list from both left and right
 	Ex: lpush names varun
 	Ex: rpush names arun
 
 2 LPOP / RPOP:
-	Remove element in list from both left and right
+	→ Remove element in list from both left and right
 	Ex: lpop names varun
 	Ex: rpop names arun
 	Ex: lpop names 3			//pop 3 elements from left
 
 3: LRANGE:
-	It is used to get the elements from the list:
+	→ It is used to get the elements from the list:
 	Ex: lrange name 0 2			//from 0th index to 2nd index ( inclusive )
 	Ex: lrange name 0 -1		//0th to last index
 	( -1 = last element , -2 = Second last element )
@@ -62,36 +62,36 @@ A Redis List is an ordered collection of strings.
 ----------------------------------------------------------------------------------------------------------------------------
 
 SET In REDIS:
-	Unordered
-	Unique elements
-	Very fast for add/remove/check
+	→ Unordered
+	→ Unique elements
+	→ Very fast for add/remove/check
 
 1: SADD:
-    Add element in set
-    Ex: sadd names varun rawat
+    → Add element in set
+    → Ex: sadd names varun rawat
 
 2: SMEMBERS:
-    Get all elements from set
-    Ex: smembers name
+    → Get all elements from set
+    → Ex: smembers name
 
 3: SISMEMBER:
-    It is used to check if the element is present in the set or not
-    Ex: sismember name varun
-    o/p = 1 --> Present / 0 --> Not Present
+    → It is used to check if the element is present in the set or not
+    → Ex: sismember name varun
+    → o/p = 1 --> Present / 0 --> Not Present
 
 3: SREM:
-    It is used to remove the element from the set using value
-    Ex: srem name varun
+    → It is used to remove the element from the set using value
+    → Ex: srem name varun
 
 4: SPOP :
-    It is used to remove the element from the set using count
-    Ex: spop name 3 
-    It removes random 3 elements.
+    → It is used to remove the element from the set using count
+    → Ex: spop name 3 
+    → It removes random 3 elements.
 
 ----------------------------------------------------------------------------------------------------------------------------
 
 HASHSET In REDIS:
-	Redis Hash = Java HashMap (field → value)
+	→ Redis Hash
 
 Keys : {
 		feild : Value
@@ -105,23 +105,29 @@ Student : {
 
 Commands:
 
-1: hset - It is used to add the data into the hashset
-	Ex: hset student name varun age 20
+1: hset:
+	→ It is used to add the data into the hashset
+	→ Ex: hset student name varun age 20
 
-2: hget - It is used to get the value using feild name
-	Ex: hget student name
+2: hget - 
+	→ It is used to get the value using feild name
+	→ Ex: hget student name
 
-3: hmget - It is used to get the multiple values using mutliple feild names
+3: hmget:
+	→ It is used to get the multiple values using mutliple feild names
 	Ex: hmget student name age 
 
-4: hgetall - It is used to get all thee feild:value of the key
-	Ex: hgetall student
+4: hgetall:
+	→ It is used to get all thee feild:value of the key
+	→ Ex: hgetall student
 
-5: HKEYS / HAVALS - It is used to get all the keys / values
-	Ex: hkeys student
-	Ex: hvaks student
+5: HKEYS / HAVALS:
+	→ It is used to get all the keys / values
+	→ Ex: hkeys student
+	→ Ex: hvaks student
 
-6: HDEL : It is used to delete the feild:value 
-	Ex: hdel student name
+6: HDEL:
+	→ It is used to delete the feild:value 
+	→ Ex: hdel student name
 	
 -----------------------------------------------------------------------------------------------------------------------------------

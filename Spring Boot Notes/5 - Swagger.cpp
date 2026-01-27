@@ -2,14 +2,14 @@
 Swagger:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Swagger is a toolset for documenting, visualizing, and testing REST APIs.
-OpenAPI is used to document the API
+→ Swagger is a tool for documenting, visualizing, and testing REST APIs.
+→ OpenAPI is used to document the API
 
-Swagger UI is a tool to visualize it:
-    See all endpoints
-    View request/response models
-    Execute APIs directly from browser
-    ( URL : localhost:8080/swagger-ui/index.html )
+Swagger UI is used to visualize it:
+    → See all endpoints
+    → View request/response models
+    → Execute APIs directly from browser
+    → ( URL : localhost:8080/swagger-ui/index.html )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 Open API Annotations:
@@ -36,8 +36,8 @@ public class MyApp { }
 
 2: @Tag & @Operation
 
-@Tag        = Controller Class description
-@Operation  = APIs method description
+@Tag        → Document Controller Class
+@Operation  → Document API Methods
 
 @Tag(name = "User", description = "User-related operations")
 @RestController
@@ -52,7 +52,8 @@ public class UserController {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-3: @Parameter : Used to describle the parameter of the API Endpoint
+3: @Parameter:
+    → Document method parameters
 
 @Operation(summary = "Get user by ID")
 @GetMapping("/{id}")
@@ -62,7 +63,8 @@ public User getUserById( @Parameter(description = "User ID", required = true) @P
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-4: @ApiResponses and @ApiResponse : Used to define possible HTTP responses of the API.
+4: @ApiResponses and @ApiResponse:
+    → Document possible responses from an API method
 
 @Operation(summary = "Delete user")
 @ApiResponses({
@@ -76,7 +78,8 @@ public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-5: @Schema : Used to describle the Entity/Model or feilds
+5: @Schema:
+    → Document entities and attributes
 
 @Schema(description = "User entity")
 public class User {
@@ -95,8 +98,11 @@ public class User {
 
 6:  @SecurityScheme & @SecurityRequirement 
 
-@SecurityScheme : Used to define the security Type and name
-@SecurityRequirement : Used to tell this method or class needs this type of auth/security
+@SecurityScheme:
+    → Used to define the security Type and name
+
+@SecurityRequirement:
+    → Used to tell this method or class needs this type of auth/security
 
 //This class defines the bearer auth and have schema of the auth
 @SecurityScheme(
@@ -114,8 +120,7 @@ public String getSecureData() { ... }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Code for Swagger:
-Student Controller
+SWAGGER CODE:
 
 @RestController
 @RequiredArgsConstructor
@@ -197,5 +202,19 @@ Advanteages of OpenAPI over swagger:
 They are more standardized and widely adopted.
 They support a broader range of tools and integrations.
 OpenAPI is the evolution of Swagger, providing a more comprehensive and flexible specification for defining APIs.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+OPEN API ANNOTATIONS:
+
+1: @Tag                 → Document Controller Class
+2: @Operation           → Document API Methods
+3: @ApiResponses        → Document possible responses from an API method
+4: @APIResponse         → Document single response
+5: @Parameter           → Document method parameters
+6: @Schema              → Document entities and attributes
+7: @Hidden              → Hide API from documentation
+8: @RequestBody         → Document request body
+9: @OpenAPIDefinition   → Document Microservice level metadata like title, version, description, contact info, server details, tags etc.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------

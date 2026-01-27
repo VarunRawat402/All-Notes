@@ -2,65 +2,28 @@
 Thread Pool:
 -------------------------------------------------------------------------------------------------------------------------------
 
-A thread pool is a group of pre-created, reusable threads
-Tasks are submitted to threadPool
-Available threads pick and execute them
-Threads are reused, not destroyed after each task
-
--------------------------------------------------------------------------------------------------------------------------------
-
-Thread Communication:
-
-Threads coordinate with each other
-One thread tells another:
-    When to wait
-    When to continue
-
-Java Methods Used:
-
-wait() → thread waits
-notify() → wakes one waiting thread
-notifyAll() → wakes all waiting threads
-⚠ These methods must be called inside a synchronized block
-
--------------------------------------------------------------------------------------------------------------------------------
-
-Where Is Thread Communication Used:
-
-When threads depend on each other
-When tasks must run in a specific order
-
-Producer-Consumer Example
-    Producer → produces data
-    Consumer → consumes data
-
-They communicate:
-    Producer: “Data ready”
-    Consumer: “Data consumed”
-
-This avoids:
-    Busy waiting
-    CPU wastage
+→ Group of pre-created reusable threads
+→ Tasks are submitted to threadPool
 
 -------------------------------------------------------------------------------------------------------------------------------
 Executor Framework:
 -------------------------------------------------------------------------------------------------------------------------------
 
 Executor: 
-    Base interface
-    Has execute(Runnable)
+    → Base interface
+    → Has execute(Runnable)
 
 ExecutorService: 
-    Main interface used in real apps
-    Submit tasks, manage lifecycle
-    Methods: submit(), shutdown(), awaitTermination()
+    → Main interface used in real apps
+    → Submit tasks, manage lifecycle
+    → Methods: submit(), shutdown(), awaitTermination()
 
 ScheduledExecutorService: 
-    Run tasks with delay or periodically.
+    → Run tasks with delay or periodically.
 
 Executors: 
-    Utility class
-    Used to create thread pools
+    → Used to create thread pools
+    → Utility class
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -74,51 +37,50 @@ ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);      
 -------------------------------------------------------------------------------------------------------------------------------
 
 shutdown():
-    after shutdown(), No new tasks accepted
-    Existing tasks should complete normally
+    → No new tasks are accepted after shutdown()
+    → Existing tasks will get completed normally
 
 shutdownNow():
-    Tries to stop running tasks, Tasks may not finish
-    Interrupts threads
+    → Stops all running tasks
+    → Interrupts threads
 
 isShutdown():
-    true if shutdown started, false if not
+    → true if shutdown started, false if not
 
 awaitTermimation():
-    When all tasks are finished and shutdown is done then we reach terminated state
-    It is used to do some tasks after all the threads completed and shutdown is done
+    → When all tasks are finished and shutdown is done then we reach terminated state
+    → It is used to do some tasks after all the threads completed and shutdown is done
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 submit() :
-    Used to submit task to thread pool
-    return Future object
+    → Used to run task in threadPool
+    → returns Future object
 
 future.get():
-    It is used to get the result from the future object
-    Blocks current thread, Waits till task finishes
-    Gets result or exception
+    → It is used to get the result from the future object
+    → Blocking operation, blocks the current thread
+    → Gets result or exception
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 RUNNABLE:
-    Functional interface
-    No return value
-    Cannot throw checked exception
-    Used for simple tasks
-    Runnable r = () -> System.out.println("Running");
+    → Functional interface
+    → No return value
+    → Cannot throw checked exception
+    → Runnable r = () -> System.out.println("Running");
 
 CALLABLE:
-    Functional interface & Generic interface
-    Returns value
-    Can throw checked exception
-    Used when result is needed
-    Callable<Integer> c = () -> 5 * 5;
+    → Functional & Generic interface
+    → Returns value
+    → Can throw checked exception
+    → Used when result is needed
+    → Callable<Integer> c = () -> 5 * 5;
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Callable Example:
-We will calculate the factorial of a number in a thread and prints it;
+    → Factorial of number
 
 Code:
 
@@ -132,48 +94,38 @@ Future<Integer> ans = threadPool.submit(() -> {
     return fact;
 });
 
-int factorial = submit.get();           //This is blocking operation
+int factorial = ans.get();           //This is blocking operation
 System.out.println(factorial);
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 InvokeALL():
-    Run all the callable task together instead of 1 by 1
-    Takes list of Callable tasks, returns list of Future objects results
-    It is a blocking operation
+    → Takes list of Callable tasks and executes them together
+    → Returns list of Future results
+    → It is a blocking operation
 
 Code:
 
 ExecutorService threadPool = Executors.newFixedThreadPool(3);
-
-//3 Callable tasks
-Callable<String> c1 = ()->{
-    return "Task 1 completed";
-};
-
-Callable<String> c2 = ()->{
-    return "Task 2 completed";
-};
-
-Callable<String> c3 = ()->{
-    return "Task 3 completed";
-};
+Callable<String> c1 = ()->{return "Task 1 completed";};
+Callable<String> c2 = ()->{return "Task 2 completed";};
+Callable<String> c3 = ()->{return "Task 3 completed";};
 
 List<Callable<String>> tasks = Arrays.asList(c1,c2,c3);
-pool.invokeAll(tasks);                                                  //This is a blocking operation
 
+pool.invokeAll(tasks);                                                  //This is a blocking operation
 pool.invokeAll(tasks,2,TimeUnit.SECONDS);                               //Run all the tasks that can be run in 2 seconds after that stop all tasks
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 ScheduledExecutorService:
-    Used for delayed or repeated execution.
-    You can schedule a task at a given time or run a task at fixed rate or interval
+    → Used for scheduled tasks
+    → Shedule a task or run at fixed intervals
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 schedule(): 
-    Run a task once after delay
+    → Run the task once after given time
 
 Code:
 threadPool.schedule(() -> {
@@ -183,13 +135,13 @@ threadPool.schedule(() -> {
 -------------------------------------------------------------------------------------------------------------------------------
 
 scheduleAtFixedRate():
-    Run a task at a fixed interval
-    First run after 1 sec and after that every run will be after 2 sec
-    It does not matter if task is completed next task will run after 2 sec 
-    and tasks can overlap
+    → Run a task at a fixed interval
+    → First run is after 1 sec and next runs will be every 2 sec
+    → Does not wait for previous tasks to finish
+    → New tasks will run after 2 sec, tasks can overlap
 
-    InOrder to shutdown with FixedRate() we need to schedule the shutdown() too
-    otherwise the shutdown will be instant
+    → InOrder to shutdown with FixedRate() we need to schedule the shutdown() too
+    → otherwise the shutdown will be instant
 
 Code:
 ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(1);
@@ -205,9 +157,9 @@ threadPool.schedule(()->{
 -------------------------------------------------------------------------------------------------------------------------------
 
 scheduleWithFixedDelay():
-    Run a task at a fixed interval after previous task is finished
-    First run after 1 sec and next run will be 2 seconds after previous task is finished
-    If previous task took 10 sec then it will run after 10 + 2 sec
+    → Runs a task with fixed interval
+    → Wait for previous tasks to finish
+    → If previous task took 10 sec then it will run after 10 + 2 sec
 
 Code:
 threadPool.scheduleWithFixedDelay(() -> {
@@ -322,5 +274,40 @@ In CountDownLatch Only main thread will wait to  get tasks finished
 
 CyclicBarrier is used why you have to sync multiple threads 
 CountDownLatch is used when you have to wait for other threads to be finished
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Thread Communication:
+
+→Threads coordinate with each other
+→ One thread tells another:
+    → When to wait
+    → When to continue
+
+Java Methods Used:
+
+wait() → thread waits
+notify() → wakes one waiting thread
+notifyAll() → wakes all waiting threads
+⚠ These methods must be called inside a synchronized block
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Where Is Thread Communication Used:
+
+→ When threads depend on each other
+→ When tasks must run in a specific order
+
+Producer-Consumer Example
+    → Producer → produces data
+    → Consumer → consumes data
+
+They communicate:
+    → Producer: “Data ready”
+    → Consumer: “Data consumed”
+
+This avoids:
+    → Busy waiting
+    → CPU wastage
 
 -------------------------------------------------------------------------------------------------------------------------------

@@ -2,9 +2,9 @@
 Set ( Collection ):
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Stores unique elements only
-No Duplicate
-No indexing - cannot access elements by index
+→ Stores unique elements only
+→ No Duplicate
+→ No indexing - cannot access elements by index
 
 Syntax:
     Set<Integer> set1 = new HashSet<>();
@@ -24,27 +24,27 @@ clear()	        : Removes all elements.
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 1: HashSet : Fastest, No Order
-Average time → O(1)
-No order is maintained
-Not thread-safe
-Allows 1 null element
+→ Average time → O(1)
+→ No order is maintained
+→ Not thread-safe
+→ Allows 1 null element
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 2: LinkedHashSet:
-Maintains Insertion Order
-Slightly slower than HashSet due to ordering overhead
-Not thread-safe
-Allows 1 null element
+→ Maintains Insertion Order
+→ Slightly slower than HashSet due to ordering overhead
+→ Not thread-safe
+→ Allows 1 null element
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 3: TreeSet:
-Sorted Order
-Uses Red-Black Tree
-Slower than HashSet (O(log N))
-Not thread-safe
-No null elements allowed
+→ Sorted Order
+→ Uses Red-Black Tree
+→ Slower than HashSet (O(log N))
+→ Not thread-safe
+→ No null elements allowed
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 

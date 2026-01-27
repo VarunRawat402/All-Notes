@@ -4,44 +4,43 @@ Abstraction:
 
 1: Abstract Classes (abstract keyword) :
 
-    abstract + normal + static methods
-    instance + static variables
-    Can have a constructor
-    Multiple inheritance not supported
-    Cannot create object of absrtact class
+    → normal + static + abstract methods
+    → instance + static variables
+    → constructor
+    → Multiple inheritance not supported
 
 2: Interfaces (interface keyword) :
 
-    abstract + default + static methods 
-    public static final variables
-    Cannot have a constructor
-    Multiple Inheritance Supported
+    → default + static + abstract  
+    → static final variables
+    → Cannot have a constructor
+    → Multiple Inheritance Supported
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 When to Use Abstract Class vs Interface:
 
 1: Use Abstract Class When:
-    You want to share same code with multiple classes
-    You want to provide common properties and attributes to subclasses
-    You want to write some default implementation for subclassses
+    → You want to provide common code with subclasses
+    → You want to provide common properties and attributes to subclasses
+    → You want to write some default implementation for subclassses
 
 Example:
-    Animal → abstract class, with name field and run() method
-    Subclasses Dog and Cat inherit common behavior
+    → Animal → abstract class, with name field and run() method
+    → Subclasses Dog and Cat inherit common behavior
 
 2: Use Interface When:
-    You want to define a contract without implementation
-    You want to provide common behavior for subclasses
-    You want to allow flexible design and loose coupling
+    → You want to define a contract without implementation
+    → You want to provide common behavior for subclasses
+    → You want to allow flexible design and loose coupling
 
 Example:
-    PaymentMethod → interface
-    CreditCard and UPI implement interface → Cart can work with any payment type
+    → PaymentMethod → interface
+    → CreditCard and UPI implement interface → Cart can work with any payment type
 
 -------------------------------------------------------------------------------------------------------------------------------
-
 Abstract Class Code:
+-------------------------------------------------------------------------------------------------------------------------------
 
 abstract class Animal {
 
@@ -81,8 +80,8 @@ class Dog extends Animal {
 Dog dog = new Dog("PetDog", "Golden Retriever");
 
 -------------------------------------------------------------------------------------------------------------------------------
-
 Interface Code:
+-------------------------------------------------------------------------------------------------------------------------------
 
 interface Vehicle {
 
@@ -106,7 +105,7 @@ class Car implements Vehicle {
 -------------------------------------------------------------------------------------------------------------------------------
 
 Note:
-If Interface A has method fun() and Interface B extends A with greet(),
+→ → If Interface A has method fun() and Interface B extends A with greet(),
 → Student class implementing B must implement both methods
 
 interface A { void fun(); }
@@ -127,10 +126,10 @@ class Student implements B {
 Tight Coupling vs Loose Coupling
 -------------------------------------------------------------------------------------------------------------------------------
 
-Without Interface → Tight Coupling
+→ Without Interface → Tight Coupling
 
-Cart depends directly on all payment classes
-Adding a new payment type → need to modify Cart → bad design
+→ Cart depends directly on all payment classes
+→ Adding a new payment type → need to modify Cart → bad design
 
 Ex:
 class CreditCard { 
@@ -157,9 +156,9 @@ class Cart {
 
 With Interface → Loose Coupling:
 
-All payment types implement PaymentMethod
-Cart depends only on interface, not on concrete classes
-Adding new payment types → no changes to Cart
+→ All payment types implement PaymentMethod
+→ Cart depends only on interface, not on concrete classes
+→ Adding new payment types → no changes to Cart
 
 interface PaymentMethod { 
     void pay(); 

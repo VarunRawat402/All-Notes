@@ -11,17 +11,17 @@ Communication Pattern:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
 2. Asynchronous Communication:
-    Service publishes event  →  other services consumes events independently
-    No direct dependency
-    Example : Kafka, RabbitMQ
+    → Service publishes event  →  other services consumes events independently
+    → No direct dependency
+    → Example : Kafka, RabbitMQ
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Hybrid Communication:
 
 Real systems use both:
-    REST → queries / validations
-    Kafka → state changes / workflows
+    → REST → queries / validations
+    → Kafka → state changes / workflows
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -42,7 +42,6 @@ FEIGN CLIENT:
     → Used to call other microservices just by writing an interface.
     → No manual RestTemplate code, Clean and readable code
     → Works very well with Eureka, Built-in load balancing support
-
 
 Steps to implement it:
 

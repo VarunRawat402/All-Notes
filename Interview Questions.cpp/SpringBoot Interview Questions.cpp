@@ -74,7 +74,6 @@ public class UserControllerV2 {
 2. Header-based Versioning:
     → Client sends header → X-API-VERSION: 2
 
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

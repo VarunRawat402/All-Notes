@@ -14,16 +14,16 @@ Assert      → Verify expected results
 Repository Testing - Steps:
 
 1: Check Save Operation
-    Ensure save() returns a non-null entity.
+    → Ensure save() returns a non-null entity.
 
 2: Verify ID Generation
-    Verify auto-generated ID is not null.
+    → Verify auto-generated ID is not null.
 
 3: Confirm Existence in Database
-    Fetch the entity using findById() or findAll().
+    → Fetch the entity using findById() or findAll().
 
 4: Validate Field Values
-    Compare stored values with expected values.
+    → Compare stored values with expected values.
 
 --------------------------------------------------------------------------------------------------------------------------------
 

@@ -3,17 +3,17 @@ Spring Framework Concepts:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Spring Container (IoC Container):
-    Creates beans
-    Manages bean lifecycle
-    Injects dependencies
+    → Creates beans
+    → Manages bean lifecycle
+    → Injects dependencies
 
 Spring Context (ApplicationContext):
-    Advanced form of Spring Container:
+    → Advanced form of Spring Container:
     Includes:
-        Event handling
-        AOP support
-        Internationalization (i18n)
-        Property & profile management
+        → Event handling
+        → AOP support
+        → Internationalization (i18n)
+        → Property & profile management
 
 So ApplicationContext = Container + extra features.
 
@@ -22,16 +22,16 @@ Dependency Injection Types:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Constructor Injection ( Best )
-Dependencies are passed via the constructor at object creation.
-    Ensures dependency are injected when object is created
-    Immutability - dependencies should be final 
-    Testability  - Easier for unit testing
+    → Dependencies are passed by the constructor.
+    → Gurantees that the dependency is provided at object creation.
+    → Immutability - dependencies should be final 
+    → Testability  - Easier for unit testing
 
 Ex:
 @Service
 class Car {
-
     private final Engine engine;
+
     public Car(Engine engine) {
         this.engine = engine;
     }
@@ -41,10 +41,10 @@ class Car {
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Setter Injection:
-    Dependency injected later
-    Used when dependency is optional
-    Can cause runtime errors without dependency
-    Feilds cannot be final 
+    → Dependency injected after object creation using setter methods
+    → Used when dependency is optional
+    → Can cause runtime errors without dependency
+    → Feilds cannot be final 
 
 Ex:
 @Service
@@ -60,11 +60,10 @@ class Car {
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Feild Injection ( Worst ):
-    @Autowired is used to inject dependencies
-    Hard to test
-    No immutability
-    If you create car object manually, dependency will not be injected in the object making testing harder
-    Gives null pointer exception
+    → @Autowired is used to inject dependencies
+    → Hard to test
+    → No immutability
+    → If you create car object manually, dependency will not be injected in the object making testing harder
 
 Ex:
 @Service
@@ -81,18 +80,12 @@ class Car {
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @PostConstruct (Executed After Bean Creation)
-    Run methods automatically after the bean is created and dependencies are injected.
-
-Used for:
-    Initialization
-    Resource setup
+    → Run methods automatically after the bean is created and dependencies are injected.
+    → Used for Initialization, Resource setup
 
 @PreDestroy (Executed Before Bean Destruction)
-    Runs before the bean is removed from the Spring context.
-
-Used for:
-    Cleanup
-    Closing connections
+    → Runs before the bean is removed from the Spring context.
+    → Used for cleanup, closing connections
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -122,12 +115,12 @@ public class EmailService {
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @Primary:
-    Default bean when multiple beans of same type exist
-    Used automatically unless another bean is chosen explicitly
+    → Default bean when multiple beans of same type exist
+    → Used automatically unless another bean is chosen explicitly
 
 @Qualifier:
-    Explicitly chooses which bean to inject
-    Overrides @Primary.
+    → Manually select a specific bean by name
+    → Overrides @Primary.
 
 Note:
 @Component/@Service/@Repository → the default bean name is the class name with lowercase first letter.
@@ -170,46 +163,46 @@ Types of Bean Scopes:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Singleton Scope (Default):
-    Only one instance of the bean is created and shared.
-    Used : Service , Repository, Controller 
+    → Only one instance of the bean is created and shared.
+    → Used : Service , Repository, Controller 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Prototype Scope:
-    New instance every request
-    Spring does NOT manage the lifecycle (you must handle destruction).
+    → New instance every request
+    → Spring does NOT manage the lifecycle (you must handle destruction).
 
 Used:
-    A service which is new everytime you access it
-    Coupon Generator ( whenever u access it creates a new one )
+    → A service which is new everytime you access it
+    → Coupon Generator ( whenever u access it creates a new one )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Request Scope (For Web Applications):
-    New instance per HTTP request
+    → New instance per HTTP request
 
 Used:
-    Handling data specific to an HTTP request, such as request logging.
-    ( Whenever that request is fetched you can perform actions on that new request )
+    → Handling data specific to an HTTP request, such as request logging.
+    →  Whenever that request is fetched you can perform actions on that new request )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Session Scope (For Web Applications):
-    One instance per user session
+    → One instance per user session
 
 Used:
     ShoppingCart:
-    (You have an shopping cart so a new shopping cart is made per user and it
-    will be same for same user and different for different user )
+    → (You have an shopping cart so a new shopping cart is made per user and it
+    → will be same for same user and different for different user )
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Application Scope (For Web Applications):
-    One instance per web application
-    Shared across all users
+    → One instance per web application
+    → Shared across all users
 
 Used:
-    Global config
-    Caching
+    → Global config
+    → Caching
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

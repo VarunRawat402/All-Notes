@@ -3,16 +3,15 @@ Authentication strategy:
 -------------------------------------------------------------------------------------------------------------
 
 1: Interface Method:
-
-Easily To Implement
-Every Entity has seperate authentication
+    → Easily To Implement
+    → Every Entity has seperate authentication
 
 -------------------------------------------------------------------------------------------------------------
 
 Interface:
-This interface allows different entities to be treated uniformly through the UserAccount while having
-specific Implementation.
-All the Entities implements UserAccount and override all the methods
+    → This interface allows different entities to be treated uniformly through the UserAccount while having
+    → Specific Implementation.
+    → All the Entities implements UserAccount and override all the methods
 
 public interface UserAccount extends UserDetails {
 
@@ -64,8 +63,8 @@ public class Admin implements UserAccount {
 -------------------------------------------------------------------------------------------------------------
 
 UserDetailsService:
-Every entity is responsible for their own authentication and implementation of UserDetails methods
-Every entity is validated as a seperate entity in loadByUsername
+    → Every entity is responsible for their own authentication and implementation of UserDetails methods
+    → Every entity is validated as a seperate entity in loadByUsername
 
 @Service
 @RequiredArgsConstructor
@@ -96,10 +95,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 -------------------------------------------------------------------------------------------------------------
 
 User Entity:
-
-Implement the userDetails Interface
-User will be validated in loadUserByUsername()
-Mapped to every entity
+    → Implement the userDetails Interface
+    → User will be validated in loadUserByUsername()
+    → Mapped to every entity
 
 @Entity
 public class User {
@@ -145,8 +143,8 @@ public class Admin {
 -------------------------------------------------------------------------------------------------------------
 
 Create Student:
-First user is created and saved
-Then student is created and mapped with user
+    → First user is created and saved
+    → Then student is created and mapped with user
 
 public class RegistrationService {
     private final UserRepository userRepo;

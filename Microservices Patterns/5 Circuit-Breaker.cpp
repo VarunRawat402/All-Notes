@@ -12,32 +12,25 @@ How Circuit Breaker Works
 ------------------------------------------------------------------------------------------------------------------------------
 
 Closed State (Normal)
-    Requests go to the service normally
-    Failures are counted
-    If failure rate crosses threshold → Open state
+    → Requests go to the service normally
+    → Failures are counted
+    → If failure rate crosses threshold → Open state
 
 Open State (Fail Fast Mode)
-    No request goes to the service
-    Calls fail immediately
-    Protects the failing service from overload
+    → No request goes to the service
+    → Calls fail immediately
+    → Protects the failing service from overload
 
 Half-Open State (Testing the Waters)
-    After a wait time, few requests are allowed
-    If they succeed → back to Closed
-    If they fail → back to Open
+    → After a wait time, few requests are allowed
+    → If they succeed → back to Closed
+    → If they fail → back to Open
 
 ------------------------------------------------------------------------------------------------------------------------------
 
 Circuit Breaker ( @CircuitBreaker ):
-    Automatically tracks failures
-    Opens circuit when threshold is reached
-    Calls fallback method instead of actual service
-
-Application.properties:
-    resilience4j.circuitbreaker.instances.myCB.failure-rate-threshold=50
-    resilience4j.circuitbreaker.instances.myCB.wait-duration-in-open-state=5000ms
-    resilience4j.circuitbreaker.instances.myCB.sliding-window-size=10
-    resilience4j.circuitbreaker.instances.myCB.permitted-number-of-calls-in-half-open-state=2
+    → Opens circuit when failed request threshold is reached
+    → Calls fallback method instead of actual service
 
 Code:
     @CircuitBreaker(name = "myCB", fallbackMethod = "fallbackResponse")
@@ -50,12 +43,18 @@ Code:
         return "Service is currently unavailable. Please try again later.";
     }
 
+Application.properties:
+    resilience4j.circuitbreaker.instances.myCB.failure-rate-threshold=50
+    resilience4j.circuitbreaker.instances.myCB.wait-duration-in-open-state=5000ms
+    resilience4j.circuitbreaker.instances.myCB.sliding-window-size=10
+    resilience4j.circuitbreaker.instances.myCB.permitted-number-of-calls-in-half-open-state=2
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Retry ( @Retry ):
-    Retries a failed request before giving up
-    Useful when service fails temporarily
-    If all retries fail → fallback is executed
+    → Retries failed request before giving up
+    → Useful when service fails temporarily sometimes
+    → If all retries fail → fallback is executed
 
 
 Application.properties:
@@ -65,9 +64,9 @@ Application.properties:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 RateLimiter ( @RateLimiter )
-    Limits number of requests per time window
-    Extra requests are rejected
-    Protects service from traffic spikes
+    → Limits number of requests per time window
+    → Extra requests are rejected
+    → Protects service from traffic spikes
 
 Application.properties:
 resilience4j.ratelimiter.instances.myRateLimiter.limit-for-period=2
@@ -76,9 +75,9 @@ resilience4j.ratelimiter.instances.myRateLimiter.limit-refresh-period=8s
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 BulkHead ( @BulkHead )
-    Limits concurrent requests, Rejects extra calls
-    Prevents thread pool exhaustion
-    Isolates failures
+    → Limits concurrent requests, Rejects extra calls
+    → Prevents thread pool exhaustion
+    → Isolates failures
 
 Application.properties:
 resilience4j.bulkhead.instances.myBulkhead.max-concurrent-calls=5

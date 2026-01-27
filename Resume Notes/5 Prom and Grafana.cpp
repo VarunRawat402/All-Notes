@@ -2,43 +2,32 @@
 PROM AND GRAFANA:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-1. CPU Metrics
-    CPU usage (%)
-    CPU cores used
-    CPU usage per container / pod
+Prometheus Implementation:
 
-How to explain:
-    CPU metrics indicate how much processing application consumes.
-    High CPU usage can signal heavy load or inefficient processing.
-
-Safe example line:
-    We monitored CPU usage to ensure the service was not over-consuming processor resources.
+1: Add Prometheus & Actuator dependency:
+2: Enable Actuator Endpoints in application.properties:
+3: Create Prometheus config file (prometheus.yml):
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-2. Memory Metrics
-Metrics you see:
-    Memory usage (MB/GB)
-    Memory limit vs used memory
-    JVM heap usage (for Spring Boot)
+Prometheus Config File:
 
-How to explain:
-    Memory metrics show how much RAM the application consumes. Monitoring this helps detect memory leaks or applications nearing their memory limits.
-    Safe example line:
-    “Memory usage was tracked to ensure the application stayed within allocated limits.”
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "spring-boot-app"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "host.docker.internal:8080"
+        labels:
+          application: "Spring boot Service"
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-3. Application (Basic) Metrics
-
-These come from the application itself.
-Common ones you can say:
-    Request count
-    Response time / latency
-    Error count (4xx / 5xx)
-    Application uptime
-How to explain:
-    Application metrics help understand how the service behaves under load, such as how many requests it handles and how quickly it responds.
+Actuator Endpoint:
+    management.endpoints.web.exposure.include=*
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 

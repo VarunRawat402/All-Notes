@@ -3,8 +3,8 @@ Exception:
 -------------------------------------------------------------------------------------------------------------------------------
 
 1: Checked Exception :
-    Occurs at compile time
-    Must Handle them or compilation will fail
+    → Compile time exception
+    → Must Handle them or compilation will fail
 
 Example: 
 IOException             → Issues during file reading
@@ -13,8 +13,8 @@ FileNotFoundException   → File path does not exist
 -------------------------------------------------------------------------------------------------------------------------------
 
 2: Unchecked Exception : 
-    Occurs at Run time 
-    Should be handled to avoid application crashes
+    → Runtime Exception
+    → Should be handled to avoid application crashes
 
 Example: 
 ArrayIndexOutOfBoundsException  → Accessing invalid array index
@@ -35,13 +35,14 @@ Exception Handling:
 -------------------------------------------------------------------------------------------------------------------------------
 
 2: Finally block :
-    Always executes whether exception occurs or not
-    Commonly used to close resources
+    → Always executes whether exception occurs or not
+    → Commonly used to close resources
+    → If you return something in try, catch and finally, then finally overrides the other two returns.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 3: Throw Keyword:
-    Used to manually throw an exception inside a method.
+    → Used to manually throw an exception inside a method.
 
 Ex:
 public static void checkAge(int age) {
@@ -54,8 +55,8 @@ public static void checkAge(int age) {
 -------------------------------------------------------------------------------------------------------------------------------
 
 4: Throws Keyword:
-    Specify which exceptions a method might throw
-    Caller must handle or propagate
+    → Specify which exceptions a method might throw
+    → Caller must handle or propagate
 
 -------------------------------------------------------------------------------------------------------------------------------
 

@@ -2,28 +2,27 @@
 DeadLock:
 -------------------------------------------------------------------------------------------------------------------------------
 
-Deadlock happens when two or more threads are blocked forever
-
-Thread 1 → holds R1 → waits for R2
-Thread 2 → holds R2 → waits for R1
+→ Deadlock happens when two or more threads are blocked forever
+→ Thread 1 → holds R1 → waits for R2
+→ Thread 2 → holds R2 → waits for R1
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 synchronized can cause deadlock
-synchronized cannot recover from deadlock once it happens
+    → synchronized cannot recover from deadlock once it happens
 
 Reason:
-    No tryLock
-    No timeout
-    No interrupt while waiting
+    → No tryLock
+    → No timeout
+    → No interrupt while waiting
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Deadlock Example:
 
-Thread-1 holds lock1, waits for lock2
-Thread-2 holds lock2, waits for lock1
-Results in Deadlock situation
+→ Thread-1 holds lock1, waits for lock2
+→ Thread-2 holds lock2, waits for lock1
+→ Results in Deadlock situation
 
 Code:
 public class SimpleDeadlock {

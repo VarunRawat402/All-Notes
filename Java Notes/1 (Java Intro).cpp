@@ -41,14 +41,13 @@ System.out.println('1' + 1);        // 50
 -------------------------------------------------------------------------------------------------------------------------------
 
 Shallow Copy
-    → Top-level object is copied
+    → Top-level object does not share reference
     → Nested objects share same reference
     → Changes in nested objects affect both
     → Default Behavior
 
 Deep Copy
-    → Top-level and nested objects are copied
-    → No shared references
+    → Top-level and nested objects both does not share reference
     → Changes do not affect the other object
     → Must override clone()
     → Manually clone nested objects

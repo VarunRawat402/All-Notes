@@ -63,12 +63,12 @@ public class DemoApplication {
 Start() vs Run():
 
 run():
-It is defined in Thread class and Runnable interface
-When you call run(), It runs the method in the same thread
-Does not create a new thread
+→ It is defined in Thread class and Runnable interface
+→ When you call run(), It runs the method in the same thread
+→ Does not create a new thread
 
 start():
-If is defined in Thread class
-When you call start(), It creates a new thread and calls run() method internally
+→ If is defined in Thread class
+→ When you call start(), It creates a new thread and calls run() method internally
 
 -------------------------------------------------------------------------------------------------------------------------------

@@ -3,19 +3,19 @@ Multi Threading:
 -------------------------------------------------------------------------------------------------------------------------------
 
 Process
-    A process is an running program with its own memory space
+    → It is a program with its owm memory and resources.
+    → Example: Chrome, Intellij
 
 Thread
-    A thread is a small unit of work inside a process.
-    A process can have one or multiple threads that share the same memory space but can execute independently.
+    → It is a smallest unit of task in process
+    → They share resources but run independently.
 
 What is Multithreading?
-    Multithreading is a programming technique where a single process is divided into multiple threads, 
-    and these threads run independently but share the same memory and data.
-    Each thread performs a part of the task, so the work gets done faster and more efficiently.
+    → When multiple threads are working together to complete a task.
+    → Improves performance and responsiveness.
 
 Thread Safe:
-    When Multiple threads access or modify shared data simultaneously without corrupting it or causing bugs.
+    → When Multiple threads access the same data without causing data corruption.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -23,53 +23,50 @@ Single Core vs Multi Core:
 
 1. Time-sharing / Concurrency (in single-core CPUs):
 
-A single core runs one task at a time.
-The operating system rapidly switches between tasks.
-Each task gets a small time slice.
-To the user, it feels like all tasks are running together — but in reality, they take turns very quickly.
+→ A single core runs one task at a time.
+→ The operating system rapidly switches between tasks.
+→ Each task gets a small time slice.
+→ To the user, it feels like all tasks are running together — but in reality, they take turns very quickly.
 
 2. True parallelism (in multi-core CPUs):
 
-A multi-core CPU can run multiple tasks at the same exact time, because:
-Each core can handle a task/thread simultaneously.
-No switching — tasks truly happen in parallel.
-This leads to better performance, especially for heavy or many tasks.
+→ A multi-core CPU can run multiple tasks at the same exact time, because:
+→ Each core can handle a task/thread simultaneously.
+→ No switching — tasks truly happen in parallel.
+→ This leads to better performance, especially for heavy or many tasks.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 Time Slice:
-A time slice is a fixed amount of CPU time given to a process or thread.
-After its time slice ends, the CPU may give the turn to another task.
-Also called a time quantum.
+    → It is a small amount of CPU time given to threads to run by scheduler before switching to the next thread.
 
 Context Switching:
-Context switching is the process of saving the state of one thread/process and loading the state of another.
-Happens when switching between tasks — including at the end of a time slice.
+    → Saving the state of one thread to run another thread and restoring it later.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 LifeCycle of Thread:
 
 NEW:
-    Thread object created, start() not called
-    Thread t1 = new Thread(() ->);
+    → Thread object created, start() not called
+    → Thread t1 = new Thread(() ->);
 
 RUNNABLE:
-    start() called
-    Waiting for CPU
+    → start() called
+    → Waiting for CPU
 
 RUNNING:
-    Scheduler assigns CPU, and thread is running
+    → Scheduler assigns CPU, and thread is running
 
 BLOCKED:
-    Thread is blocked because another thread holds the lock
+    → Thread is blocked because another thread holds the lock
 
 WAITING:
-    Thread is waiting for another thread to get completed
-    thread.join()  → waiting for another thread to finish
+    → Thread is waiting for another thread to get completed
+    → thread.join()  → waiting for another thread to finish
 
 TERMINTED:
-    Thread has finished execution
-    run() execution completed
+    → Thread has finished execution
+    → run() execution completed
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

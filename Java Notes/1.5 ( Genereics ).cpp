@@ -3,8 +3,8 @@ GENERICS:
 -------------------------------------------------------------------------------------------------------------------------------
 
 What are Generics in Java?
-    Generics allows you to create classes, interfaces, and methods that work with different data types 
-    while ensuring type safety at compile time.
+    → Generics allows you to create classes, interfaces, and methods that work with different data types 
+    → while ensuring type safety at compile time.
 
 Type Safety         → Prevents inserting the wrong data type
 No Type Casting     → Cleaner and safer code

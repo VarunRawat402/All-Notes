@@ -23,9 +23,9 @@ Code:
 -------------------------------------------------------------------------------------------------------------
 
 InMemory Authorization:
-    No need to implement UserDetails or UserDetailsService for in memory authentication
-    Hardcode the credentials 
-    Used for testing
+    → No need to implement UserDetails or UserDetailsService for in memory authentication
+    → Hardcode the credentials 
+    → Used for testing
 
 Code:
     @Bean
@@ -43,8 +43,8 @@ Code:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Database-Based Authentication:
-    Validates user from the Database
-    Needs to implement UserDetails and UserDetailsService
+    → Validates user from the Database
+    → Needs to implement UserDetails and UserDetailsService
 
 
 public class User implements UserDetails {
@@ -70,8 +70,8 @@ public class User implements UserDetails {
 }
 
 Role:
-    Roles are not hardcoded in variables, Make a Db for all the roles
-    Roles and User are in many to many relationship so, we create common table for them
+    → Roles are not hardcoded, Make a table for all the roles
+    → Roles and User are in many to many relationship so, we create common table for them
 
 public class Role {
 
@@ -83,8 +83,8 @@ public class Role {
 }
 
 Student:
-    Student is mapped to user in one to one relationship
-    Student is the owning entity because we are saving student and user will be automatically saved
+    → Student is mapped to user in one to one relationship
+    → Student is the owning entity because we are saving student and user will be automatically saved
 
 public class Student{
 

@@ -2,7 +2,7 @@
 Api Gateway:
 ------------------------------------------------------------------------------------------------------------------------------
 
-→ Single entry point for all client requests
+→ Single entry point for all requests
 → Clients never call microservices directly.
 → Gateway forwards requests to the correct service
 
@@ -11,33 +11,26 @@ Api Gateway:
 Core Responsibilities:
 
 1. Request Routing:
-    Routes requests to the correct service.
+    → Send requests to the correct service.
 
 2. Authentication & Authorization:
-    JWT / OAuth2 validation
-    Role-based access
-    Done once at gateway
+    → JWT validation
+    → Role-based access
 
 3. Rate Limiting
-    Prevent abuse of requests
-    Example: 100 requests/min per user
+    → Prevent abuse of requests
+    → Fail request after limit reached
 
 4. Load Balancing
-    Routes traffic across multiple service instances
-    Uses service discovery (Eureka / Kubernetes)
-
-5. Request / Response Transformation
-    Modify headers
-    Convert payloads
-    Add user 
+    → Send requests to service instances in a load balanced way
     
-6. Caching:
-    Cache frequent responses
-    Reduce backend load
+5. Caching:
+    → Cache frequent responses
+    → Reduce backend load
 
-7. Logging & Monitoring
-    Central request logging
-    Tracing IDs
+6. Logging & Monitoring
+    → Central request logging
+    → Tracing IDs
     
 ------------------------------------------------------------------------------------------------------------------------------
 
@@ -69,12 +62,12 @@ spring.cloud.gateway.discovery.locator.lowerCaseServiceId=true                  
 ------------------------------------------------------------------------------------------------------------------------------
 
 Re-Routing in API GATEWAY:
-    You can manually specify routes using RouteLocator.
-    Similar path will re-route the request to correct service in a load balanced way
+    → Create the routes using RouteLocatorBuilder
+    → re-routes the requests based on URL to correct service
 
 Load Balancing : 
-    Automatic when multiple service instances exist
-    Uses Spring Cloud LoadBalancer
+    → Automatic when multiple service instances exist
+    → Uses Spring Cloud LoadBalancer
 
 ------------------------------------------------------------------------------------------------------------------------------
 
@@ -97,11 +90,11 @@ public class ApiConfiguration {
 Custom URL Rewriting:
 
 Incoming Request:
-    http://localhost:9765/fx/USD/INR
+    → http://localhost:9765/fx/USD/INR
 
 Gateway Rewrites To:
-    /currency/exchange/USD/INR
-    Forwards to CurrencyExchange Service
+    → /currency/exchange/USD/INR
+    → Forwards to CurrencyExchange Service
 
 Code:
 
@@ -119,19 +112,5 @@ public class ApiConfiguration {
                     .build();
     }
 }
-
-------------------------------------------------------------------------------------------------------------------------------
-
-Authentication and Authorization via GateWay:
-
-Authentication (API Gateway)
-    JWT validation
-    Reject invalid tokens
-    Prevents unnecessary service calls
-
-Authorization (Microservices)
-    Extract roles from JWT
-    Allow / deny access based on roles
-    Optional re-validation for sensitive APIs
 
 ------------------------------------------------------------------------------------------------------------------------------

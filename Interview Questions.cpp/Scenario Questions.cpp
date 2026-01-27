@@ -56,7 +56,7 @@ How It Works:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 What Causes Memory Leaks:
-    A memory leak occurs when objects are no longer needed but still referenced, so the garbage collector cannot reclaim memory.
+    → A memory leak occurs when objects are no longer needed but still referenced, so the garbage collector cannot reclaim memory.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -106,35 +106,35 @@ Non-Transient Errors: permanent → no retry
 Application Deployment Process (Production-Oriented):
 
 1. Code Development & Version Control:
-    Code is developed locally
-    feature → develop → main
+    → Code is developed locally
+    → feature → develop → main
 
 2. Push Code to Git Repository:
-    Create PR (Pull Request)    → Code review
-    Merge after approval        → Triggers CI pipeline
+    → Create PR (Pull Request)    → Code review
+    → Merge after approval        → Triggers CI pipeline
 
 3. Build & Package Application:
-    mvn clean install   → Generate JAR files
-    mvn test            → run unit tests
+    → mvn clean install   → Generate JAR files
+    → mvn test            → run unit tests
 
 4. Create Docker Image:
-    Write Dockerfile
-    Build Docker image
+    → Write Dockerfile
+    → Build Docker image
 
 5. Push Docker Image to Container Registry:
-    Authenticate with AWS ECR
-    Tag image
-    Push image
+    → Authenticate with AWS ECR
+    → Tag image
+    → Push image
 
 6. Deployment to Environment:
-    Kubernetes (EKS)
-    kubectl apply -f deployment.yaml
+    → Kubernetes (EKS)
+    → kubectl apply -f deployment.yaml
 
-7   . Post-Deployment Verification:
-    Health checks
-    Smoke tests
-    Monitor logs and metrics
-    Rollback if required
+7  Post-Deployment Verification:
+    → Health checks
+    → Smoke tests
+    → Monitor logs and metrics
+    → Rollback if required
 
 We follow a CI/CD-based deployment where code is built, tested, containerized, pushed to a registry, and deployed using automated pipelines with verification and rollback.
 
@@ -158,8 +158,8 @@ How to Store Customer Sensitive Data:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Saga Design Pattern:
-    Saga is used to manage distributed transactions in microservices.
-    Maintains data consistency
+    → Saga is used to manage distributed transactions in microservices.
+    → Maintains data consistency
 
 1. Choreography-Based Saga:
     → No central coordinator

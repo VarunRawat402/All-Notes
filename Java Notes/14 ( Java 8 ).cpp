@@ -4,9 +4,9 @@ Java 8 Features:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Streams():
-    Functional way to process collections
-    Processes data without modifying original collection
-    Supports operations like filter, map, reduce
+    → Functional way to process collections
+    → Processes data without modifying original collection
+    → Supports operations like filter, map, reduce
 
 Syntax:
 
@@ -20,15 +20,15 @@ Stream<Integer> s2 = Stream.of(1,2,3,4);
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Parallel Streams():
-Normally, streams execute sequentially, meaning one item at a time. If the dataset is large, this can be slow.
-Parallel streams split the work across multiple threads, utilizing multiple CPU cores to process data faster.
-Used when dataset is large, operation is CPU intesive, No shared data, Each element takes time to process
+→ Normally, streams execute sequentially, meaning one item at a time. If the dataset is large, this can be slow.
+→ Parallel streams split the work across multiple threads, utilizing multiple CPU cores to process data faster.
+→ Used when dataset is large, operation is CPU intesive, No shared data, Each element takes time to process
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 1: Lambda Expressions (Anonymous Functions)
-    Reduces boilerplate code
-    More readable
+    → Reduces boilerplate code
+    → More readable
 
 Ex:
 interface Greeting {
@@ -41,22 +41,22 @@ Greeting g = () -> System.out.println("Hello Java 8");
 
 2:  Functional Interfaces (@FunctionalInterface)
 
-Interface with exactly 1 abstract method
-It can have any number of static and default method, but abstract method should be 1 only
-Example: Runnable, Comparator, Callable.
+→ Interface with exactly 1 abstract method
+→ It can have any number of static and default method, but abstract method should be 1 only
+→ Example: Runnable, Comparator, Callable.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 3: Default & Static Methods in Interfaces
 
-default → has body, can be overridden
-static → belongs to interface itself, not instances
+→ default → has body, can be overridden
+→ static → belongs to interface itself, not instances
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 4 : Optional :
-    Optional<T> is used to avoid NullPointerException.
-    Encourages null-safe coding
+    → Optional<T> is used to avoid NullPointerException.
+    → Encourages null-safe coding
 
 Example:
 
@@ -72,8 +72,8 @@ static public Optional<String> upperCase(String name){
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 5: Predicate:
-A Predicate<T> is a functional interface
-Takes a condition return true or false
+    → A Predicate<T> is a functional interface
+    → Takes a condition return true or false
 
 Predicate<Integer> isEven = num -> num % 2 == 0;
 
@@ -83,7 +83,7 @@ System.out.println(isEven.test(11)); // false
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 Predicate with filter() in Streams
-We often use Predicate with Streams to filter elements.
+    → We often use Predicate with Streams to filter elements.
 
 List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
 Predicate<Integer> isEven = num -> num % 2 == 0;
@@ -105,8 +105,8 @@ System.out.println(and.test(name));
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 7: Reduce():
-Used to combine all stream elements into one result (sum, max, min, concatenation).
-In reduce method we give condition on how to accumulate the data
+    → Used to combine all stream elements into one result (sum, max, min, concatenation).
+    → In reduce method we give condition on how to accumulate the data
 
 Sum of Numbers:
 

@@ -7,7 +7,7 @@ What is Redis:
     → Used as database, cache, and message broker
 
 To connect Redis:
-	redis-cli -h <host-name> -p <port> -a <password>
+	→ redis-cli -h <host-name> -p <port> -a <password>
 
 Cloud Redis usually requires authentication
 Port is taken from the connection string
@@ -35,12 +35,12 @@ Pipelining & batching:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 When Redis Memory Is Full:
-	1: Increase memory / add Redis nodes
-	2: Evict existing keys (based on eviction policy)
+
+1: Increase memory / add Redis nodes
+2: Evict existing keys (based on eviction policy)
 
 Always store cache data with expiry to avoid memory issues.
 If keys have no expiry, nothing is deleted → insertion fails when memory fulls.
-This is why expiry time is important.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -48,8 +48,10 @@ Disadvantages:
 
 1: Startup time increases because Redis loads data from disk into RAM.
 2: Duplicate storage — same data in RAM and disk at the same time.
-	Ex: 1 gb data loaded from disk in memory when server starts.
-		So Memory is using 1 gb and disk is also using 1 gb of storage of same data.
+
+Ex: 
+→ 1 gb data loaded from disk in memory when server starts.
+→ So Memory is using 1 gb and disk is also using 1 gb of storage of same data.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -148,7 +150,8 @@ AOF:
     → Near-zero data loss
     → Slight performance overhead
 
-Combination: Many production systems use both RDB + AOF for speed + durability.
+Combination: 
+→ Many production systems use both RDB + AOF for speed + durability.
 
 RDB + AOF (Production Best Practice):
 → RDB → fast recovery
@@ -161,34 +164,37 @@ Example (E-commerce App):
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Replication:
-    Copies data from master → replicas
 
 How it works:
-    → Master handles all writes
+    → Master handles all writes, can also handle reads
     → Replicates data to replicas asynchronously
     → Replicas handle read requests → reduces master load
+
+Implication:
+    → High performance.
+    → Possible replication lag.
+    → In case of master crash, recent writes may be lost if not yet replicated.
 
 New replica joining:
     → Master sends full RDB snapshot
     → Then streams incremental updates
 
+Note:
+Read critical data from master to avoid stale reads due to replication lag.
+
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Sentinel:
-    Continuously monitors master & replicas
+    → Continuously monitors master & replicas using heartbeats.
 
 If the master fails:
-→ Promotes a replica to master automatically
-→ Reconfigures other replicas
-→ Notifies clients of new master
-→ No manual intervention required
-    Promotes one replica to master automatically.
-    Updates other replicas to follow the new master.
-    Notifies client applications of the new master address.
-    Provides high availability without manual intervention.
+→ Promotes one replica to master automatically.
+→ Updates other replicas to follow the new master.
+→ Notifies client applications of the new master address.
+→ No manual intervention required for all this
 
-→ Manual master/replica configuration
-→ On failure → downtime + reconfiguration
+Manual Configuration:
+    → On failure → downtime increases + reconfiguration
 
 → With Sentinel, You connect to redis and master node through sentienl automatically
 → Configure reads from replicas using LettuceConnectionFactory
@@ -222,7 +228,6 @@ Meaning:
 → PX / EX → TTL → lock auto-expires if process crashes
 
 → Prevents race conditions in distributed applications.
-→ Ensures mutual exclusion for critical sections
 → Avoids duplicate processing when multiple instances of a service run concurrently.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------\
@@ -247,7 +252,7 @@ How do you protect DB when Redis is down:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Cache Double Delete Strategy:
-    Prevents stale cache after DB update
+    → Prevents stale cache after DB update
 
 T1: UPDATE user (uncommitted)
 T2: SELECT user → A

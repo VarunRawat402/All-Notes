@@ -2,10 +2,9 @@
 Linked List:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Each node   →   data + reference of next node
-
-Dynamically sized
-Does not require contiguous memory allocation
+→ node  →  data + reference of next node
+→ Dynamically sized
+→ Does not require contiguous memory allocation
 
 Syntax:
     LinkedList<String> ll = new LinkedList<>();
@@ -18,23 +17,23 @@ Search:     O(n) — must traverse from head
 Access:     O(n) — cannot directly access index
 
 1. Singly Linked List:
-    Each node points only to next node
-    Traversal only forward
+    → Each node points only to next node
+    → Traversal only forward
 
 2. Doubly Linked List:
-    Each node points to both next and previous nodes
-    Can traverse in both directions
+    → Each node points to both next and previous nodes
+    → Can traverse in both directions
 
 3. Circular Linked List:
-    Last node points back to first node
-    Forms a circular chain
+    → Last node points back to first node
+    → Forms a circular chain
 
 4. Doubly Circular Linked List:
-    Combination of doubly + circular
-    First ↔ Last connected both ways
+    → Combination of doubly + circular
+    → First ↔ Last connected both ways
 
 Note:
-In java LinkedList is implemented as a Doubly Linked List
+→ In java LinkedList is implemented as a Doubly Linked List
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 

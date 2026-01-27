@@ -2,29 +2,31 @@
 Configuration Management Patterns:
 ------------------------------------------------------------------------------------------------------------------------------
 
-→ It handle how microservices manage configuration, secrets in a dynamic, distributed environment.
+→ Manage configuration & secrets in distributed environment.
 → Microservices run independently in multiple environments (dev, QA, prod)
 → Configuration may change frequently (URLs, DB credentials, feature flags)
-→ Hardcoding configs → inflexible, error-prone, and insecure
+→ Hardcoding configs → inflexible, error-prone
 
-A. Externalized Configuration:
-    Move configs out of the service code
-    Store in config files, environment variables, or config servers
+------------------------------------------------------------------------------------------------------------------------------
 
-B. Secrets Management:
-    Sensitive data (DB passwords, API keys) must be secured
-    Avoid storing in config files or code
-    AWS Secrets Manager
-    Kubernetes Secrets
+1. Externalized Configuration:
+    → Move configs out of the service code
+    → Store in config files, environment variables, or config servers
 
-C. Centralized Configuration:
-    One central config source for all service 
-    Services fetch configs at startup (or dynamically)
-    Spring Cloud Config Server + Git backend
+2. Secrets Management:
+    → Sensitive data must be secured
+    → Avoid storing Sensitive data in config files or code
+    → AWS Secrets Manager
+    → Kubernetes Secrets
 
-D. Dynamic Configuration Refresh:
-    Services can reload configuration at runtime without redeploy
-    Useful for feature flags, timeouts, endpoints
+3. Centralized Configuration:
+    → 1 Config server for all the microservices configuration
+    → Services fetch configs at startup (or dynamically)
+    → Spring Cloud Config Server + Git backend
+
+4. Dynamic Configuration Refresh:
+    → Services can reload configuration at runtime without redeploy
+    → Useful for feature flags, timeouts, endpoints
 
 Code:
     @RefreshScope
@@ -38,15 +40,14 @@ Code:
 Centralized Configuration Implementation:
 ------------------------------------------------------------------------------------------------------------------------------
 
-→ All microservices fetch configuration from one central place
+→ All microservices fetch configuration from one config server
 → Config is stored in Git (recommended) or local folder
-→ Changes config without redeploying all services
+→ Changes in config without redeploying all services
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-1: Config Server:
-    Reads configuration from Git / local
-    Exposes config via HTTP endpoints
+Config Server:
+    → Reads configuration from Git / local
 
 1: Add spring cloud config server Dependecy:
 2: Annotate application with @EnableConfigServer:
@@ -60,7 +61,7 @@ Centralized Configuration Implementation:
 ------------------------------------------------------------------------------------------------------------------------------
 
 Config Client
-    Fetches configuration from Config Server on startup
+    → Fetches configuration from Config Server on startup
 
 1: Add spring cloud starter config
 
@@ -75,7 +76,7 @@ Configuration File Naming and Profiles:
     → user-service-dev.properties
     → user-service-prod.properties
 
-Active Profile ( Client Side ):
+Active Profile(Service):
 spring.profiles.active=dev              //Config Server will load user-service-dev.properties
 
 ------------------------------------------------------------------------------------------------------------------------------

@@ -2,11 +2,11 @@
 Enums:
 -------------------------------------------------------------------------------------------------------------------------------
 
-Used to define constants
-Alternate to public static final 
+→ Used to define constants
+→ Alternate to public static final 
 
-Enums improve readability, maintainability, and type safety.
-Enum objects cannot be created using the new keyword.
+→ Enums improve readability, maintainability, and type safety.
+→ Enum objects cannot be created using the new keyword.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -23,13 +23,13 @@ public enum Constants {
 -------------------------------------------------------------------------------------------------------------------------------
 
 Enums Can Have:
-    Variables
-    Constructors (always private internally)
-    getters + static methods
+    → Variables
+    → Constructors (always private internally)
+    → getters + static methods
 
 Cannot have:
-Public constructors
-Setters (enum values should be immutable)
+→ Public constructors
+→ Setters (enum values should be immutable)
 
 Code:
 

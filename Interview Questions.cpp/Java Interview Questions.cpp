@@ -3,8 +3,8 @@ Java Interview Questions:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is exception propagation?
-    When an exception is not caught in the method where it occurs, 
-    it propagates up the call stack to the calling method.
+    → When an exception is not caught in the method where it occurs, 
+    → it propagates up the call stack to the calling method.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -42,10 +42,10 @@ hashCode()   → decides bucket location
 equals()     → checks values
 
 If a.equals(b) is true
-    Then, a.hashCode() == b.hashCode() 
+    → Then, a.hashCode() == b.hashCode() 
 
 If a.hashCode() == b.hashCode()
-    Then, a.equals(b) may be true or false
+    → Then, a.equals(b) may be true or false
 
 Explanation:
 You have 2 objects you want to store in the hashmap
@@ -55,62 +55,15 @@ Different hashcode()    → both will be added in different buckets
 Same hashcode()         → both will be added in same bucket
 
 Example:
-
-k1 = "varun" & k2 = "arun"
-Assume same hashCode → stored in same bucket
-hashcode() of k1 is used to find the bucket
-Now in bucket there are 2 values stored, which one to get
-now .equals() method is used to get the correct value by checking each key with "varun"
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Finalize vs Try with resource:
-    Used to close the resources like file, database connection etc
-
-Finalize:
-→ Method in Object class
-→ When object has no reference, GC may call finalize() automatically
-→ GC can call it after some time, or may never call it you dont know and resource will never gets closed.
-
-Try with resource:
-→ method in AutoCloseable interface
-→ close() is automatically called after try block executes
-→ Works even if exception occurs
-
-Example:
-try (Resource res = new Resource()) {
-    res.use();                              // Auto-closes after this block
-}
+→ k1 = "varun" & k2 = "arun"
+→ Assume same hashCode → stored in same bucket
+→ hashcode() of k1 is used to find the bucket
+→ Now in bucket there are 2 values stored, which one to get
+→ now .equals() method is used to get the correct value by checking each key with "varun"
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-What are classloaders in Java?
-
-ClassLoader is a part of JVM that loads class into memory
-Class is not loaded into memory when created 
-Class gets loaded into the memory when:
-    object is created / static method is called / static variable is accessed
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Why Do We Make a Constructor private:
-    A private constructor is used to restrict object creation from outside the class.
-
-1. Singleton Pattern
-   └─ Only one instance of the class exists
-
-2. Utility Classes
-   └─ Class has only static methods, no object needed
-
-3. Factory Methods
-   └─ Force usage of static method for object creation
-
-4. Prevent Inheritance
-   └─ Subclasses cannot call super(), class cannot be extended
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Concurrent Hashmap and Internal working:
+Concurrent Hashmap():
     → Thread-safe implementation of Map
     → Alternative to Collections.synchronizedMap()
 
@@ -132,14 +85,60 @@ Notes:
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+Finalize vs Try with resource:
+    → Used to close the resources like file, database connection etc
+
+Finalize:
+→ Method in Object class
+→ When object has no reference, GC may call finalize() automatically
+→ GC can call it after some time, or may never call it you dont know and resource will never gets closed.
+
+Try with resource:
+→ method in AutoCloseable interface
+→ close() is automatically called after try block executes
+→ Works even if exception occurs
+
+Example:
+try (Resource res = new Resource()) {
+    res.use();                              // Auto-closes after this block
+}
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+What are classloaders in Java?
+
+→ ClassLoader is a part of JVM that loads class into memory
+→ Class is not loaded into memory when created 
+→ Class gets loaded into the memory when:
+    object is created / static method is called / static variable is accessed
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Why Do We Make a Constructor private:
+    → A private constructor is used to restrict object creation from outside the class.
+
+1. Singleton Pattern
+   └─ Only one instance of the class exists
+
+2. Utility Classes
+   └─ Class has only static methods, no object needed
+
+3. Factory Methods
+   └─ Force usage of static method for object creation
+
+4. Prevent Inheritance
+   └─ Subclasses cannot call super(), class cannot be extended
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Serialization vs Deserialization in Java:
 
 Serialization   : Java object → byte stream 
 Deserialization : byte stream → Java object
 
-Serializable is a marker interface (no methods).
-It is used to tag the class so JVM Can apply special behavior to it.
-Implement Serializable for objects that need to be transferred or stored.
+→ Serializable is a marker interface (no methods).
+→ It is used to tag the class so JVM Can apply special behavior to it.
+→ Implement Serializable for objects that need to be transferred or stored.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -190,7 +189,7 @@ Example: Wallet Balance Update
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is Thread starvation?
-    When a thread is continuously ignored and other threads keep executing over it
+    → When a thread is continuously ignored and other threads keep executing over it
 
 Common causes:
 
@@ -213,34 +212,23 @@ How to prevent thread starvation:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Exception Swallow:
-
-An exception is swallowed when it is:
-    Caught only or Only logged
-    Not thrown or handled meaningfully
+    → when exception is caught but not rethrown or logged properly
 
 Why exceptions should NOT be swallowed:
 
 1. Bugs are hidden
-    Application continues in invalid state
-    Root cause of exception is lost
+    → Application continues in invalid state
+    → Root cause of exception is lost
 
 3. Breaks observability:
-    Monitoring/alerts rely on thrown exceptions
-    Swallowed errors never reach:
-        Logs with stack traces
-        Error metrics
+    → Monitoring/alerts rely on thrown exceptions
+    → Swallowed errors never reach:
+        → Logs with stack traces
+        → Error metrics
 
 4: Violoates @Transactional:
-    Error is not thrown, Transaction will not rollback
+    → Error is not thrown, Transaction will not rollback
 
-@Transactional
-public void process() {
-    try {
-        repo.save();
-    } catch (Exception e) {
-        // swallowed
-    }
-}
 
 What to do instead (correct patterns):
 
@@ -258,19 +246,20 @@ catch (IOException e) {
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transactions:
-@Transactional is used to make database operations execute as one atomic unit — either all succeed (commit) or all fail (rollback).
+    → It is used to make database operations execute as one atomic unit
+    → either all commit or all rollback.
 
 How @Transactional works internally:
 
-Spring creates a proxy for the class
-Method is called through proxy
+→ Spring creates a proxy for the class
+→ Method is called through proxy
 Proxy:
-    Opens DB connection
-    Disables auto-commit
-    Starts transaction
-    Executes method
-    If success → COMMIT
-    If exception → ROLLBACK
+    → Opens DB connection
+    → Disables auto-commit
+    → Starts transaction
+    → Executes method
+    → If success → COMMIT
+    → If exception → ROLLBACK
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -289,10 +278,9 @@ public class PaymentService {
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transaction rollback rules:
-    Transaction roll backs if RuntimeException or any exception occures
-    Transaction does not roll back if exception is catched
-
-Use Rollback for checked Exception:
+    → Transaction roll backs automatically for RuntimeException
+    → Transaction does not roll back if exception is catched
+    → Rollbackfor is used to roll back the transaction for specific checked exceptions
 
 @Transactional(rollbackFor = Exception.class)
 public void process() throws Exception {

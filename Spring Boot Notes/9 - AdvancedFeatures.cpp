@@ -3,21 +3,20 @@ Advanced Rest API Features:
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Content Negotiation ( REST API ):
-
-Content Negotiation allows a REST API to return responses in different formats (JSON, XML, etc.) based on what the client requests.
-Client specifies the desired format using the Accept header.
+    → Used to return response in different formats ( JSON, XML, etc ) based on client request.
+    → Client specifies the desired format using the Accept header.
 
 Accept: application/json
 Accept: application/xml
 
 How It Works in Spring Boot
-    Spring Boot supports JSON by default.
-    To support XML, you must add an XML message converter.
+    → Spring Boot supports JSON by default.
+    → To support XML, you must add an XML message converter.
 
 Spring automatically:
-    Reads Accept header
-    Chooses the correct converter (JSON/XML)
-    Serializes the response
+    → Reads Accept header
+    → Chooses the correct converter (JSON/XML)
+    → Serializes the response
 
 Dependency (XML Support):
 <dependency>
@@ -25,7 +24,6 @@ Dependency (XML Support):
     <artifactId>jackson-dataformat-xml</artifactId>
 </dependency>
 
-Controller Example:
 @GetMapping(value = "/user", produces = { "application/json", "application/xml" })
 public User getUser() {
     return new User(1, "Varun");
@@ -36,10 +34,10 @@ public User getUser() {
 2: Spring Boot Actuator:
 
 Actuator provides production-ready features to monitor and manage applications.
-    Health monitoring (DB up or down)
-    Metrics collection (memory, CPU, HTTP requests, GC)
-    Check logs and thread dumps (Debugging)
-    Integrate with monitoring tools (Prometheus, Grafana, ELK, etc.)
+    → Health monitoring (DB up or down)
+    → Metrics collection (memory, CPU, HTTP requests, GC)
+    → Check logs and thread dumps (Debugging)
+    → Integrate with monitoring tools (Prometheus, Grafana, ELK, etc.)
 
 1: Add the Dependency:
 
@@ -61,24 +59,22 @@ Common Actuator endpoints:
 /actuator/beans	    : Displays all Spring Beans
 
 How do you expose actuator endpoints securely:
-
-management.endpoints.web.exposure.include=health,metrics
-management.endpoint.health.show-details=when_authorized
-
-.authorizeHttpRequests()
-.requestMatchers("/actuator/**").hasRole("ADMIN")
+    management.endpoints.web.exposure.include=health,metrics
+    management.endpoint.health.show-details=when_authorized
+    .authorizeHttpRequests()
+    .requestMatchers("/actuator/**").hasRole("ADMIN")
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 3: What is a Scheduler?
-A scheduler allows you to run code automatically at fixed intervals or specific time.
+    → A scheduler allows you to run code automatically at fixed intervals or specific time.
 
 Cron Expression:
-A cron expression defines the exact time a scheduled job should run.
+    → A cron expression defines the exact time a scheduled job should run.
 
 Spring uses 6 fields:
-    - second, minute, hour, day-of-month, month, day-of-week
-    - Example: 0 15 10 * * ? → Runs at 10:15 AM every day.
+    → second, minute, hour, day-of-month, month, day-of-week
+    → Example: 0 15 10 * * ? → Runs at 10:15 AM every day.
 
 Enable Scheduling in Spring:
 

@@ -73,16 +73,16 @@ Declarative Caching:
 5: Use caching annotations
 
 RedisConnectionFactory:
-    hostname, port etc are configured.
-    Automatically created if configured in application.properties
-    If not setup manually
+    → hostname, port etc are configured.
+    → Automatically created if configured in application.properties
+    → If not setup manually
 
 RedisCacheConfiguration:
-    Defines cache settings such as TTL, key prefix, and serializers.
+    → Defines cache settings such as TTL, key prefix, and serializers.
 
 RedisCacheManager:
-    Uses RedisConnectionFactory and RedisCacheManager manage redis
-    Used internally when you apply annotations like @Cacheable.
+    → Uses RedisConnectionFactory and RedisCacheManager manage redis
+    → Used internally when you apply annotations like @Cacheable.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

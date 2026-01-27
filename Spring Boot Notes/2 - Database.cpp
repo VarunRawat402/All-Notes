@@ -3,14 +3,14 @@
 ---------------------------------------------------------------------------------------------------------------
 
 H2:
-    H2 is an in-memory, mainly used for development and testing.
+    → H2 is an in-memory, mainly used for development and testing.
 
 ---------------------------------------------------------------------------------------------------------------
 
 JDBC:
-    JDBC allows interacting with relational databases using raw SQL queries.
-    You manually write SQL for CRUD operations.
-    Unlike Spring Data JPA (which uses Hibernate and ORM), JDBC gives full control over SQL.
+    → Used to interact with databases using SQL queries.
+    → You manually write SQL for CRUD operations.
+    → JDBC gives full control over SQL queries unlike JPA which autogenerates SQL.
 
 Dependencies:
     <dependency>
@@ -58,13 +58,13 @@ public class JDBCRepository {
 ---------------------------------------------------------------------------------------------------------------
 
 JPA:
-    It is a specification that defines how java objects are mapped to database tables.
-    It only provides interfaces and rules, not the implementation.
+    → It is a specification that defines how java objects are mapped to database.
+    → It only provides interfaces and rules, not the implementation.
 
 Hibernate:
-    It is an ORM framework that implements JPA.
-    Converts java objects to tables automatically, removes JDBC boiler plate code		
-    Supports features like lazy loading, caching, criteria API, transaction management, etc.	
+    → It is an ORM framework that implements JPA.
+    → Converts java objects to tables automatically, removes JDBC boiler plate code		
+    → Supports features like lazy loading, caching, criteria API, transaction management, etc.	
 
 
 @Repository
@@ -89,10 +89,9 @@ public class JpaRepository {
 ---------------------------------------------------------------------------------------------------------------
 
 SQL properties file ( queries.sql ):
-    Used to run SQL queries automatically at application startup.
-    Location : same folder as application.properties is in
-    Spring Boot will pick it up (if using JPA + Hibernate + schema initialization enabled).
-    Jpa picks up this folder and run all the sql queries in it as soon as the application starts
+    → Used to run SQL queries automatically at application startup.
+    → Location : same folder as application.properties is in
+    → Jpa picks up this folder and run all the sql queries in it as soon as the application starts
 
 Ex:
 create table Student(
