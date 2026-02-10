@@ -5,16 +5,16 @@ JaCOCO:
 JaCoCo (Java Code Coverage) is a tool used to measure how much of your Java code is executed during tests.
 
 It helps you:
-    Identify untested code
-    Improve test quality
-    Enforce minimum coverage in CI/CD pipelines
+    → Identify untested code
+    → Improve test quality
+    → Enforce minimum coverage in CI/CD pipelines
 
 Implementation Steps:
 
-Add JaCoCo Maven Plugin
-Run tests using Maven
-Generate coverage report
-View HTML report from target/site/jacoco/index.html
+→ Add JaCoCo Maven Plugin
+→ Run tests using Maven
+→ Generate coverage report
+→ View HTML report from target/site/jacoco/index.html
 
 --------------------------------------------------------------------------------------------------------------------------------
 JaCoCo Maven Plugin Configuration
@@ -61,15 +61,15 @@ Maven Commands & Behavior:
 'mvn clean spring-boot:run'
 
 What it does:
-    Deletes target/
-    Compiles source code
-    Starts Spring Boot application
-    Runs embedded server (Tomcat/Jetty)
-    Keeps application running
+    → Deletes target/
+    → Compiles source code
+    → Starts Spring Boot application
+    → Runs embedded server (Tomcat/Jetty)
+    → Keeps application running
 
 Important:
-    ❌ Does NOT run unit tests
-    ❌ Does NOT generate JaCoCo reports
+    → Does NOT run unit tests
+    → Does NOT generate JaCoCo reports
 
 Used only for local development
 
@@ -78,15 +78,15 @@ Used only for local development
 'mvn clean test'
 
 What it does:
-    Deletes target/
-    Compiles main + test code
-    Runs all unit tests (src/test/java)
-    Stops after tests complete
+    → Deletes target/
+    → Compiles main + test code
+    → Runs all unit tests (src/test/java)
+    → Stops after tests complete
 
 Output:
-    Console test results
-    JaCoCo coverage report
-    Surefire reports
+    → Console test results
+    → JaCoCo coverage report
+    → Surefire reports
 
 Most common command for coverage
 
@@ -95,15 +95,15 @@ Most common command for coverage
 'mvn clean verify'
 
 What it does:
-    Runs clean
-    Compiles code
-    Executes unit tests
-    Executes verify phase
+    → Runs clean
+    → Compiles code
+    → Executes unit tests
+    → Executes verify phase
 
 Verify phase is used for:
-    JaCoCo coverage validation
-    Code quality checks (Checkstyle, PMD)
-    Integration tests (if configured)
+    → JaCoCo coverage validation
+    → Code quality checks (Checkstyle, PMD)
+    → Integration tests (if configured)
 
 --------------------------------------------------------------------------------------------------------------------------------
 

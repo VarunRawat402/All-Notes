@@ -30,52 +30,6 @@ Actuator Endpoint:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Consumer Service Configuration of Kafka:
 //This is used to map the kafka json event to java class automatically
 //Json data coming with typeId = txncreation will be mapped to TxnCreation class
@@ -89,18 +43,3 @@ spring.kafka.consumer.properties.spring.json.type.mapping = txncreation:com.exam
 spring.kafka.producer.properties.spring.json.type.mapping=txnupdate:com.example.wallet.wallet.kafkaUtil.TxnUpdate
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
-
-CQRS - chatgpt
-Saga Pattern - chatgpt→
-
-ELK EFK 
-
-
-https://www.youtube.com/@ProgrammingTechie/playlists
-Unit testing spring boot
-
-https://www.youtube.com/watch?v=gJZhdEJvZmc
-Mail Notification
-
-https://www.youtube.com/watch?v=12uIIGh4abc
-camel metrics video

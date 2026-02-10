@@ -1,62 +1,24 @@
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Java Interview Questions:
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-What is exception propagation?
-    → When an exception is not caught in the method where it occurs, 
+Exception propagation:
+    → When an exception is not caught in the method where it occurs
     → it propagates up the call stack to the calling method.
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-STACK:
-    → Primitive values
-    → Local variables
-    → References of objects
-    → Method() calls
+Exception Swallow:
+    → When exception is not thrown again after catch
+    → When exception is only logged
 
-HEAP:
-    → Objects
-    → Arrays
-    → Instance variables
+Why exceptions should NOT be swallowed:
+    → Application continues in invalid state
+    → Bug or data corruption may go unnoticed
+    → Monitoring/alerts rely on thrown exceptions.
+    → Error is not thrown, Transaction will not rollback
 
-Metaspace:
-    → Class info (class name, class structure)
-    → Static variables
-
-Example:
-
-int a = 10;         
-    → a and 10 stored in stack
-
-String s = "Varun"; 
-    → s in stack, "Varun" in heap
-
-static int b = 20; 
-    → b and 20 stored in metaspace
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Concurrent Hashmap():
-    → Thread-safe implementation of Map
-    → Alternative to Collections.synchronizedMap()
-
-Collections.synchronizedMap():
-    → One global lock → poor concurrency
-
-ConcurrentHashMap:
-→ No global lock ✅
-→ Reads (get) 🔹 lock-free, very fast
-    → hash → bucket → read volatile value
-→ Writes (put) 🔹 fine-grained locking
-    → hash → bucket → lock bucket → insert/update → unlock
-    → Multiple threads can work on different buckets concurrently
-
-Notes:
-→ volatile → guarantees memory visibility
-→ Reads dont need locks → very fast
-→ Writes lock only the affected bucket → high throughput
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Finalize vs Try with resource:
     → Used to close the resources like file, database connection etc
@@ -76,16 +38,7 @@ try (Resource res = new Resource()) {
     res.use();                              // Auto-closes after this block
 }
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-What are classloaders in Java?
-
-→ ClassLoader is a part of JVM that loads class into memory
-→ Class is not loaded into memory when created 
-→ Class gets loaded into the memory when:
-    object is created / static method is called / static variable is accessed
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Why Do We Make a Constructor private:
     → A private constructor is used to restrict object creation from outside the class.
@@ -102,7 +55,7 @@ Why Do We Make a Constructor private:
 4. Prevent Inheritance
    └─ Subclasses cannot call super(), class cannot be extended
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Serialization vs Deserialization in Java:
 
@@ -113,38 +66,10 @@ Deserialization : byte stream → Java object
 → It is used to tag the class so JVM Can apply special behavior to it.
 → Implement Serializable for objects that need to be transferred or stored.
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-ArrayList vs LinkedList:
-
-ArrayList
-    → Dynamic array
-    → Fast random access (index-based) ✅
-    → Less memory overhead
-    → Best for read-heavy operations
-
-LinkedList
-    → Doubly linked list
-    → Fast insert/delete at start/middle ✅
-    → No random access
-    → More memory usage
-
-When to use:
-
-ArrayList
-    → Returning list from REST API
-    → DTO collections
-    → Index-based loops
-
-LinkedList
-    → Task queues
-    → Sliding window
-    → BFS traversal
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Race Conditions:
-    Occurs when multiple threads try to modify the same data concurrently → data corruption
+    → When multiple threads try to modify the same data concurrently → data corruption
 
 Example: Wallet Balance Update
 → 2 threads read balance = 100
@@ -159,7 +84,7 @@ Example: Wallet Balance Update
     → AtomicInteger count = new AtomicInteger();
     → count.incrementAndGet();
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is Thread starvation?
     → When a thread is continuously ignored and other threads keep executing over it
@@ -178,53 +103,36 @@ Common causes:
     → Threads stay busy → others starve
 
 How to prevent thread starvation:
-1. Good thread pool sizing
-2. Use fair locks when needed
+
+1. Use fair locks when needed
+2. Good thread pool sizing
 3. Avoid blocking calls
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Exception Swallow:
-    → when exception is caught but not rethrown or logged properly
+Difference between PUT and PATCH with a real API example:
 
-Why exceptions should NOT be swallowed:
+1. PUT:
+    → Updates the entire entity with the provided data
+    → If feilds are missing, they are considered null or defaulted
 
-1. Bugs are hidden
-    → Application continues in invalid state
-    → Root cause of exception is lost
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-3. Breaks observability:
-    → Monitoring/alerts rely on thrown exceptions
-    → Swallowed errors never reach:
-        → Logs with stack traces
-        → Error metrics
-
-4: Violoates @Transactional:
-    → Error is not thrown, Transaction will not rollback
-
-
-What to do instead (correct patterns):
-
-1. Handle and rethrow:
-catch (SQLException e) {
-    log.error("DB error", e);
-    throw new DatabaseException("Failed to save", e);
-}
-
-2. Translate exception:
-catch (IOException e) {
-    throw new ExternalServiceException("Payment service down", e);
-}
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. PATCH:
+    → Updates only the speicified feilds which are provided
+    → If feilds are missing, they are left unchanged
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transactions:
     → It is used to make database operations execute as one atomic unit
-    → either all commit or all rollback.
+    → Either all methods are commited or no one gets commited
+    → @Transactional annotation does not work on static and private methods
+    → Only roll back database operations not memory operations
+    → Needs to call the method from another service
 
 How @Transactional works internally:
 
-→ Spring creates a proxy for the class
+→ Spring creates a proxy around your class
 → Method is called through proxy
 Proxy:
     → Opens DB connection
@@ -234,21 +142,23 @@ Proxy:
     → If success → COMMIT
     → If exception → ROLLBACK
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Self Invocation does not work:
+    → Transactional method should be called from another service 
+    → It should not get called from the same service where it is defined because it bypasses the proxy
 
 public class PaymentService {
     
+    @Transactional
+    public void process() {}
+
     public void pay() {
         process(); // ❌ transactional ignored
     }
-
-    @Transactional
-    public void process() { }
 }
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transaction rollback rules:
     → Transaction roll backs automatically for RuntimeException
@@ -260,40 +170,124 @@ public void process() throws Exception {
     throw new Exception();
 }
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transaction Propagation:
-    → Propagation defines how transactions behave when one method calls another.
+    → Propagation defines how Transactional method behaves when called inside another transaction.
 
 1: REQUIRED (default):
-    → If no transaction, creates one
-    → If already present, join that
+    → Join existing txn OR create new txn
 
 2: REQUIRES_NEW:
-    →Stops existing transaction, creates new
+    → Always start NEW transaction.
+    → Pause the outer txn, creates new txn, resumes outer texn
+    → Inner txn can commit, even if outer txn roll backs
 
-3: SUPPORTS:
+3. MANDATORY
+    → Fails if no transaction exists
+
+4: SUPPORTS:
     → Runs if transaction exists
     → If not runs without transaction
 
-4. MANDATORY
-    → Fails if no transaction exists
 
-5. NOT_SUPPORTED
-    → Suspends transaction, runs non-transactional
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-7. NEVER
-    → Throws exception if transaction exists
+Transaction Isolation:
+    → How one transaction is protected from changes made by other running transactions.
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Isolation Protects From 3 Problems:
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Transaction Isolation Levels:
-    READ_UNCOMMITTED	
-    READ_COMMITTED	
-    REPEATABLE_READ	
-    SERIALIZABLE
+1: Dirty Read:
+    → Reading data that is not yet commited by another transaction            
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Example:
+    → Initial balance → 1000
+    → T1    → update balance = 5000   (not committed yet)
+    → T2    → reads: balance = 5000   ← sees uncommitted value
+    → Then T1 rolls back.                     
+    → Real balance = 1000
+    → But T2 used 5000 → wrong.   
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+2: Non-Repeatable Read:
+    → Same query gives different result inside same transaction.
+
+Example:
+    → T1    → read balance   → 1000
+    → T2    → update balance → 2000     → commit
+    → T1    → again reads    → balance  → 2000
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+3: Phantom Read:
+    → New rows appear during same transaction.
+
+Example:
+    → T1    → select count(*) where status='ACTIVE' → 10
+    → T2    → insert new ACTIVE row     → commit
+    → T1    → again                     → count → 11
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Isolation Levels:
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+1: READ_UNCOMMITTED:
+    → Lowest Safety
+    → Can read uncommitted changes
+    
+Allows:
+    → dirty read ❌
+    → non-repeatable read ❌
+    → phantom read ❌
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+2: READ_COMMITTED
+    → Most Common Default
+    → Only committed data visible
+    → Prevents: dirty read ✅ blocked
+
+Allows:
+    → non-repeatable read ❌
+    → phantom read ❌
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+3: REPEATABLE_READ
+    → Rows read once cannot change during txn
+
+Prevents:
+    → dirty read ✅
+    → non-repeatable read ✅
+
+Allows:
+    → phantom read ❌ (depending on DB engine)
+
+Example:
+    → T1 reads balance = 1000
+    → T2 tries to update same row → blocked until T1 finishes
+    → T1 reads again → still 1000
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+4: SERIALIZABLE:
+    → Highest Safety
+    → Transactions behave like they run one by one
+
+Prevents:
+    → dirty read ✅
+    → non-repeatable read ✅
+    → phantom read ✅
+
+Example:
+    → If T1 running:
+    → T2 must wait      → even for inserts affecting query range.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Example:
 @Transactional(
@@ -307,18 +301,5 @@ public void transfer(Long from, Long to, BigDecimal amount) {
     credit(to, amount);    // step 2
 }
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Difference between PUT and PATCH with a real API example:
-
-1. PUT:
-    → Updates the entire entity with the provided data
-    → If feilds are missing, they are considered null or defaulted
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-2. PATCH:
-    → Updates only the speicified feilds which are provided
-    → If feilds are missing, they are left unchanged
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------

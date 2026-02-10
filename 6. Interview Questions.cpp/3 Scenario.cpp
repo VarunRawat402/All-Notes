@@ -1,9 +1,9 @@
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Scenario Interview Questions:
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you improve API performance:
-    → fetch only required fields (DTOs)
+    → fetch only required fields (DTOs) from the repository
     → Pagination for large datasets
     → Caching frequently accessed data
     → Proper indexing on frequently searched fields
@@ -11,7 +11,7 @@ How do you improve API performance:
     → Use async for non-critical or long-running tasks
     → Rate limiting
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you handle concurrent updates to the same database row:
 
@@ -35,7 +35,7 @@ CREATE TABLE wallet (
     version BIGINT
 );
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Connection pooling:
     → Maintain a set of pre-created connections (DB/Redis/HTTP)
@@ -53,25 +53,12 @@ How It Works:
     → Request arrives → borrow connection → execute query → return to pool
     → No connection available → thread waits → timeout → exception
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 What Causes Memory Leaks:
-    → A memory leak occurs when objects are no longer needed but still referenced, so the garbage collector cannot reclaim memory.
+    → When objects are no longer needed but still referenced due to this GC cannot reclaim the memory causes Memory Leaks.
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Logging Best Practices:
-    → Every log should answer → What happened? Where? Why?
-
-Success:
-    → log.info("Order created", kv("orderId", orderId), kv("userId", userId));
-
-Exception:
-    → log.error("Failed to create order", e);
-
-Production Level: INFO / WARN / ERROR
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Database is slow - what steps will you take:
     → Confirm DB is bottleneck → compare API latency vs query time
@@ -85,60 +72,48 @@ Connection Pool Issues:
     → Increase pool size (within DB limits)
     → Close leaked connections
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-How do you handle failure of services in a microservices ecosystem?
+Production Code Lifecycle:
 
-→ Circuit Breaker → stop cascading failures
-→ Fallback → return fallback response
-→ Retries → only for transient errors
-→ Health Checks → detect faulty services
-→ Monitoring & Tracing → visibility & debugging
+main        → Production code (always stable)
+develop     → Integration branch for next release
+feature/    → New features, extracted from develop branch
+bugfix/     → Non-production fixes, extracted from develop branch
+release/    → Release preparation
+hotfix/     → Urgent production fixes, extracted from main branch
 
-Transient Errors: temporary → retry
-    Network glitches, short service overload, DB deadlock
 
-Non-Transient Errors: permanent → no retry
-    Invalid input, auth failures, 404
+Flow:
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+→ Feature branch is created from develop branch
+→ Feature is created , run and unit tested locally
 
-Application Deployment Process (Production-Oriented):
+→ Pull Request is created to develop branch
+→ After code approval, feature branch is merged to develop branch
 
-1. Code Development & Version Control:
-    → Code is developed locally
-    → feature → develop → main
+CI/CD Pipeline triggers:
+    → mvn clean verify
+    → Run unit tests
+    → Run integration tests
+    → Security scan (Snyk/Trivy/etc)
+    → Build artifact (JAR/WAR)
 
-2. Push Code to Git Repository:
-    → Create PR (Pull Request)    → Code review
-    → Merge after approval        → Triggers CI pipeline
+→ Realease branch is used to release all the features to production
+→ After Multiple Features created and merged into develop branch
+→ Develop branch is merged into Release branch
 
-3. Build & Package Application:
-    → mvn clean install   → Generate JAR files
-    → mvn test            → run unit tests
+→ CI/CD Pipeline triggers
+    → Run all tests
+    → Create Docker image and push to ECR
 
-4. Create Docker Image:
-    → Write Dockerfile
-    → Build Docker image
+→ Release is merged to main for releasing the features
 
-5. Push Docker Image to Container Registry:
-    → Authenticate with AWS ECR
-    → Tag image
-    → Push image
+Note:
+→ bugfix branch : Created from develop, fix the bug locally, merge to develop
+→ hotfix branch : Created from main, fix the live production bug, merged to develop and release both
 
-6. Deployment to Environment:
-    → Kubernetes (EKS)
-    → kubectl apply -f deployment.yaml
-
-7  Post-Deployment Verification:
-    → Health checks
-    → Smoke tests
-    → Monitor logs and metrics
-    → Rollback if required
-
-We follow a CI/CD-based deployment where code is built, tested, containerized, pushed to a registry, and deployed using automated pipelines with verification and rollback.
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How to Store Customer Sensitive Data:
 
@@ -151,11 +126,7 @@ How to Store Customer Sensitive Data:
     → Never encrypt/decrypt → hash only
     → Hashing for verification → original value not needed
 
-3. Encryption Keys Management:
-    → Never store keys in code/config
-    → Use AWS KMS / Vault
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Saga Design Pattern:
     → Saga is used to manage distributed transactions in microservices.
@@ -182,4 +153,5 @@ Example:
     → Orchestrator → Inventory Service → reserve stock
     → Payment fails → Orchestrator triggers Order Service cancel
     
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+

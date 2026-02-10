@@ -4,155 +4,55 @@ S3 Explanation:
 
 Upload Files:
 
-Small Files:
-    FE sends file to backend → backend uploads files 
+1: Small Files:
+    → FE sends file to backend 
+    → Backend uploads files 
 
-Large Files:
-    FE sends file data to backend → Backend generate pre-signed URL → FE uploads the file
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Approach 1 — Backend uploads to S3 (simple + controlled):
-Used when files are small or medium sized (< 5MB).
-
-Flow:
-Client sends file to backend API (multipart/form-data)
-Backend:
-    Validates file type/size
-    Generates S3 object key (folder + UUID)
-    Uploads to S3 using AWS SDK
-    Backend saves metadata in DB to fetch file later
-    Backend returns success response
-
-MetaData:
-id, user_id, bucket_name, object_key, original_file_name, content_type, file_size, created_at
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Approach 2 — Pre-signed URLs (most common in real production):
-
-Flow:
-Client calls backend
-Backend:
-    Authenticates user
-    Generates pre-signed URL (valid for 5-15 minutes)
-    Backend saves metadata in DB to fetch file later
-Client uploads file
-Client notifies backend upload is complete
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Note:
-We never store access keys in code. 
-The application uses IAM roles, and AWS SDK automatically picks up credentials
+2: Large Files:
+    → FE sends file data to backend 
+    → Backend generate pre-signed URL 
+    → FE uploads the file
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Pre-Signed URLs:
-It is a normal HTTP URL which can perform operation like get or put or post on a specific object
-Contains temporary aws signature
+    → It is a normal HTTP URL which can perform operation like get or put or post on a specific object
+    → Contains temporary access to S3
 
-Flow:
-
-Front-end gets the url from backend:
 {
   "uploadUrl": "https://s3.amazonaws.com/....",
   "objectKey": "user-uploads/123/uuid_file.pdf"
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
-Success Upload:
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Approach A — Client confirms upload (most common):
-
-Flow
-Client uploads file to S3 using pre-signed URL
-    If upload succeeds (HTTP 200), Notifies the backend 
-
-Backend:
-    Verifies file exists in S3 (HEAD object)
-    Updates file status → UPLOADED
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Approach B — Backend async verification (also used)
-
-Scheduled job checks:
-    PENDING records older than X minutes
-    Uses HEAD Object call to S3
-    If object exists → COMPLETED
-    If expired → FAILED
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Flow:
-
-Small files:
-
-Frontend -> Backend -> Upload Files -> SUCCESS -> DB(COMPLETED)
-Frontend -> (fail) -> Throws Exception -> Handled
-
-Large Files:
-For this mechanism client must send the confirmation back to backend:
-
-Frontend → Backend → DB(PENDING) → pre-signed URL → Frontend
-Frontend → S3 → Uploads File
-Frontend notifies to backend → Backend verify → DB(COMPLETED)
-Frontend → (fail) → DB(PENDING/FAILED) → Cleaned up after some time
-
-------------------------------------------------------------------------------------------------------------------------------------------------
 
 Testing:
 
-We tested using temp AWS account with limited access like S3
-Used postman to hit the api and check if file is uploaded or not
-Test database If metadata is stored or not
-Download using presigned url to check if download works
+→ We tested using temp AWS account with limited access like S3
+→ Used postman to hit the api and check if file is uploaded or not
+→ Test database If metadata is stored or not
+→ Download using presigned url to check if download works
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-IAM Role:
-Iam role is configured through machine in EC2 and use AWS SDK 	
+S3 Client Configuration Class:
+
+public class S3Config {
+
+    @Bean
+    public S3Client s3Client() {
+        return S3Client.builder().region(Region.of(region)).build();
+    }
+
+    @Bean
+    public S3Presigner s3Presigner() {
+        return S3Presigner.builder().region(Region.of(region)).build();
+    }
+}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
-
-AWS SDK:
-It is a library provided by AWS software development kit
-It is used to interact with aws services without calling
-
-It means instead of calling S3 APIs directlt 
-we uses s3Client.PutObectRequest and s3Client.getObjectRequest
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-FLOW:
-We created multiple api to upload
-1: First Normal upload -> creates file name + gets presigned url to upload + returns URL + saves and marks the filEntity as pending
-2: Completed API -> gets the fileEntity and marks it as completed from pending
-3: Retry -> if retry gets the fileEntity if completed -< Throw error, If pending or failed + marks as pending again + generate new presign url and returns it
-4: if retry reaches max retry count throw error 
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
-Code:
-
-Application file:
-aws.region=ap-south-1
-aws.s3.bucket=${S3_BUCKET_NAME}
-file.upload.max-retry=${MAX_RETRY_COUNT:3}
-
-Fetch from k8s config files
-
-------------------------------------------------------------------------------------------------------------------------------------------------
-
 File Entity:
 
-@Entity
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class FileRecord {
 
     @Id
@@ -164,54 +64,21 @@ public class FileRecord {
     private String fileName;
     private String contentType;
     private String status; // PENDING, COMPLETED, FAILED
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
-DTOS:
 
-@Data
-public class UploadRequest {
-    private String fileName;
-    private String contentType;
-}
-
-@Data
-@AllArgsConstructor
-public class UploadResponse {
-    private Long fileId;
-    private String preSignedUrl;
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------------
 Service:
 
-@Service
-@RequiredArgsConstructor
 public class FileService {
 
     private final FileRepository fileRepository;
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
-    @Value("${aws.s3.bucket}")
-    private String bucketName;
+    public UploadResponse getUploadUrl(String fileName, String contentType, Long userId) {
 
-    public UploadResponse createUpload(String fileName, String contentType, Long userId) {
-        String objectKey = userId + "/" + UUID.randomUUID() + "_" + fileName;
+        String objectKey = "files/users/" + userId + "/" + UUID.randomUUID() + "/" + fileName;
 
         FileRecord fileRecord = FileRecord.builder()
                 .userId(userId)
@@ -222,13 +89,33 @@ public class FileService {
                 .build();
         fileRepository.save(fileRecord);
 
-        String url = generatePreSignedUrl(objectKey, contentType);
+        String url = generateUploadUrl(objectKey, contentType);
         return new UploadResponse(fileRecord.getId(), url);
     }
 
-    public void completeUpload(Long fileId, Long userId) {
-        FileRecord file = fileRepository.findByIdAndUserId(fileId, userId)
-                .orElseThrow(() -> new RuntimeException("File not found"));
+    public UploadResponse getDownloadUrl(Long fileId, Long userId) {
+
+        FileRecord file = fileRepository.findByIdAndUserId(fileId, userId).orElseThrow(() -> new RuntimeException("File not found"));
+
+        if (!file.getStatus().equals("COMPLETED")) {
+            throw new RuntimeException("File not available for download");
+        }
+
+        String url = generateDownloadUrl(file.getObjectKey());
+        return new UploadResponse(file.getId(), url);
+    }
+
+    public void deleteFile(String key){
+
+        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder().bucket(bucketName).key(key).build();
+        s3Client.deleteObject(deleteRequest);
+
+        fileRepository.findByS3Key(key).ifPresent(fileRepository::delete);
+    }
+
+    public void verifyFileOnS3(Long fileId, Long userId){
+
+        FileRecord file = fileRepository.findByIdAndUserId(fileId, userId).orElseThrow(() -> new RuntimeException("File not found"));
 
         try {
             s3Client.headObject(HeadObjectRequest.builder()
@@ -243,21 +130,10 @@ public class FileService {
         fileRepository.save(file);
     }
 
-    public UploadResponse downloadFile(Long fileId, Long userId) {
-        FileRecord file = fileRepository.findByIdAndUserId(fileId, userId).orElseThrow(() -> new RuntimeException("File not found"));
-
-        if (!file.getStatus().equals("COMPLETED")) {
-            throw new RuntimeException("File not available for download");
-        }
-
-        String url = generateGetPreSignedUrl(file);
-        return new UploadResponse(file.getId(), url);
-    }
-
-    private String generateGetPreSignedUrl(FileRecord file) {
+    private String generateDownloadUrl(String objectKey) {
         GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key(file.getObjectKey())
+                .key(objectKey)
                 .build();
 
         PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(
@@ -269,7 +145,7 @@ public class FileService {
         return presignedRequest.url().toString()
     }
 
-    private String generatePutPreSignedUrl(String objectKey, String contentType) {
+    private String generateUploadUrl(String objectKey, String contentType) {
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectKey)
@@ -287,6 +163,7 @@ public class FileService {
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
 Controller:
 
 @RestController
@@ -296,23 +173,77 @@ public class FileController {
 
     private final FileService fileService;
 
-    @PostMapping
-    public UploadResponse createUpload(@RequestBody UploadRequest request,
-                                       @RequestHeader("userId") Long userId) {
-        return fileService.createUpload(request.getFileName(), request.getContentType(), userId);
-    }
-
-    @PostMapping("/{fileId}/complete")
-    public void completeUpload(@PathVariable Long fileId,
-                               @RequestHeader("userId") Long userId) {
-        fileService.completeUpload(fileId, userId);
+    @PostMapping("/upload")
+    public UploadResponse getUploadUrl(@RequestBody UploadRequest request, @RequestHeader("userId") Long userId) {
+        return fileService.getUploadUrl(request.getFileName(), request.getContentType(), userId);
     }
     
     @GetMapping("/{fileId}/download")
-    public UploadResponse downloadFile(@PathVariable Long fileId,
-                                       @RequestHeader("userId") Long userId) {
-        return fileService.downloadFile(fileId, userId);
+    public UploadResponse getDownloadUrl(@PathVariable Long fileId, @RequestHeader("userId") Long userId) {
+        return fileService.getDownloadUrl(fileId, userId);
+    }
+
+    @PostMapping("/{fileId}/complete")
+    public void verifyFileOnS3(@PathVariable Long fileId, @RequestHeader("userId") Long userId) {
+        fileService.verifyFileOnS3(fileId, userId);
+    }
+
+    @DeleteMapping("/delete/{key}")
+    public ResponseEntity<String> deleteFile(@PathVariable String key) {
+        s3Service.deleteFile(key);
+        return ResponseEntity.ok("File deleted successfully: " + key);
     }
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+Upload file from Backend:
+
+public FileEntity uploadFile(MultipartFile file, Long userId) throws IOException {
+
+    String objectKey = "files/users/" + userId + "/" + UUID.randomUUID() + "/" + file.getOriginalFilename();
+
+    PutObjectRequest putRequest = PutObjectRequest.builder().bucket(bucketName).key(key).build();
+    s3Client.putObject(putRequest, RequestBody.fromBytes(file.getBytes()));
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Interview questions for S3:
+
+1. What is a pre-signed URL in AWS S3? Why do we use it?
+    → Temporary URL for accessing private S3 objects.
+    → Allows clients to download/upload without AWS credentials.
+    → URL expires after a defined time.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+2. Difference between MultipartFile and File:
+    → MultipartFile handles HTTP uploads from clients in Spring
+    → File represents a local file on disk. 
+    → In production, we usually stream MultipartFile directly to S3.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+4: Do you always need to convert MultipartFile to File:
+    → No. 
+    → Conversion is optional. 
+    → Streaming InputStream directly to S3 is more efficient and avoids unnecessary disk I/O.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+5: How to handle large files in S3 upload/download?
+    → For large files, I stream InputStream to S3 and use pre-signed URLs for downloads. 
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+8: Explain streaming uploads/downloads
+    → Streaming uploads and downloads use InputStreams to transfer data, preventing high memory usage and improving performance for large files.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+9: If user reports broken download link, what could be the problem?
+    → The broken link could be due to URL expiration, incorrect S3 key, missing object, or permission issues. I would regenerate a fresh pre-signed URL for the user
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+

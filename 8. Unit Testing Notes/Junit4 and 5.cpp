@@ -30,20 +30,20 @@ Junit 4 and Junit 5 Annotations:
 
 Database Testing Annotations:
 
-In SpringBootTest, If you make changes in the DB, It will stay in the DB
-If you want to rollback changes in SpringBootTest you can use @Transactional
+→ In @SpringBootTest, If you make changes in the DB, It will stay in the DB
+→ If you want to rollback changes in @SpringBootTest you can use @Transactional
 
-In DataJpaTest, If you make changes in DB, it will get rollbacked after every test
-If you dont want to rollback changes you can use @Commit annotation
+→ In @DataJpaTest, If you make changes in DB, it will get rollbacked after every test
+→ If you dont want to rollback changes you can use @Commit annotation
 
 --------------------------------------------------------------------------------------------------------------------------------
+
 Parameterized Tests:
-    Tests that run the same logic with different inputs automatically. 
+    → Tests that run the same logic with different inputs automatically. 
+
 --------------------------------------------------------------------------------------------------------------------------------
 
 1: Single Parameter (ValueSource):
-
-Ex:
 
 @ParameterizedTest
 @ValueSource(ints = {2,5,6,8,10})
@@ -79,9 +79,7 @@ void testNumberWords(int num, String word) {
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Question:
-
-Check if all the given names is present in the DB or not:
+1: Check if all the given names is present in the DB or not:
 
 @ParameterizedTest
 @ValueSource(strings = {"varun","nandni"})
@@ -93,7 +91,7 @@ public void checkUserNames(String name){
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Test if these usernames are present in repository or not:
+2: Test if these usernames are present in repository or not:
 
 @ParameterizedTest
 @CsvSource({

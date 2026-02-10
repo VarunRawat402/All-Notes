@@ -1,6 +1,6 @@
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 JAVA 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Source Code     → Java code in .java file
 Bytecode        → .class file, platform independent
@@ -10,7 +10,7 @@ JDK (Java Development Kit)      → Converts source code to byte code
 JVM (Java Virtual Machine)      → Reads bytecode, converts it to machine code, and executes the program.
 JRE (Java Runtime Environment)  → Contains JVM + libraries needed to run Java programs; does not include compiler.
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Data Types:
 
@@ -20,11 +20,11 @@ Non-Primitive   : String, Array, Class, Object
 Default value of primitive        → 0 / false
 Default value of Non-primitive    → null
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Char ( 16bit ):
-Used to store single digit characters
-Every char has ASCII Value 
+    → Used to store single digit characters
+    → Every char has ASCII Value 
 
 ASCII Values:
 
@@ -38,4 +38,32 @@ System.out.println((int) a);        //65
 System.out.println('A' + 'B');      //131
 System.out.println('1' + 1);        // 50
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+STACK:
+    → Primitive values
+    → Local variables
+    → References of objects
+    → Method() calls
+
+HEAP:
+    → Objects
+    → Arrays
+    → Instance variables
+
+Metaspace:
+    → Class info (class name, class structure)
+    → Static variables
+
+Example:
+
+int a = 10;         
+    → a and 10 stored in stack
+
+String s = "Varun"; 
+    → s in stack, "Varun" in heap
+
+static int b = 20; 
+    → b and 20 stored in metaspace
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------

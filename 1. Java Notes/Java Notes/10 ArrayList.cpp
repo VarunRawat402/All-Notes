@@ -1,35 +1,21 @@
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Array List:
------------------------------------------------------------------------------------------------------------------------------------------
-
-→ When capacity is exceeded, a new larger array is created internally and all elements are copied into it.
-→ Default Capacity : 10 elements
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Syntax:
     ArrayList<Integer> l1 = new ArrayList<>();
     ArrayList<Integer> l1 = new ArrayList<>(1000);      //Initial capacity is 1000 before creating bigger size array
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Difference Between Arrays and ArrayList:
 
-Size:
-    Array           → fixed size
-    ArrayList       → dynamic size
+→ Array has fixed size , length()
+→ ArrayList has dynamic size, size()
+→ Add / Remove is difficult in array due to manual index shifting
+→ Array is faster than ArrayList due to less memory overhead
 
-Length / Size:
-    Array           → length
-    ArrayList       → size()
-
-Operations:
-    Array           → add/remove difficult, manual index handling
-    ArrayList       → easy add, remove, update
-
-Performance:
-    Array           → faster, less memory overhead
-    ArrayList       → slightly slower due to resizing and extra features
-
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Difference Between ArrayList and Vector:
 
@@ -38,7 +24,35 @@ Difference Between ArrayList and Vector:
 → Because of synchronization, Vector has more overhead and is slower.
 → Use ArrayList in single-threaded programs, Vector in multi-threaded scenarios (rarely recommended today).
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+ArrayList vs LinkedList:
+
+ArrayList
+    → Dynamic array
+    → Fast random access (index-based) ✅
+    → Less memory overhead
+    → Best for read-heavy operations
+
+LinkedList
+    → Doubly linked list
+    → Fast insert/delete at start/middle ✅
+    → No random access
+    → More memory usage
+
+Uses:
+
+ArrayList
+    → Returning list from REST API
+    → DTO collections
+    → Index-based loops
+
+LinkedList
+    → Task queues
+    → Sliding window
+    → BFS traversal
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Difference Between ArrayList and CopyOnWriteArrayList:
 
@@ -51,7 +65,7 @@ CopyOnWriteArrayList:
     → Safe to modify while iterating because reading happens on the old array.
     → Thread-safe.
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 CopyOnWriteArrayList():
 
@@ -66,16 +80,16 @@ for(String item : l1){
     }
 }
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 ArrayList vs Arrays.asList vs List.of:
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 ArrayList():
     → Mutable
     → Allows Null
     → Not-ThreadSafe
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Arrays.asList():
     → Can change the value of the element
@@ -88,7 +102,7 @@ List<String> list = Arrays.asList("A", "B", "C");
 list.set(1, "X");       // ✅ Works fine (modifying elements)
 // list.add("D");       // ❌ Throws UnsupportedOperationException
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 List.of():
     → Immutable
@@ -100,4 +114,4 @@ List<String> list = List.of("A", "B", "C");
 // list.set(1, "X");    // ❌ Throws UnsupportedOperationException
 // list.add("D");       // ❌ Throws UnsupportedOperationException
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------

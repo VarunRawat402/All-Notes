@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------
-User Creation Service Notes:
+Customer Creation Service Notes:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: User Creation DTO:
-2: User Entity:
-3: User Kafka Entity:
+1: Customer RequestDTO:
+2: Customer Entity:
+3: Customer kafka payload
 4: OutBox Entity:
 5: Service Layer:
 6: OutBox Repository:
@@ -12,64 +12,62 @@ User Creation Service Notes:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-1. User Creation:
+1. Customer Creation:
 
-Client sends a UserRequestDTO.
-DTO is validated and converted into a User entity.
-A UserCreatedEvent is created from the User.
-A UserOutboxEntity is created to store the event for Kafka publishing.
-User and UserOutboxEntity are saved in the same database transaction → ensures atomicity (either both are saved or none).
-The UserCreatedEvent is stored in the UserOutboxEntity to be published to Kafka.
+→ Client sends a CustomerRequestDTO.
+→ DTO is validated and converted into a Customer entity.
+→ A CustomerOutboxEntity is created to maintain consistency
+→ Customer and CustomerOutboxEntity are saved in the same database transaction → ensures atomicity (either both are saved or none).
+→ The Customer KafkaPayload is stored in the CustomerOutboxEntity to be published to Kafka.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 2. Outbox Scheduler (Asynchronous Kafka Publishing):
 
-Scheduler periodically fetches UserOutboxEntity rows with PENDING or PROCESSING status from the repository.
-Row-level locking is used with skip locked rows to prevent multiple pods from processing the same event.
-Fetched entities are marked as PROCESSING and saved back to the database.
-Events are sent to Kafka asynchronously using addCallback():
-On success → status marked as SENT
-On failure → retry count incremented and status marked as PENDING
-If retry count exceeds MAX_RETRIES → status marked as FAILED
-FAILED events can be retried manually or by the scheduler at a later time.
+→ Scheduler periodically fetches CustomerOutboxEntity rows with PENDING or PROCESSING status from the repository.
+→ Row-level locking is used with skip locked rows to prevent multiple pods from processing the same event.
+→ Fetched entities are marked as PROCESSING and saved back to the database.
+→ Events are sent to Kafka asynchronously using addCallback():
+→ On success → status marked as SENT
+→ On failure → retry count incremented and status marked as PENDING
+→ If retry count exceeds MAX_RETRIES → status marked as FAILED
+→ FAILED events can be retried manually or by the scheduler at a later time.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 3. Synchronous Alternative (Optional):
 
-Kafka messages can be sent synchronously using kafka.send().get():
-Allows retry with backoff and recover methods.
-Disadvantage: .get() is blocking → slows down processing for large batches.
+→ Kafka messages can also be sent synchronously using kafka.send().get():
+→ Allows retry with @Retryable and @Recover methods.
+→ Disadvantage: .get() is blocking → slows down processing for large batches.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Key Points / Highlights
 
-Atomicity: User and Outbox entity saved in the same transaction.
-Reliable delivery: Outbox pattern ensures events are not lost if service crashes.
-Concurrency safe: Row locking + skip locked rows prevent multiple pods from publishing the same event.
-Retry mechanism: Handles temporary Kafka failures with retry count and backoff.
-Idempotency: Consumer ensures duplicate events are not processed.
-
+→ Atomicity: Customer and Outbox entity saved in the same transaction.
+→ Reliable delivery: Outbox pattern ensures events are not lost if service crashes.
+→ Concurrency safe: Row locking + skip locked rows prevent multiple pods from publishing the same event.
+→ Retry mechanism: Handles temporary Kafka failures with retry count and backoff.
+→ Idempotency: Consumer ensures duplicate events are not processed.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: UserCreatedEvent:
-    kafka Event which will be sent to kafka
+1: CustomerCreatedEvent:
+    → kafka Event which will be sent to kafka
 
-public class UserCreatedEvent {
+public class CustomerCreatedEvent {
 
     private UUID eventId;
-    private Long userId;
+    private Long CustomerId;
     private String email;
     private Instant createdAt;
 
-    public static UserCreatedEvent from(User user) {
-        return new UserCreatedEvent(
+    public static CustomerCreatedEvent from(Customer Customer) {
+        return new CustomerCreatedEvent(
             UUID.randomUUID(),
-            user.getId(),
-            user.getEmail(),
+            Customer.getId(),
+            Customer.getEmail(),
             Instant.now()
         );
     }
@@ -78,7 +76,7 @@ public class UserCreatedEvent {
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: OutBox Entity:
-    Processed by scheduler to send kafka event
+    → Processed by scheduler to send kafka event
 
 public class EventOutbox{
 
@@ -86,7 +84,7 @@ public class EventOutbox{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userId;
+    private String CustomerId;
     private String eventType;
 
     @Lob
@@ -109,27 +107,27 @@ public class EventOutbox{
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Service Layer:
-    Save User and UserOutboxEntity
+    → Save Customer and CustomerOutboxEntity
 
 @Service
-public class UserService {
+public class CustomerService {
 
     @Transactional
-    public void createUser(CreateUserRequest dto) throws Exception {
+    public void createCustomer(CreateCustomerRequest dto) throws Exception {
 
-        User user = new User(
+        Customer Customer = new Customer(
             dto.getEmail(),
             dto.getName()
         );
 
-        userRepository.save(user); // business data
+        CustomerRepository.save(Customer); // business data
 
-        UserCreatedEvent event = UserCreatedEvent.from(user);
+        CustomerCreatedEvent event = CustomerCreatedEvent.from(Customer);
 
         outboxRepository.save(
             new OutboxEvent(
                 event.getEventId(),
-                "user_created",
+                "Customer_created",
                 event,
                 Status.NEW,
             )
@@ -140,8 +138,8 @@ public class UserService {
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 4: OutBox Repository:
-    Used to make row locking so multiple pods cannot use single row together
-    Prevents multiple pods publishing the same event
+    → Used to make row locking so multiple pods cannot use single row together
+    → Prevents multiple pods publishing the same event
 
 public interface OutboxRepository extends JpaRepository<OutboxEvent, UUID> {
 //This fetch rows and locks the fetched rows and skips the locked rows 
@@ -174,10 +172,10 @@ public interface EventOutboxRepository extends JpaRepository<EventOutbox, Long> 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 5: Kafka Scheduler:
-    Send Kafak Events to kafka topic, runs every 2 seconds
-    Kafka Events will be sent asynchronously with callBack mechanism to handle success and failure
-    Cannot use @Retryable and @Recover here as its asynchronous way of sending messages
-    Failed message will be manually retried after fixing the issue
+    → Send Kafka Events to kafka topic, runs every 2 seconds
+    → Kafka Events will be sent asynchronously with callBack mechanism to handle success and failure
+    → Cannot use @Retryable and @Recover here as its asynchronous way of sending messages
+    → Failed message will be manually retried after fixing the issue
 
 
 @Component
@@ -200,7 +198,7 @@ public class OutboxPublisher {
             repository.save(event);
 
             kafkaTemplate
-                .send("user_create", event.getAggregateId(), event.getPayload())
+                .send("Customer_create", event.getAggregateId(), event.getPayload())
                 .addCallback(
                     result -> handleSuccess(event),
                     ex -> handleFailure(event, ex)
@@ -232,22 +230,22 @@ public class OutboxPublisher {
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
-Consumer:
+Consumer Idempotency Checking:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Wallet Consumer Code:
-// idempotency is checked with save() DB operation using unique key { user Id }
-// If user is saved, we get error then continue dont process the message
+    → Idempotency is checked with save() DB operation using unique key { Customer Id }
+    → If Customer is saved, we get error then continue dont process the message
 
-@KafkaListener(topics = "user_created", groupId = "wallet-service")
+@KafkaListener(topics = "Customer_created", groupId = "wallet-service")
 @Transactional
-public void consume(UserCreatedEvent event) {
+public void consume(CustomerCreatedEvent event) {
 
     try {
         walletRepository.save(
             new Wallet(
                 UUID.randomUUID(),
-                event.getUserId(),
+                event.getCustomerId(),
                 BigDecimal.ZERO
             )
         );
@@ -259,9 +257,9 @@ public void consume(UserCreatedEvent event) {
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 Email Consumer Code:
-// Stores userId / eventId in redis
-// If userId is present skip the operation
-// If not perform the operation
+    → Stores CustomerId / eventId in redis
+    → If CustomerId is present skip the operation
+    → If not perform the operation
 
 public boolean markIfFirst(UUID eventId) {
     return Boolean.TRUE.equals(
@@ -270,8 +268,8 @@ public boolean markIfFirst(UUID eventId) {
     );
 }
 
-@KafkaListener(topics = "user_created", groupId = "email-service")
-public void consume(UserCreatedEvent event) {
+@KafkaListener(topics = "Customer_created", groupId = "email-service")
+public void consume(CustomerCreatedEvent event) {
 
     if (!redisService.markIfFirst(event.getEventId())) {
         return; // duplicate
@@ -282,7 +280,7 @@ public void consume(UserCreatedEvent event) {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-Synchronous way of sending mesasges to kafka with Retry and Recover mechanism:
+→ Synchronous way of sending mesasges to kafka with Retry and Recover mechanism:
 
 @Component
 public class OutboxScheduler {
@@ -322,14 +320,14 @@ public class OutboxScheduler {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-I tested the CustomerService by creating unit tests that mock the UserRepository and OutboxRepository.
-I verified that when createUser() is called, the user and outbox record are saved together, and if any exception occurs, the transaction rolls back.
+→ I tested the CustomerService by creating unit tests that mock the CustomerRepository and OutboxRepository.
+→ I verified that when createCustomer() is called, the Customer and outbox record are saved together, and if any exception occurs, the transaction rolls back.
 
-My friend tested the OutboxPublisher by mocking the KafkaTemplate and OutboxRepository.
-Mock KafkaTemplate
+→ My friend tested the OutboxPublisher by mocking the KafkaTemplate and OutboxRepository.
+→ Mock KafkaTemplate
 Simulate:
-    Success callback → status becomes SENT
-    Failure callback → retryCount increments, status becomes PENDING or FAILED
+    → Success callback → status becomes SENT
+    → Failure callback → retryCount increments, status becomes PENDING or FAILED
 
 
 

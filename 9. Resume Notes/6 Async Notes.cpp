@@ -3,7 +3,7 @@ ASYNC Notes:
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 @Async: 
-It is used to run a method asynchronously
+    → It is used to run a method asynchronously
 
 Implementation:
 1: Create a Async Class with @Configuration and @EnableAsync Annotation
@@ -60,22 +60,19 @@ public class BackgroundService {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------\
 
-We moved from sequential message processing to parallel consumption
-By processing messages faster, consumer lag reduced, which directly lowered end-to-end event latency.
+→ Sequential message processing to parallel consumption
+→ By processing messages faster, consumer lag reduced, which directly lowered end-to-end event latency.
 
-Kafka assigns 1 thread per partition in a consumer group.
-That consumer thread processes messages sequentially to maintain ordering.
-
-If the @KafkaListener performs heavy operations (DB calls, external API calls, long computations):
-The consumer thread becomes busy and blocked.
+→ If the @KafkaListener performs heavy operations (DB calls, external API calls, long computations):
+→ The consumer thread becomes busy and blocked.
 
 While the thread is busy:
-    New messages for that partition cannot be processed
-    Messages start waiting in Kafka
+    → New messages for that partition cannot be processed
+    → Messages start waiting in Kafka
 
 This leads to:
-    Consumer lag increase
-    Higher end-to-end latency
-    Slower system throughput
+    → Consumer lag increase
+    → Higher end-to-end latency
+    → Slower system throughput
 
 ------------------------------------------------------------------------------------------------------------------------------------------------

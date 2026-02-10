@@ -1,8 +1,8 @@
------------------------------------------------------------------------------------------
-JPA and HIBERNATE 
------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+JPA and HIBERNATE :
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Connecting Spring Boot to Database:
+SpringBoot Application Connection to Database:
 
 spring.datasource.url=jdbc:mysql://localhost:3306/office?createDatabaseIfNotExist=true
 spring.datasource.username=root
@@ -10,67 +10,68 @@ spring.datasource.password=root402
 spring.jpa.hibernate.ddl-auto=update
 
 Hibernate DDL Auto (startup behavior):
-    create          → Drops + recreates tables every startup
-    update          → Updates schema, keeps old data
-    validate        → Only checks schema, no changes
-    create-drop     → Create on start, drop on shutdown
+1: create          → Drops + recreates tables every startup
+2: update          → Updates schema, keeps old data
+3: validate        → Only checks schema, no changes
+4: create-drop     → Create on start, drop on shutdown
 
 → Production: usually validate or none
 → Development: update
 
----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 REPOSITORY:
     → Interface that gives CRUD + query methods.
     
-CrudRepository              → basic CRUD
-PagingAndSortingRepository  → pagination
-JpaRepository               → CRUD + pagination + JPA features
+1: CrudRepository:
+    → Basic CRUD methods
+    → save(), findById(), findAll(), delete(), count()
+
+2: PagingAndSortingRepository:
+    → Extends CrudRepository
+    → CRUD + Pagination + Sorting
+    → findAll(Sort sort), findAll(Pageable pageable)
+
+3: JpaRepository:
+    → Extends PagingAndSortingRepository
+    → CRUD + Pagination + JPA features
+    → flush(), saveAndFlush(), deleteInBatch(), getOne() (lazy fetch)
 
 Code:
-public interface PersonRepository extends JpaRepository<Person,Integer>{}
+public interface PersonRepository extends JpaRepository<Person,Long>{}
 
----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-@Entity
-public class Person {
+Why @Repository is not needed in JpaRepository Interface;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-}
+→ Spring Data automatically scans the JpaRepository Interface 
+→ Creates a proxy implementation class at runtime
+→ Register it as a spring bean
+→ Converts JPA Exception to Spring Exception so we dont need to take care of vendor specific exception like Hibernate or EclipsLink
 
-GenerationType.AUTO :
-    → Hibernate chooses best strategy (DB independent)
-    → Good when you have different type of DB
-
-GenerationType.IDENTITY: 
-    → DB generates ID (MySQL auto_increment)
-    → Best when using single DB
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 JPA Relationships:-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 @OneToOne (One-to-One Relationship)
-    1 entity ↔ 1 entity
-    Example: 1 user has 1 profile.
+    → 1 entity ↔ 1 entity
+    → Example: 1 user has 1 profile.
 
 @OneToMany (One-to-Many Relationship)
-    One → many
-    Example: 1 customer can have many orders.
+    → One ↔ many
+    → Example: 1 customer can have many orders.
 
 @ManyToOne (Many-to-One Relationship)
-    Many → one
-    Example: Many orders belong to 1 customer.
+    → Many ↔ one
+    → Example: Many orders belong to 1 customer.
 
 @ManyToMany (Many-to-Many Relationship)
-    Many ↔ many
-    Uses join table
-    Avoid in real projects → prefer separate entity
-    Example: A student can enroll in many courses, and a course can have many students.
+    → Many ↔ many
+    → Uses join table
+    → Avoid in real projects → prefer separate entity
+    → Example: A student can enroll in many courses, and a course can have many students.
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 @JoinColumm : 
     → Creates foreign key column
@@ -101,17 +102,30 @@ class Department {              // Non-owning side
     private List<Student> students;
 }
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Fetching:
+
+Lazy Fetching:
+    → Loads related data only when accessed
+    → Better performance
+
+Eager Fetching:
+    → Loads related data immediately
+    → Can cause performance issues
+    → Avoid unless necessary
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Cascade Types:
 
-CascadeType.ALL     → All operations
-CascadeType.PERSIST → Saves child when parent saved
-CascadeType.MERGE   → Updates child when parent updated
-CascadeType.REMOVE  → Deletes child when parent deleted
-CascadeType.DETACH  → Detach child from persistence context
+1: CascadeType.ALL      → All operations
+2: CascadeType.PERSIST  → Saves child when parent saved
+3: CascadeType.MERGE    → Updates child when parent updated
+4: CascadeType.REMOVE   → Deletes child when parent deleted
+5: CascadeType.DETACH   → Detach child from persistence context
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Cascade:
     → Cascade will always be added on the saving side
@@ -131,17 +145,4 @@ public class Student {
 
 }
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Fetching:
-
-Lazy Fetching:
-    → Loads related data only when accessed
-    → Better performance
-
-Eager Fetching:
-    → Loads related data immediately
-    → Can cause performance issues
-    → Avoid unless necessary
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------

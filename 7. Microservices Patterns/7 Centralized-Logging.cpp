@@ -3,10 +3,12 @@ Centralized Logging:
 ------------------------------------------------------------------------------------------------------------------------------
 
 → Collects log from all microservices into one place for easy search, analysis, and monitoring.
+→ Helps in debugging distributed systems and tracing requests across services
 
 Centralized Logging Systems:
     → ELK Stack: Elasticsearch (store & search), Logstash (process), Kibana (visualize)
     → EFK Stack: Elasticsearch, Fluentd, Kibana (commonly used with Kubernetes)
+    → Cloud-native alternatives: AWS CloudWatch
 
 ------------------------------------------------------------------------------------------------------------------------------
 
@@ -88,6 +90,8 @@ INFO    : Normal application flow (service start, user actions).
 DEBUG   : Detailed debugging info (enabled in lower environments).
 TRACE   : Very fine-grained logs (method-level, rarely enabled in prod).
 
+→ Production usually runs at INFO/WARN level
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Log Format:
@@ -108,6 +112,7 @@ Example:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 How logs are written in application:
+    → Avoid logging sensitive data (passwords, tokens, PII)
 
 @Slf4j
 @Service
@@ -151,7 +156,7 @@ Use the centralized logging UI:
 Step 3: Correlate logs
 
 → If microservices are involved:
-→ get the traceId of the request and search in other services to get the error
+→ Get the traceId of the request and search in other services
 → Helps find which service failed.
 
 Check for:
@@ -179,6 +184,7 @@ Step 4: Check metrics & monitoring (optional)
 → and determine the root cause—whether it is a validation issue, database constraint failure, or an external service timeout.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Describe a difficult bug you solved:
 
 → My task was to investigate why the search was failing for certain inputs and fix it so that all valid data would be returned correctly. 

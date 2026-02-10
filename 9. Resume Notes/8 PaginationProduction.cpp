@@ -219,16 +219,16 @@ public class GlobalExceptionHandler {
 Optimization:
 
 1. enforce maxPageSize (e.g., 100) in production:
-    It caps the result to return only 100 pages of content
+    → It caps the result to return only 100 pages of content
 
 2. Index the columns used in filtering and sorting
-    When u create index, it sorts the data and make lookup easy for searching 
-    Dont work with %john%
-    Works with only john%
+    → When u create index, it sorts the data and make lookup easy for searching 
+    → Dont work with %john%
+    → Works with only john%
 
 3. Avoid LIKE '%...%' when possible:
-What it is  : Using % at the start of a LIKE search prevents the database from using indexes.
-What it does: Queries become full table scans, which are slow for millions of rows.
+→ What it is  : Using % at the start of a LIKE search prevents the database from using indexes.
+→ What it does: Queries become full table scans, which are slow for millions of rows.
 
 4: Fetch only ResponseDTO feilds using projection:
 @Query("SELECT new com.example.StudentDTO(s.id, s.name, s.age) FROM Student s WHERE ...")

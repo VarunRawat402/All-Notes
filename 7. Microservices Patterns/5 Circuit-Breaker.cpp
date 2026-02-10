@@ -4,7 +4,7 @@ Circuit Breaker in Microservices:
 
 → Prevent cascading failures and improve system reliability.
 → Services depend on each other → failure in one can break the chain
-→ Network failures, timeouts, or high load are common
+→ Network failures, timeouts, or high load are common things to avoid   
 → Without resilience, small errors can bring down the system
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -20,6 +20,7 @@ Open State (Fail Fast Mode)
     → No request goes to the service
     → Calls fail immediately
     → Protects the failing service from overload
+    → Fallback method is executed
 
 Half-Open State (Testing the Waters)
     → After a wait time, few requests are allowed
@@ -49,7 +50,7 @@ Application.properties:
     resilience4j.circuitbreaker.instances.myCB.sliding-window-size=10
     resilience4j.circuitbreaker.instances.myCB.permitted-number-of-calls-in-half-open-state=2
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Retry ( @Retry ):
     → Retries failed request before giving up
@@ -61,7 +62,7 @@ Application.properties:
     resilience4j.retry.instances.myRetry.max-attempts=3             
     resilience4j.retry.instances.myRetry.wait-duration=2000ms
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 RateLimiter ( @RateLimiter )
     → Limits number of requests per time window
@@ -72,7 +73,7 @@ Application.properties:
 resilience4j.ratelimiter.instances.myRateLimiter.limit-for-period=2
 resilience4j.ratelimiter.instances.myRateLimiter.limit-refresh-period=8s
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 BulkHead ( @BulkHead )
     → Limits concurrent requests, Rejects extra calls
@@ -83,4 +84,4 @@ Application.properties:
 resilience4j.bulkhead.instances.myBulkhead.max-concurrent-calls=5
 resilience4j.bulkhead.instances.myBulkhead.max-wait-duration=0ms
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------

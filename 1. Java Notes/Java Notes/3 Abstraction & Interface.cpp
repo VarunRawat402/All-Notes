@@ -1,6 +1,6 @@
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Abstraction:
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Abstract Classes (abstract keyword) :
 
@@ -8,6 +8,8 @@ Abstraction:
     → instance + static variables
     → constructor
     → Multiple inheritance not supported
+    → Cannot override static methods
+    → Can override abstract and default methods
 
 2: Interfaces (interface keyword) :
 
@@ -15,13 +17,15 @@ Abstraction:
     → static final variables
     → Cannot have a constructor
     → Multiple Inheritance Supported
+    → Cannot override static methods
+    → Can override abstract and default methods
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 When to Use Abstract Class vs Interface:
 
 1: Use Abstract Class When:
-    → You want to provide common code with subclasses
+    → You want to provide common code for subclasses
     → You want to provide common properties and attributes to subclasses
     → You want to write some default implementation for subclassses
 
@@ -38,9 +42,9 @@ Example:
     → PaymentMethod → interface
     → CreditCard and UPI implement interface → Cart can work with any payment type
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Abstract Class Code:
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 abstract class Animal {
 
@@ -79,9 +83,9 @@ class Dog extends Animal {
 
 Dog dog = new Dog("PetDog", "Golden Retriever");
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Interface Code:
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 interface Vehicle {
 
@@ -102,10 +106,10 @@ class Car implements Vehicle {
     }
 }
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Note:
-→ → If Interface A has method fun() and Interface B extends A with greet(),
+→ If Interface A has method fun() and Interface B extends A with greet(),
 → Student class implementing B must implement both methods
 
 interface A { void fun(); }
@@ -122,14 +126,14 @@ class Student implements B {
     }
 }
 
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Tight Coupling vs Loose Coupling
--------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 → Without Interface → Tight Coupling
 
-→ Cart depends directly on all payment classes
-→ Adding a new payment type → need to modify Cart → bad design
+→ PaymentService depends directly on all payment classes
+→ Adding a new payment type → need to modify PaymentService → bad design
 
 Ex:
 class CreditCard { 
@@ -143,7 +147,7 @@ class UPI {
     } 
 }
 
-class Cart {
+class PaymentService {
     void doPayment(CreditCard c) { 
         c.pay(); 
     }
@@ -152,13 +156,13 @@ class Cart {
     }
 }
 
------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 With Interface → Loose Coupling:
 
 → All payment types implement PaymentMethod
-→ Cart depends only on interface, not on concrete classes
-→ Adding new payment types → no changes to Cart
+→ PaymentService depends only on interface, not on concrete classes
+→ Adding new payment types → no changes to PaymentService
 
 interface PaymentMethod { 
     void pay(); 
@@ -176,15 +180,20 @@ class UPI implements PaymentMethod {
     }
 }
 
-class Cart {
-    void doPayment(PaymentMethod paymentMethod) {
+class PaymentService {
+
+    private PaymentMethod paymentMethod;
+
+    void doPayment() {
         paymentMethod.pay();
     }
 }
 
-// Usage
-Cart cart = new Cart();
-cart.doPayment(new CreditCard());
-cart.doPayment(new UPI());
+//Run Time Polymorphism
+PaymentService paymentService = new PaymentService(new CreditCard());
+paymentService.doPayment();
 
------------------------------------------------------------------------------------------------------------------------------------------
+PaymentService paymentService = new PaymentService(new UPI());
+paymentService.doPayment();
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------

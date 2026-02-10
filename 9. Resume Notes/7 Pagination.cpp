@@ -8,11 +8,11 @@ PageRequest.of()    → static factory method to create a Pageable object.
 Sort                → utility class to define sorting order.
 
 By default:
-Data is returned unsorted
-Pagination is zero-based
+    → Data is returned unsorted
+    → Pagination is zero-based
 
 Offset Formula:
-offset = (pageNumber - 1) x pageSize
+    → offset = (pageNumber - 1) x pageSize
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Basic Pagination with Page and PageSize:
@@ -26,15 +26,15 @@ Flow:
 4: Repository returns a Page<T> object.
 
 What Page<T> Contains
-content         → actual list of records
-totalElements   → total rows in DB
-totalPages      → 15
-pageNumber      → 0
-pageSize        → 0
-sort            → ASC
+1: content         → actual list of records
+2: totalElements   → total rows in DB
+3: totalPages      → 15
+4: pageNumber      → 0
+5: pageSize        → 0
+6: sort            → ASC
 
 To get the actual data:
-studentRepository.findAll(pageable).getContent();
+    → studentRepository.findAll(pageable).getContent();
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Pagination with Sorting
@@ -42,8 +42,8 @@ Pagination with Sorting
 
 Sorting Parameters:
 
-sortBy → field name (id, name, salary, etc.)
-sortDir → asc or desc
+1: sortBy   → Feild name ( id, name , salary )
+2: sortDir  → Asc or Desc
 
 public List<Student> getAllCustomer(int page, int pageSize, String sortBy, String sortDir){
     
@@ -86,11 +86,11 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Specification:
-    A functional interface used for dynamic query building.
-    Abstract method() → toPredicate(root, query, criteriaBuilder)
-        root            → Entity
-        query           → final SQL query
-        criteriaBuilder → used to build conditions (AND / OR / LIKE / EQUAL)
+    → A functional interface used for dynamic query building.
+    → Abstract method() → toPredicate(root, query, criteriaBuilder)
+            root            → Entity
+            query           → final SQL query
+            criteriaBuilder → used to build conditions (AND / OR / LIKE / EQUAL)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Multiple Search filters ( name, age, salary ):

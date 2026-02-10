@@ -1,6 +1,6 @@
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Kafka Interview Questions:
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Producer Acknowledgments (spring.kafka.producer.acks):
     → Producer → Leader → Replicas → Ack → Producer
@@ -11,7 +11,7 @@ spring.kafka.producer.acks:
     acks=1      → Leader confirms only
     acks=all    → Leader + all in-sync replicas (safest)
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 min.insync.replicas:
     → Minimum number of in-sync replicas required to accept a write
@@ -21,55 +21,59 @@ min.insync.replicas:
     → Write allowed only if ≥2 replicas are alive & in sync
     → Else → write fails
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 At-most-once vs At-least-once vs Exactly-once;
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 At-most-once:
-    → Producer sends message
-    → Offset committed before processing
-    → Message lost if crash happens
+    → Producer sends message → Offset is committed before processing
+    → If app crashes after commit → message is lost.
     → offsets are autocomitted
+    → Duplicates never happen
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+spring.kafka.consumer.enable-auto-commit=true
+spring.kafka.consumer.auto-commit-interval=100
+
+@KafkaListener(topics = "email-topic")
+public void sendEmail(String msg) {
+    // offset already committed
+    process(msg);
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 At-least-once
-    → Producer sends message
-    → Offset committed after processing
+    → Producer sends message → Offset is committed after processing
+    → If processing fails → ack not called → message re-delivered.
     → Duplicates possible if retry happens
 
 @KafkaListener(...)
 public void consume(OrderEvent event, Acknowledgment ack) {
-    // process message
+    process(msg);
     ack.acknowledge(); // commit AFTER processing
 }
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Exactly-once
-    → Kafka transactions used
-    → Producer + consumer coordinated
+    → Kafka transactions Manager configured making kafka send and Database transaction atomic
+    → Idempotent producer
+    → Transactional consumer
     → No duplicates, no loss, atomic across topics/partitions
 
-spring:
-  kafka:
-    producer:
-      enable-idempotence: true
-      transaction-id-prefix: tx-
+spring.kafka.producer.transaction-id-prefix=tx-
+spring.kafka.producer.properties.enable.idempotence=true
 
-kafkaTemplate.executeInTransaction(kafkaTemplate -> {
-    kafkaTemplate.send("order_topic", orderId, event);
-});
+@KafkaListener(topics = "payment-topic")
+@Transactional
+public void handlePayment(String msg) {
 
+    updateDatabase(msg);
+    sendAnotherKafkaEvent(msg);
 
-Exactly Once Working:
-→ It helps us only when kafka retries internally not when application sends same message again
-→ Consumer reads from read-commited message but if processing is done and consumer crashses when offsets are commited
-→ message can be re-assign to different consumer and same message can be processes again
+}
 
-→ So idempotency is needed even with this
-
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 DLT:
 → A Dead Letter Topic is a separate Kafka topic where messages are sent after all retry attempts fail and the message still cannot be processed successfully.
@@ -79,7 +83,7 @@ DLT:
 
 → Later, failed message can be logged, re-publish from DLT
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Retry in Kafka:
 → Re-processing the failed messages automatically or manually
@@ -88,7 +92,7 @@ When consumer fails:
     → The offset is not commited
     → kafka will re-assign the same message
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Approach 1: Default retry (offset not committed):
 
@@ -102,7 +106,7 @@ public void consume(String message) {
 → When retry happens kafka blocks that partition so other messages are also waiting to get processes
 → This can cause infinite retry if message is failing again and again and infinite block of partition
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Approach 2: Retry with DefaultErrorHandler (MOST USED):
 
@@ -157,7 +161,7 @@ kafkaListenerFactory(
     return factory;
 }
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Approach 3: Non-blocking retry using Retry Topics (BEST PRACTICE):
     → It retry the messages without blocking the main consumer
@@ -180,7 +184,7 @@ public void consume(String message) {
     throw new RuntimeException("temporary failure");
 }
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Kafka Listener Concurrency:
 
@@ -195,7 +199,7 @@ Kafka Listener Concurrency:
 → Without concurrency     → 4 messages take ~4 sec
 → With concurrency 4      → 4 messages take ~1 sec
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Disadvantages of Using Spring Kafka Concurrency:
 
@@ -203,7 +207,7 @@ Disadvantages of Using Spring Kafka Concurrency:
 2: If one instance goes down, all threads stop → single point of failure
 3: Kubernetes scales pods better than increasing threads in one JVM
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Question 1: What happens if a consumer crashes:
 
@@ -217,7 +221,7 @@ What Happens to Messages:
     → Offset committed        → no reprocessing
     → Offset not committed    → message reprocessed by another consumer
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Question 2: What is idempotent producer:
     → Kafka retries automatically if ack fails
@@ -225,7 +229,7 @@ Question 2: What is idempotent producer:
     → Kafka avoids duplicates using:
     → ProducerId + Sequence Number
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Question 3: What causes consumer lag:
     → Producer faster than consumer
@@ -240,7 +244,7 @@ Fix:
     → Increase partitions
     → Scale Kafka
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Question 4: How to reprocess old messages:
 
@@ -273,4 +277,4 @@ public void reprocess(String message) {
 → Old Kafka messages are reprocessed by resetting consumer offsets, 
 → replaying from a DLT, or using a new consumer group, depending on whether full or selective reprocessing is needed
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------

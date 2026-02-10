@@ -6,8 +6,8 @@ Flow of Testing:
     AAA = Arrange → Act → Assert
 
 Arrange     → Set up data, mocks, and environment
-Act         → test logic
-Assert      → Verify expected results
+Act         → Write tests 
+Assert      → Verify tests
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,30 +29,30 @@ Repository Testing - Steps:
 
 @SpringBootTest:
 
-Starts the entire Spring Boot application context
+→ Starts the entire Spring Boot application context
 Loads:
-    Controllers
-    Services
-    Repositories
-    Security
-    Configuration
-Used for integration testing.
+    → Controllers
+    → Services
+    → Repositories
+    → Security
+    → Configuration
+→ Used for integration testing.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 @DataJpaTest:
 
-Used for JPA layer testing only
+→ Used for JPA layer testing only
 Loads:
-    @Entity
-    JPA repositories
-Does not load services, controllers, security, etc.
-Uses in-memory H2 database by default.
+    → @Entity
+    → JPA repositories
+→ Does not load services, controllers, security, etc.
+→ Uses in-memory H2 database by default.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 @AutoConfigureTestDatabase:
-Controls which database is used in @DataJpaTest.
+    → Controls which database is used in @DataJpaTest.
 
 Use real configured DB:
 

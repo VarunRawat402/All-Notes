@@ -3,9 +3,9 @@ Complete Repository Testing - Student Entity
 --------------------------------------------------------------------------------------------------------------------------------
 
 Purpose:
-    Test JPA Repository layer only
-    Uses in-memory H2 database
-    Each test runs in transaction + auto rollback
+    → Test JPA Repository layer only
+    → Uses in-memory H2 database
+    → Each test runs in transaction + auto rollback
 
 
 @DataJpaTest

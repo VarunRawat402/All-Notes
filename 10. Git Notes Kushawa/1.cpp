@@ -3,110 +3,112 @@ Git Notes - Comprehensive Guide
 ------------------------------------------------------------------------------------------------------------------------
 
 1. Repository: 
-    It is used by Git to store and tracks your project files and history.
-    Local Repository - Exists on your computer
-    Remote Repository - GitHub, GitLab, Bitbucket
+    → Used to store and track files and history of project
+    → Local Repository  - Exists on your computer
+    → Remote Repository - GitHub, GitLab, Bitbucket
 
 2. Working Folder:
-    The project folder where you create, edit, or delete files.
+    → The project folder where you create, edit, or delete files.
 
 3. Staging Area:
-    A temporary area between the Working Directory and the Local Repository.
-    It is where you prepare and organize which changes you want to include in your next commit.
+    → A temporary area between the Working folder and the Local Repository.
+    → It is where you prepare and organize which changes you want to include in your next commit.
 
 Git Workflow:
-    Working Directory → Staging Area → Local Repository → Remote Repository
+    → Working Folder → Staging Area → Local Repository → Remote Repository
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Essential Git Commands:
 
-1: Creates a new Git repository in the current folder:
-    `git init`                              
+1: Initializes Git repository:
+    → `git init`                              
 
 2: Add files to staging area: 
-    `git add <filename>`                    - add files to staging area
-    `git add .`                             - stages all files
+    → `git add <filename>`                    - add files to staging area
+    → `git add .`                             - stages all files
 
 3: Remove files from staging area: 
-    `git restore --staged <filename>`       - Removes file from staging, but keeps your code changes.
-    `git restore <filename>`                - Removes all uncommitted changes in the working directory.
+    Staging area → back to Working directory
+    → `git restore --staged <filename>`       - Removes file from staging, but keeps your code changes.
+    → `git restore <filename>`                - Removes all uncommitted changes in the working directory.
 
 4: View commit history: 
-    `git log`                               - detailed history
-    `git log --oneline`                     - one line history
+    → `git log`                               - detailed history
+    → `git log --oneline`                     - one line history
 
 5: Stop Tracking a File (but keep it locally): 
-    `git rm --cached <filename>`            - Removes file from Git tracking but file stays locally
+    → `git rm --cached <filename>`            - Removes file from Git tracking but file stays locally
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Branching:
-A branch is a separate line of development
-It lets you work on features, bug fixes, or experiments without touching the main code.
+    → A branch is a separate line of development
+    → It lets you work on features, bug fixes, or experiments without touching the main code.
 
 1: 'git branch'
-Shows all local branches
-Current branch is marked with *
+→ Shows all local branches
+→ Current branch is marked with *
 
 2: 'git branch <branch-name>'
-Creates a branch but does not switch to it
+→ Creates a branch 
 
 3: 'git switch <branch-name>'
-Switch to specific branch
+→ Switch to specific branch
 
 4: 'git switch -c <branch-name>'
-Create branch and switch to it
+→ Create branch and switch to it
 
 5: Delete a branch: 
 'git branch -d <branch-name>'
-    Deletes only if branch is already merged
+    → Deletes only if branch is already merged
+
 'git branch -D <branch-name>'
-    Deletes branch even if not merged
+    → Deletes branch even if not merged
 
 6: Rename branches: 
 'git branch -m <new-name>'
-    Rename current branch
+    → Rename current branch
 
 'git branch -m <old-name> <new-name>'
-    Rename any branch
+    → Rename any branch
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Remote Operations:
 
 1: 'git push origin <branch-name>'
-Push changes to remote repositories
+→ Push changes to remote repositories
 
 2: 'git pull origin <branch-name>'
-Fetches changes from remote and merges them into your local branch
+→ Fetches changes from remote and merges them into your local branch
 
 4: 'git fetch --all'
-Downloads updates from remote
-Does NOT merge automatically
-Used when you want to review changes first
+→ Downloads updates from remote
+→ Does NOT merge automatically
+→ Used when you want to review changes first
 
 5: 'git push origin --delete <branch-name>'
-Removes branch from the remote repository
+→ Removes branch from the remote repository
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Merging and Rebasing:
 
 - Merging: 
-    combines one branch into another.
-    Switch to the branch that should receive changes
-    Merge the feature branch into it
+    → combines one branch into another.
+    → Switch to the branch that should receive changes
+    → Merge the feature branch into it
 
 Example:
     `git switch main`
     `git merge feature/login`
 
 - Rebasing: 
-    moves your branch commits on top of another branch.
-    Switch to the branch you want to update
-    Reapply its commits on top of the target branch
-    Mostly used for local or personal branches.
+    → moves your branch commits on top of another branch.
+    → Switch to the branch you want to update
+    → Reapply its commits on top of the target branch
+    → Mostly used for local or personal branches.
 
 Example:
     `git switch feature/login`

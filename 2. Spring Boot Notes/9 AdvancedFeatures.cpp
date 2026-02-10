@@ -1,6 +1,6 @@
---------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Advanced Rest API Features:
---------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Content Negotiation ( REST API ):
     → Used to return response in different formats ( JSON, XML, etc ) based on client request.
@@ -8,6 +8,8 @@ Advanced Rest API Features:
 
 Accept: application/json
 Accept: application/xml
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How It Works in Spring Boot
     → Spring Boot supports JSON by default.
@@ -17,6 +19,8 @@ Spring automatically:
     → Reads Accept header
     → Chooses the correct converter (JSON/XML)
     → Serializes the response
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Dependency (XML Support):
 <dependency>
@@ -29,7 +33,7 @@ public User getUser() {
     return new User(1, "Varun");
 }
 
---------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Spring Boot Actuator:
 
@@ -40,7 +44,6 @@ Actuator provides production-ready features to monitor and manage applications.
     → Integrate with monitoring tools (Prometheus, Grafana, ELK, etc.)
 
 1: Add the Dependency:
-
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-actuator</artifactId>
@@ -50,6 +53,8 @@ Actuator provides production-ready features to monitor and manage applications.
     Application.properties:
     management.endpoints.web.exposure.include=*
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 Common Actuator endpoints:
 
 /actuator/health    : Shows application health (up, down, details)
@@ -58,15 +63,19 @@ Common Actuator endpoints:
 /actuator/metrics	: Lists available metrics (like jvm.memory.used, http.server.requests)
 /actuator/beans	    : Displays all Spring Beans
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 How do you expose actuator endpoints securely:
     management.endpoints.web.exposure.include=health,metrics
     management.endpoint.health.show-details=when_authorized
     .authorizeHttpRequests()
     .requestMatchers("/actuator/**").hasRole("ADMIN")
 
---------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-3: What is a Scheduler?
+3: SCHEDULED:
+
+What is a Scheduler?
     → A scheduler allows you to run code automatically at fixed intervals or specific time.
 
 Cron Expression:
@@ -80,10 +89,9 @@ Enable Scheduling in Spring:
 
 @EnableScheduling
 @SpringBootApplication
-public class MyApp {
-}
+public class MyApp {}
 
---------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 Examples:
 
 Fixed Rate (every 5 seconds)
@@ -105,5 +113,5 @@ public void dailyTask() {
     System.out.println("Runs at 9:00 AM every SUN");
 }
 
---------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
