@@ -7,8 +7,8 @@ Exception:
     → Must Handle them or compilation will fail
 
 Example: 
-    IOException             → Issues during file reading
-    FileNotFoundException   → File path does not exist
+    IOException             → Error while reading or writing a file
+    FileNotFoundException   → Wrong file path / file not exist
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ Example:
 
 Example: 
     ArrayIndexOutOfBoundsException  → Accessing invalid array index
-    ArithmeticException             → Illegal arithmetic operation (e.g., divide by zero)
+    ArithmeticException             → Illegal arithmetic operation
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Exception Handling:
@@ -27,7 +27,7 @@ Exception Handling:
 1. Try-Catch Block:
 
     try {
-        int result = 10 / 0;  // Exception
+        int result = 10 / 0;
     } catch (ArithmeticException e) {
         System.out.println("Cannot divide by zero!");
     }
@@ -49,7 +49,6 @@ public static void checkAge(int age) {
     if (age < 18) {
         throw new IllegalArgumentException("You must be 18 or older.");
     }
-    System.out.println("Welcome!");
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

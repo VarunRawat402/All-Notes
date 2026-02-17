@@ -13,7 +13,8 @@ Difference Between Arrays and ArrayList:
 → Array has fixed size , length()
 → ArrayList has dynamic size, size()
 → Add / Remove is difficult in array due to manual index shifting
-→ Array is faster than ArrayList due to less memory overhead
+→ No built-in methods for add and remove
+→ Array has better performance than ArrayList due to less memory overhead
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -30,26 +31,25 @@ ArrayList vs LinkedList:
 
 ArrayList
     → Dynamic array
-    → Fast random access (index-based) ✅
+    → Fast random access ( index-based )
     → Less memory overhead
     → Best for read-heavy operations
 
 LinkedList
     → Doubly linked list
-    → Fast insert/delete at start/middle ✅
-    → No random access
+    → No index-based access, traversal required
+    → Fast insert/delete at start/middle 
     → More memory usage
 
-Uses:
-
 ArrayList
+    → Frequent reads / random access
     → Returning list from REST API
     → DTO collections
-    → Index-based loops
 
 LinkedList
+    → Frequent insert/delete operations
+    → Random access not required
     → Task queues
-    → Sliding window
     → BFS traversal
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

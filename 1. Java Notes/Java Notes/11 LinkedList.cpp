@@ -40,22 +40,14 @@ Note:
 1. Adding Elements:
 
 list.add("Apple");        // Add at end
-list.addFirst("Orange");  // Add at beginning
-list.addLast("Banana");   // Add at end
 list.add(1, "Mango");     // Add at index
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2. Removing Elements:
 
-list.remove();                       // Remove first element
-list.removeFirst();                  // Remove first element
-list.removeLast();                   // Remove last element
 list.remove("Apple");                // Remove specific element
 list.remove(2);                      // Remove element at index
-list.removeFirstOccurrence("Apple"); // Remove first occurrence
-list.removeLastOccurrence("Apple");  // Remove last occurrence
-list.clear();                        // Remove all elements
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -64,16 +56,12 @@ list.clear();                        // Remove all elements
 list.getFirst();        // Get first element
 list.getLast();         // Get last element
 list.get(2);            // Get element at index
-list.peek();            // Retrieve but don't remove first element
-list.poll();            // Retrieve and remove first element
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 4. Searching & Checking:
 
 list.contains("Apple");          // Check if element exists
-list.indexOf("Apple");           // Find first occurrence index
-list.lastIndexOf("Apple");       // Find last occurrence index
 list.size();                     // Get number of elements
 list.isEmpty();                  // Check if empty
 

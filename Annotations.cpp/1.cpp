@@ -2,36 +2,9 @@
 Annotations In Spring Boot
 ----------------------------------------------------------------------------------------------------------------------
 
-@Component: 	
-    → Marks a class as a Spring-managed component.
-    → Spring automatically detects it during component scanning and creates a bean in IOC Container
-
-----------------------------------------------------------------------------------------------------------------------
-
-@Configuration:
-    → Used to mark a class where we need to create beans manually 
-
-@Bean
-public RestTemplate restTemplate(){}
-
-----------------------------------------------------------------------------------------------------------------------
-
-@ComponentScan:
-    → Used to tell spring to create bean of all the classes marked as @Controller, @Service, @Respository, @Component
-
-----------------------------------------------------------------------------------------------------------------------
-
-@EnableConfiguration:
-    → Used to automatically set the environments based on dependencies
-
-Example:
-spring-boot-starter-web -> Tomcat and Spring MVC
-spring-boot-starter-data-jpa -> I will set up DataSource, EntityManager, etc
-
-----------------------------------------------------------------------------------------------------------------------
-
 @JsonIgnore: 	
-    → Used to exclude a field from JSON serialization and deserialization.
+    → Used on Entity feilds
+    Excludes attributes from serialization and ignore the attribute in response
     → Spring will skip this field in API responses and in request-body mapping.
 
 ----------------------------------------------------------------------------------------------------------------------

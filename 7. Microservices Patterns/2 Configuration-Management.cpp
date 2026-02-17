@@ -2,9 +2,9 @@
 Configuration Management Patterns:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-→ Microservices run independently in multiple environments (dev, QA, prod)
-→ Configuration may change frequently (URLs, DB credentials, feature flags)
-→ Hardcoding configs → inflexible, error-prone
+→ Microservices run in multiple environments (dev, QA, prod)
+→ Configuration change frequently (URLs, DB credentials, feature flags)
+→ Hardcoding configuration can make your application error-prone
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -12,28 +12,16 @@ Configuration Management Patterns:
     → All Services will fetch configs from config server dynamically
     → Spring Cloud Config Server + Git backend
 
-
 2. Secrets Management:
-    → Avoid storing Sensitive data in config files or code
+    → You should not store sensitive data in config files or code
     → Sensitive data must be secured
+    → Pass Sensitive data and config at runtime using env variables
     → AWS Secrets Manager / Kubernetes Secrets / Docker env
-
-Code:
-    @RefreshScope
-    @Component
-    public class PaymentServiceConfig {
-        @Value("${payment.url}")
-        private String paymentUrl;
-    }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Centralized Configuration Implementation:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-→ All microservices fetch configuration from 1 config server
-→ Config is stored in Git (recommended) or local folder
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Config Server:
     → Reads configuration from Git / local
 
@@ -47,6 +35,7 @@ Config Server:
     spring.cloud.config.server.git.clone-on-start=true                                  
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Config Client
     → Fetches configuration from Config Server on startup
 

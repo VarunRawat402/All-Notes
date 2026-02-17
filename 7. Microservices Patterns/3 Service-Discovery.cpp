@@ -22,7 +22,6 @@ Server-Side Discovery:
 Eureka Server:
     → Acts as a Service Registry
     → All microservices register themselves here
-    → Registry is queried using service name
 
 Eureka Server Stores:
     → Service Name
@@ -46,7 +45,7 @@ Eureka Server Stores:
 Eureka Client:
     → Registers itself on Eureka server automatically on startup
     → Sends heartbeat every 30 seconds
-    → Gets registry of other services (important addition)
+    → Gets registry of other services
     → Deregisters automatically if it goes down (or lease expires)
         
 1: Add Eureka client Dependency:

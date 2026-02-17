@@ -2,14 +2,14 @@
 Pagination:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Pageable            → an interface used to define pagination information.
-PageRequest         → an implementation class of Pageable.
-PageRequest.of()    → static factory method to create a Pageable object.
+Pageable            → Interface
+PageRequest         → Class 
+PageRequest.of()    → static method to create Pageable object
 Sort                → utility class to define sorting order.
 
-By default:
-    → Data is returned unsorted
-    → Pagination is zero-based
+Note:
+    → Data is unsorted by default
+    → Pagination is zero-based index
 
 Offset Formula:
     → offset = (pageNumber - 1) x pageSize
@@ -18,44 +18,34 @@ Offset Formula:
 Basic Pagination with Page and PageSize:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Flow:
-
-1: Controller receives page and pageSize.
-2: Create Pageable object using PageRequest.of(page-1, pageSize).
-3: Pass Pageable to repository method
-4: Repository returns a Page<T> object.
+Pageable p1             = PageRequest.of(0,50);
+Page<Customer> page     = customerRepository.findAll(pageable);
+List<Customer> list     = page.getContent();
 
 What Page<T> Contains
-1: content         → actual list of records
-2: totalElements   → total rows in DB
-3: totalPages      → 15
-4: pageNumber      → 0
-5: pageSize        → 0
-6: sort            → ASC
-
-To get the actual data:
-    → studentRepository.findAll(pageable).getContent();
+    1: content              → List<Customer>
+    2: totalElements        → Total customers fetched by query
+    3: totalPages           → Total pages
+    4: pageNumber           → 0
+    5: pageSize             → 50
+    6: sort                 → ASC
+    7: Is first/last page   → Check if current page is first or last
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Pagination with Sorting
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Sorting Parameters:
-
-1: sortBy   → Feild name ( id, name , salary )
-2: sortDir  → Asc or Desc
+    1: sortBy   → Feild name ( id, name , salary )
+    2: sortDir  → Asc or Desc
 
 public List<Student> getAllCustomer(int page, int pageSize, String sortBy, String sortDir){
     
-    Sort sort = null;
-    if(sortDir.equalsIgnoreCase("ASC")){
-        sort = Sort.by(sortBy).ascending();
-    }else if(sortDir.equalsIgnoreCase("DESC")){
-        sort = Sort.by(sortBy).descending();
-    }
-    
-    Pageable p1 = PageRequest.of(page-1,pageSize,sort);
-    return studentService.getAllStudents(p1);
+    Sort.Direction direction = Sort.Direction.fromString(sortDir);
+    Sort sort = Sort.by(direction, sortBy)
+
+    Pageable pageable = PageRequest.of( page-1, pageSize, sort);
+    return studentService.getAllStudents(pageable);
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -63,20 +53,14 @@ Fetch Customers by Name with Pagination:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @GetMapping("/student/")
-public List<Student> getAllCustomer(int page, int pageSize, String search){
+public List<Student> getAllCustomer(String name, int page, int pageSize){
     
-    Pageable p1 = PageRequest.of(page-1,pageSize);
-    return studentService.getAllStudents(p1,search);
+    Pageable pageable = PageRequest.of(page-1,pageSize);
+    return studentService.getAllStudents( name, pageable );
 }
 
-public List<Student> getAllStudents(Pageable pageable, String search) {
-
-    if (search == null) {
-        return studentRepository.findAll(pageable).getContent();
-    }
-    else{
-        return studentRepository.findByName(search, pageable).getContent();
-    }
+public List<Student> getAllStudents(Pageable pageable, String name) {
+    return studentRepository.findByName(name, pageable).getContent();
 }
 
 public interface StudentRepository extends JpaRepository<Student,Integer> {
@@ -87,10 +71,10 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
 
 Specification:
     → A functional interface used for dynamic query building.
-    → Abstract method() → toPredicate(root, query, criteriaBuilder)
-            root            → Entity
-            query           → final SQL query
-            criteriaBuilder → used to build conditions (AND / OR / LIKE / EQUAL)
+    → toPredicate(root, query, criteriaBuilder)
+        root            → Entity
+        query           → final SQL query
+        criteriaBuilder → used to build conditions (AND / OR / LIKE / EQUAL)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Multiple Search filters ( name, age, salary ):

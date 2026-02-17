@@ -3,7 +3,7 @@ Git Notes - Comprehensive Guide
 ------------------------------------------------------------------------------------------------------------------------
 
 1. Repository: 
-    → Used to store and track files and history of project
+    → Where code is stored and tracked
     → Local Repository  - Exists on your computer
     → Remote Repository - GitHub, GitLab, Bitbucket
 
@@ -19,77 +19,73 @@ Git Workflow:
 
 ------------------------------------------------------------------------------------------------------------------------
 
-Essential Git Commands:
+Basic Git Commands:
 
-1: Initializes Git repository:
-    → `git init`                              
-
-2: Add files to staging area: 
-    → `git add <filename>`                    - add files to staging area
-    → `git add .`                             - stages all files
-
-3: Remove files from staging area: 
-    Staging area → back to Working directory
-    → `git restore --staged <filename>`       - Removes file from staging, but keeps your code changes.
-    → `git restore <filename>`                - Removes all uncommitted changes in the working directory.
-
-4: View commit history: 
-    → `git log`                               - detailed history
-    → `git log --oneline`                     - one line history
-
-5: Stop Tracking a File (but keep it locally): 
-    → `git rm --cached <filename>`            - Removes file from Git tracking but file stays locally
+1: 'git init'
+2: 'git add <filename>' 
+3: 'git add .'
+4: 'git log'                               
+5: 'git log --oneline'                     
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Branching:
     → A branch is a separate line of development
-    → It lets you work on features, bug fixes, or experiments without touching the main code.
+    → It lets you work on features, bug fixes, or development without changing the main code.
 
 1: 'git branch'
-→ Shows all local branches
-→ Current branch is marked with *
+    → Shows all branches
 
-2: 'git branch <branch-name>'
-→ Creates a branch 
+2: 'git branch user'
+    → Creates a user branch 
 
-3: 'git switch <branch-name>'
-→ Switch to specific branch
+3: 'git switch user'
+    → Switch to user branch
 
-4: 'git switch -c <branch-name>'
-→ Create branch and switch to it
+4: 'git switch -c user'
+    → Create user branch and switch to it
 
 5: Delete a branch: 
-'git branch -d <branch-name>'
-    → Deletes only if branch is already merged
+    'git branch -d user'
+        → Deletes only if user branch is already merged
 
-'git branch -D <branch-name>'
-    → Deletes branch even if not merged
+    'git branch -D user'
+        → Deletes user branch even if not merged
 
 6: Rename branches: 
-'git branch -m <new-name>'
-    → Rename current branch
+    'git branch -m <new-name>'
+        → Rename current branch
 
-'git branch -m <old-name> <new-name>'
-    → Rename any branch
+    'git branch -m <old-name> <new-name>'
+        → Rename any branch
 
 ------------------------------------------------------------------------------------------------------------------------
 
-Remote Operations:
+Remote Repositories Operations:
 
-1: 'git push origin <branch-name>'
-→ Push changes to remote repositories
 
-2: 'git pull origin <branch-name>'
-→ Fetches changes from remote and merges them into your local branch
+1: 'git remote add origin <repository-url>'
+    → Link Github repo to local 
 
-4: 'git fetch --all'
-→ Downloads updates from remote
-→ Does NOT merge automatically
-→ Used when you want to review changes first
+2: 'git clone <repository-url>'
+    → Init git + Link github repo to local + download all code
 
-5: 'git push origin --delete <branch-name>'
-→ Removes branch from the remote repository
+3: 'git push origin main'
+    → Push changes to main branch
+
+4: 'git pull origin main'
+    → Pull changes from main branch + merge them
+
+5: 'git fetch origin main'
+    → Fetch changes from main branh + No Merging
+
+6: 'git fetch --all'
+    → Downloads updates from remote
+    → Does NOT merge automatically
+    → Used when you want to review changes first
+
+7: 'git push origin --delete <branch-name>'
+    → Removes branch from the remote repository
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -123,10 +119,11 @@ Typical Branch Workflow:
 3. Push branch to remote
 4. Merge into main
 5. Delete the feature branch
+
 feature → commit → push → merge → delete
 
 Do NOT rebase a branch that others are using
-Rebase only local / personal branches
+    Rebase only local / personal branches
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -136,99 +133,82 @@ Git stash temporarily saves your uncommitted changes
 Used when you need to switch branches quickly without committing.
 
 1: 'git stash' or 'git stash save "description"'
-Saves tracked file changes
+    Saves tracked file changes
 
 2: 'git stash list'
-View All Stashes
+    View All Stashes
 
 3: Apply stashed changes: 
-'git stash apply'
-'git stash apply stash@{n}'
-    Applies stash but does NOT remove it
+    'git stash apply'
+    'git stash apply stash@{n}'
+        Applies stash but does NOT remove it
 
 4: 'git stash pop'
-Applies stash and deletes it
+    Applies stash and deletes it
 
 5: Delete a stash: 
-'git stash drop'
-'git stash drop stash@{n}'
+    'git stash drop'
+    'git stash drop stash@{n}'
 
 6: 'git stash clear'
-Deletes all stashed changes
-
-------------------------------------------------------------------------------------------------------------------------
-
-Remote Setup and Force Push:
-
-1: 'git remote add origin <repository-url>'
-Connects local repo to remote
-
-2: 'git push --force origin main'
-Overwrites remote branch history
-Used after rebase or history rewrite
+    Deletes all stashed changes
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Git Ignore:
-    .gitignore tells Git which files or folders to not TRACK, STAGE, COMMIT in repository
-    Common use: logs, build files, passwords, environment configs.
-
-Working:
-    Create a file named .gitignore in your projects root directory
-    Add patterns for files/folders you want Git to ignore
-    Git will automatically exclude these files from tracking
+    → It is a file in which we add all the files we dont want git to TRACK, STAGE, COMMIT in repository
+    → Common use: logs, build files, passwords, environment configs.
 
 Ex:
-*.css
-    Ignore all .css files
 
-passwords/
-    Ignores all files inside the passwords directory
+1: '*.css'
+    → Ignore all .css files
+
+2: 'passwords/'
+    → Ignores all files inside the passwords directory
     
 Note:
-Git does not affect files which are already tracked
-To ignore the file which is already tracked
-'git rm --cached <filename>'
+→ Git does not affect files which are already tracked
+→ To ignore the file which is already tracked
+→ 'git rm --cached <filename>'
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Git Restore:
-    Used to undo changes in files.
-    Works in two places:
-        Working Directory → discard changes
-        Staging Area → unstage files
+    → It is used to remove the changes and going back to last commit 
+    → It is also used to unstage the staged files
+    → File Level
 
-Scenario 1: Discard Unstaged Changes:
-You edited a file but want to go back to the last commit
-    'git restore myfile.py'
-    Removes all changes
-    File returns to last committed state
+Scenario 1: Remove Changes: 
+    → 'git restore myfile.py'
+    → You updated a file but changes are bad 
+    → It will remove all the changes till last commit 
 
-Scenario 2: Unstage a File (Keep Changes):
-You staged a file by mistake
-    'git restore --staged myfile.py'
-    File is removed from staging area
-    Changes stay in working directory
+Scenario 2: You staged a file by mistake:
+    → 'git restore --staged myfile.py'
+    → File is removed from staging area
 
 Scenario 3: Completely Reset a File:
-Remove file from staging and discard all changes
-    'git restore --staged myfile.py'   # Unstage
-    'git restore myfile.py'            # Discard changes
-    File becomes exactly like the last commit
+    → 'git restore --staged myfile.py'   # Unstage
+    → 'git restore myfile.py'            # Discard all recent changes
+    → File becomes exactly like the last commit
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Git Reset:
-    It is used to undo the changes or going back to the previous commit 
-    It moves the HEAD pointer to the previous specified commit and delete all the commits after the specified commit.
-    It can also modify the staging area and working directory based on the type of reset used.
+    → It is used to undo the changes and going back to prev commit 
+    → It moves the HEAD pointer from the current commit to specified commit
+    → Delete of commits after specified commit depends on reset type
+    → It erases the history of commits
+    → Use reset only in local not when commit is pushed to remote
+    → Uses:
+        → You accidently commited or forget some files so want to remove the commit and commit again
+        → You commit and something broke, now back to prev commit with no history
 
-Example:
-    If your commit history looks like this:
-    A -- B -- C -- D (HEAD)
-    'git reset --hard B', Then your HEAD will be at B
-    A -- B (HEAD)
-    Commits C and D are removed from current history
+Commit History:
+
+→ A -- B -- C -- D (HEAD)   →   'git reset --hard B'    →   A -- B (HEAD)
+Commits C and D are removed from this history
 
 Types of git reset:
 
@@ -247,16 +227,15 @@ Types of git reset:
 ------------------------------------------------------------------------------------------------------------------------
 
 Git Revert:
-    It is used to undo the changes or going back to the previous commit 
-    It does not delete the commits from the history, instead it creates a new commit that reverses the changes of the specified commit.
-    It is a safe way to undo changes in a public branch because it undo the changes and preserves the commit history.
-    'git revert <commit-hash>'
+    → It is used to undo the changes and going back to prev commit 
+    → It does not delete the commits from history
+    → It creates a new commit and remove the changes from the specified commit 
+    → It is a safe way to undo changes in a public branch because it undo the changes and preserves the commit history.
+    → 'git revert <commit-hash>'
 
-Example:
-    If your commit history looks like this:
-    A -- B -- C -- D (HEAD)
-    If you do git revert D, Then your HEAD will be at E
-    A -- B -- C -- D -- E (HEAD)
-    and E will be a new commit and D changes will be removed.
+A -- B -- C -- D (HEAD)     'git rever D'     →     A -- B -- C -- D -- E (HEAD)
+
+D's changes will be removed 
+
 
 ------------------------------------------------------------------------------------------------------------------------

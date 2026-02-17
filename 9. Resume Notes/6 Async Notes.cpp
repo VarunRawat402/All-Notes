@@ -6,7 +6,7 @@ ASYNC Notes:
     → It is used to run a method asynchronously
 
 Implementation:
-1: Create a Async Class with @Configuration and @EnableAsync Annotation
+1: Create a Async Class, Add @Configuration and @EnableAsync Annotation
 2: Use @Async on methods you want to run asynchronously
 3: You have to call the method with another service, You cannot call from where its defined
 4: Async function return void or CompletableFuture nothing else.

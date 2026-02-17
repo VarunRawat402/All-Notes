@@ -2,12 +2,8 @@
 JAVA 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Source Code     → Java code in .java file
-Bytecode        → .class file, platform independent
-Compiler        → Converts source code to byte code
-
-JDK (Java Development Kit)      → Converts source code to byte code
-JVM (Java Virtual Machine)      → Reads bytecode, converts it to machine code, and executes the program.
+JDK (Java Development Kit)      → Source code → byte code
+JVM (Java Virtual Machine)      → Bytecode → Machine code → Executes program
 JRE (Java Runtime Environment)  → Contains JVM + libraries needed to run Java programs; does not include compiler.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -61,7 +57,8 @@ int a = 10;
     → a and 10 stored in stack
 
 String s = "Varun"; 
-    → s in stack, "Varun" in heap
+    → s in stack
+    → "Varun" in heap
 
 static int b = 20; 
     → b and 20 stored in metaspace

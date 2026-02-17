@@ -64,18 +64,21 @@ Count Male and Female Students:
 
 GroupingBy:
     → It is used to group on some attribute
-    → It returns Map where key is the attribute you are grouping on
+    → Return value becomes the key 
 
 → It takes three arguments:
 
-1: key → It is used to group the elements
-    → Student::gender()
+1: Function:
+    → Return value of the function becomes the key 
+    → Elements having the same return value adds in same key    
 
-2: MapType → Type of map you want to group in
+2: Collector Downstream:
+    → Custom map to collect the key and values
     → LinkedHashMap::new
 
-3: Collector →  what you want to collect and on which collector
-    → Collectors.toList() or Collectors.mapping(Student::getName(),Collectors.toList())
+3: Collector:
+    → Perform some action on collected elements
+    → counting(), summintInt(), averagingInt(), mapping(), filtering()
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  

@@ -25,9 +25,9 @@ Abstraction:
 When to Use Abstract Class vs Interface:
 
 1: Use Abstract Class When:
-    → You want to provide common code for subclasses
-    → You want to provide common properties and attributes to subclasses
-    → You want to write some default implementation for subclassses
+    → You want to provide base functionality + shared state
+    → You want to give default implementations for all subclassses
+    → You want constructors
 
 Example:
     → Animal → abstract class, with name field and run() method
@@ -36,75 +36,11 @@ Example:
 2: Use Interface When:
     → You want to define a contract without implementation
     → You want to provide common behavior for subclasses
-    → You want to allow flexible design and loose coupling
+    → You want loose coupling
 
 Example:
     → PaymentMethod → interface
     → CreditCard and UPI implement interface → Cart can work with any payment type
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-Abstract Class Code:
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-abstract class Animal {
-
-    String name;
-    static int price = 1000;
-
-    Animal(String name) {                       // Constructor
-        this.name = name;
-    }
-
-    abstract void eat();                        // Abstract method
-
-    public void run() {                         // Normal method
-        System.out.println("I am running");
-    }
-
-    static void fly() {                         // Static method
-        System.out.println("I am flying");
-    }
-}
-
-class Dog extends Animal {
-
-    String breed;
-
-    Dog(String name, String breed) {
-        super(name);
-        this.breed = breed;
-    }
-
-    @Override
-    void eat() {
-        System.out.println(name + " is eating");
-    }
-}
-
-Dog dog = new Dog("PetDog", "Golden Retriever");
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-Interface Code:
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-interface Vehicle {
-
-    void start();                                           // Abstract method
-
-    default void stop() {                                   // Default method
-        System.out.println("Vehicle is stopping");
-    }
-
-    static void service() {                                 // Static method
-        System.out.println("Vehicle is being serviced");
-    }
-}
-
-class Car implements Vehicle {
-    public void start() {
-        System.out.println("Car is starting");
-    }
-}
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
