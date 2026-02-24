@@ -9,12 +9,16 @@ Thread Class:
 Runnable Interface:
     → Interface + Can extend another class + Multiple threads can share one object
 
+If runnable is so good then why Thread class is there?
+    → Thread class creates threads, provide start(), join() methods
+    → Runnable does not create threads it uses thread class to perform tasks
+    → Runnable Execution → Thread creates → Thread run() → calls runnable run()
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 How to create a new Thread:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Using Thread Class:
-    → Extend Thread class
     → Override run()
 
 public class Student extends Thread{
@@ -29,7 +33,6 @@ s1.start();
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Using Runnable Interface:
-    → Implement Runnable Interface
     → Override run()
 
 public class Student implements Runnable{
@@ -81,10 +84,10 @@ t1.start();
 Runnable task1 = new Runnable() {
     @Override
     public void run() {
-        wallet.withDraw(50);
+        System.out.println("Hello world");
     }
 };
-Thread t2 = new Thread(task1);
+Thread t1 = new Thread(task1);
 t1.start();
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -92,7 +95,7 @@ t1.start();
 3: Create Thread Directly:
 
 Thread t3 = new Thread(()->{
-    wallet.withDraw(50);
+    System.out.println("Hello world");
 });
 t3.start();
 
@@ -101,7 +104,7 @@ t3.start();
 4: Anonymous Thread:
 
 new Thread(()->{
-    wallet.withDraw(50);
+    System.out.println("Hello world");
 }).start();
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

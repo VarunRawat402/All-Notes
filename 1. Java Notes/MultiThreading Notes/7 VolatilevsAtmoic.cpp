@@ -4,23 +4,21 @@ Volatile vs Atomic :
 
 Thread visibility Problem:
 
-→ In Java, each thread caches variables values in its own working memory.
+→ In Java, each thread caches variable's values in its own working memory.
 
-This means:
-→ A thread may read a value once from main memory.
-→ It may then continue using its cached value, even if another thread updates the variable.
-→ As a result, threads may see stale (old) values, leading to incorrect behavior.
-→ For example, if Thread A updates a variable, Thread B might not immediately see that update because it is still reading the old value from its local cache.
-→ This issue is known as the visibility problem.
+→ A thread read a variable's value from main memory and cached it 
+→ Another thread updates the variable in main memory
+→ First thread still reading the old value from its own memory which may lead to incorrect behaviour
+→ This is called visibility problem
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Volatile:
 
+→ It ensures threads always reads latest value from main memory 
+
 → volatile solves visibility, not atomicity.
-→ When a variable is declared volatile, All threads always see the latest value
-→ Prevents thread-local caching
-→ It does not make operations atomic like i++, i += 1, or check-then-act.
+→ It does not make operations like i++, i+=1 thread-safe
 → Used for boolean flags
 
 Example: 
@@ -30,31 +28,23 @@ Example:
 
 Atomic:
 
-→ Atomic solves visibility and atomicity.
-→ Use CAS (Compare-And-Swap)
-→ Lock-free and thread-safe
+→ It allows thread-safe operations without lock / synchronization
+→ Internally use CAS (Compare-And-Swap)
 
 Common Atomic Classes:
-    → AtomicInteger
-    → AtomicLong
-    → AtomicBoolean
-    → AtomicReference
+
+1: AtomicInteger
+2: AtomicLong
+3: AtomicBoolean
+4: AtomicReference
 
 Safe atomic operations
-    → incrementAndGet()
-    → addAndGet()
-    → compareAndSet()
-
-→ These operations are atomic, meaning no race conditions.
+    → incrementAndGet()     →    +1 and return integer
+    → addAndGet(5)          →     +5 and return integer
 
 Example:
+
 AtomicInteger count = new AtomicInteger(0);
 count.incrementAndGet();  // Thread-safe
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Best used for modifing states
-    → volatile guarantees visibility but not atomicity. Atomic types guarantee both visibility and atomicity. 
-    → Therefore, volatile is safe only for reads, while AtomicInteger is safe for operations like increment.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

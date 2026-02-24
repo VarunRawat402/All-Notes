@@ -93,7 +93,7 @@ Preauthorize() vs Postauthorize():
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-@Preauthorize():
+Preauthorize():
     → Check authorization before the method executes
     → Used to validate method parameters or caller roles.
 
@@ -164,5 +164,13 @@ public class UserController {
     @GetMapping(headers = "X-API-VERSION=2")
     public UserV2 getUserV2() {return new UserV2("Varun", "Rawat");}
 }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+What is maven:
+    It manage build lifecycle, dependency, plugins of project
+
+What is POM:
+It contains configs, dependency, plugins, build settings and metadata
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

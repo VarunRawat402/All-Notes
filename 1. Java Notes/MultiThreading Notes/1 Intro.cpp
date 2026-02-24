@@ -15,7 +15,7 @@ What is Multithreading?
     → Improves performance and responsiveness.
 
 Thread Safe:
-    → When Multiple threads access the same data without causing data corruption.
+    → When Multiple threads modify the same data without causing data corruption.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -25,23 +25,13 @@ Single Core vs Multi Core:
 
 → A single core runs one task at a time.
 → The operating system rapidly switches between tasks.
-→ Each task gets a small time slice.
 → To the user, it feels like all tasks are running together — but in reality, they take turns very quickly.
 
 2. True parallelism (in multi-core CPUs):
 
-→ A multi-core CPU can run multiple tasks at the same exact time, because:
+→ A multi-core CPU can run multiple tasks at the same exact time
 → Each core can handle a task/thread simultaneously.
-→ No switching — tasks truly happen in parallel.
-→ This leads to better performance, especially for heavy or many tasks.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Time Slice:
-    → It is a small amount of CPU time given to threads to run by scheduler before switching to the next thread.
-
-Context Switching:
-    → Saving the state of one thread to run another thread and restoring it later.
+→ tasks truly happen in parallel.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -67,11 +67,11 @@ s1.equals(s2)     → true  (same values)
 
 Why passwords are stored in chars[] not String:
 
-When functions ends all the objects and values inside the function lose their reference and gets collected by GC and removed
-When you store passwords in Strings, The reference is gone but the value is still in memory because Strings is immutable
-GC can collect it in minutes or hours you dont know so any hacker or developer can see the password in dump
+→ When function ends all the objects and values inside the function lose their reference and gets collected by GC and removed
+→ When you store passwords in Strings, The reference is gone but the value is still in memory because Strings is immutable
+→ GC can collect it in minutes or hours you dont know so any hacker or developer can see the password in dump
 
-Chars[] is used to store passwords because after use you can fill with \0 char which is 0 
-and if anyone tries to see the password it shows 0 instead of the password
+→ Chars[] is used to store passwords because after use you can fill with \0 char which is 0 
+→ and if anyone tries to see the password it shows 0 instead of the password
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

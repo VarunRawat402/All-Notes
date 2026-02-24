@@ -13,16 +13,13 @@ FILTER:
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Print student who belongs to "Computer Science" department:
-    → students.stream().filter(x->x.getDepartment().equals("Computer Science")).forEach(x->System.out.println(x.getName()));
+    → students.stream().filter(x->x.getDepartment().equals("Computer Science"));
 
 Print student who belongs to "Computer Science" department & salary > 65000:
-    → students.stream().filter(x->x.getDepartment().equals("Computer Science") && x.getSalary()>65000).forEach(x->System.out.println(x.getName()));
-
-Print student who belongs to "Computer Science" department & salary > 65000 & salary < 76000:
-    → students.stream().filter(x->x.getDepartment().equals("Computer Science") && x.getSalary()>65000 && x.getSalary()<76000).forEach(x->System.out.println(x.getName() + x.getSalary()));
+    → students.stream().filter(x->x.getDepartment().equals("Computer Science") && x.getSalary()>65000)
 
 Get Students who belong to department = "Computer Science" and collect the id and name of students in Map
-    → Map<Integer, String> m1 = students.stream().filter(x -> x.getDepartment().equals("Computer Science")).collect(Collectors.toMap(Student::getId, Student::getName));
+    → students.stream().filter(x -> x.getDepartment().equals("Computer Science")).collect(Collectors.toMap(Student::getId, Student::getName));
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -40,7 +37,7 @@ FlatMap:
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-SORTING:
+SORTED:
 
 → List<Student> l1 = students.stream().sorted(Comparator.comparing(Student::getSalary)).collect(Collectors.toList());
 → List<Student> l1 = students.stream().sorted(Collections.reverseOrder(Comparator.comparing(Student::getSalary))).collect(Collectors.toList());

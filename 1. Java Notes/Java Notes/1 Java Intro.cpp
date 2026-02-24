@@ -2,19 +2,28 @@
 JAVA 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-JDK (Java Development Kit)      → Source code → byte code
-JVM (Java Virtual Machine)      → Bytecode → Machine code → Executes program
-JRE (Java Runtime Environment)  → Contains JVM + libraries needed to run Java programs; does not include compiler.
+JVM (Java Virtual Machine):
+    → Executes .class file and runs the java program
+    → Handle GC
+    
+JRE (Java Runtime Environment):
+    → JVM + Java libraries
+
+JDK (Java Development Kit):
+    → Used to Develop Java programs
+    → Compiles code
+    → Runs code
+    → Contains JRE + JVM
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Data Types:
 
-Primitive       : byte, short, int, long, char, boolean, float, double
-Non-Primitive   : String, Array, Class, Object
+Primitive       : byte / short / int / long / char / boolean / float / double
+Non-Primitive   : Integer / String / Boolean / Array / Class / Object
 
-Default value of primitive        → 0 / false
-Default value of Non-primitive    → null
+Primitive Default        → 0 / false
+Non-primitive Default    → null
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -37,30 +46,48 @@ System.out.println('1' + 1);        // 50
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 STACK:
-    → Primitive values
-    → Local variables
-    → References of objects
-    → Method() calls
+    → Primitive values / Local variables / References of objects / Method() calls
 
 HEAP:
-    → Objects
-    → Arrays
-    → Instance variables
+    → Objects / Instance variables
 
 Metaspace:
-    → Class info (class name, class structure)
-    → Static variables
+    → Class info / Static variables
 
 Example:
 
-int a = 10;         
-    → a and 10 stored in stack
+1: int a = 10;         
+    → a, 10 stored in stack
 
-String s = "Varun"; 
+2: String s = "Varun"; 
     → s in stack
     → "Varun" in heap
 
-static int b = 20; 
-    → b and 20 stored in metaspace
+3: static int b = 20; 
+    → b, 20 stored in metaspace
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+What is Garbage Collection:
+    → It automatically removes unused objects from heap memory.
+    → If no reference of objects → eligible for Garbage collection
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+How do you ensure Garbage Collection is working correctly:
+    → Check JVM GC logs
+    → VisualVM
+    → JConsole
+    → Check Heap usage monitoring
+    → Check GC metrics dashboards
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+How do you debug OutOfMemoryError:
+    → Enable Heap Dump
+    → Capture dump on OOM
+    → Analyze the dumps using tools
+    → Find memory leaks
+    → Check caches or fix static references
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

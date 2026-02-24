@@ -2,24 +2,6 @@
 Java Interview Questions:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Exception propagation:
-    → When an exception is not caught in the method where it occurs
-    → it propagates up the call stack to the calling method.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Exception Swallow:
-    → When exception is not thrown again after catch
-    → When exception is only logged
-
-Why exceptions should NOT be swallowed:
-    → Application continues in invalid state
-    → Bug or data corruption may go unnoticed
-    → Monitoring/alerts rely on thrown exceptions.
-    → Error is not thrown, Transaction will not rollback
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Finalize vs Try with resource:
     → Used to close the resources like file, database connection etc
 
@@ -63,8 +45,17 @@ Serialization   : Java object → byte stream
 Deserialization : byte stream → Java object
 
 → Serializable is a marker interface (no methods).
-→ It is used to tag the class so JVM Can apply special behavior to it.
-→ Implement Serializable for objects that need to be transferred or stored.
+→ It is used to tell JVM this class is allowed to serialize
+→ Uses : Store object in file / sent over network / cached
+
+Serial Version UID:
+→ It is a unique Id of the class which is used during deserialization to verify compatibility.
+→ If you dont define one, JVM will create one automatically
+→ If you change something in class, JVM version Id will also change
+
+Note:
+    → Static and Transient variables are not seialized
+    → If Parent class is not serializable, Child class can still be serializable
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -91,22 +82,10 @@ What is Thread starvation?
 
 Common causes:
 
-1. Unfair locks
-
-2. Thread pool too small:
-    → Pool = 2 threads
-    → 2 long-running tasks occupy them
-    → Short tasks never execute
-
-3. Blocking operations inside threads:
-    → Database calls, Network calls, Thread.sleep()
-    → Threads stay busy → others starve
-
-How to prevent thread starvation:
-
-1. Use fair locks when needed
-2. Good thread pool sizing
-3. Avoid blocking calls
+1: Unfair Locks
+2: High priority Thread keeps running, low priority threads starving
+3: Long synchronized blocks making other threads starve
+4: Small thread pool size
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -121,42 +100,24 @@ Difference between PUT and PATCH with a real API example:
 2. PATCH:
     → Updates only the speicified feilds which are provided
     → If feilds are missing, they are left unchanged
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transactions:
-    → It is used to make database operations execute as one atomic unit
-    → Either all methods are commited or no one gets commited
-    → @Transactional annotation does not work on static and private methods
+    → In Transaction either all methods are commited or no one gets commited
+    → @Transactional does not work on static + private methods
     → Only roll back database operations not memory operations
     → Needs to call the method from another service
 
 How @Transactional works internally:
 
-→ Spring creates a proxy around your class
+→ Spring creates a proxy
 → Method is called through proxy
-Proxy:
-    → Opens DB connection
-    → Disables auto-commit
-    → Starts transaction
-    → Executes method
-    → If success → COMMIT
-    → If exception → ROLLBACK
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Self Invocation does not work:
-    → Transactional method should be called from another service 
-    → It should not get called from the same service where it is defined because it bypasses the proxy
-
-public class PaymentService {
-    
-    @Transactional
-    public void process() {}
-
-    public void pay() {
-        process(); // ❌ transactional ignored
-    }
-}
+→ Opens 1 DB connection
+→ Disables auto-commit
+→ Executes method
+→ If success → COMMIT
+→ If exception → ROLLBACK
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -176,20 +137,18 @@ Transaction Propagation:
     → Propagation defines how Transactional method behaves when called inside another transaction.
 
 1: REQUIRED (default):
-    → Join existing txn OR create new txn
+    → Join existing txn
 
 2: REQUIRES_NEW:
     → Always start NEW transaction.
-    → Pause the outer txn, creates new txn, resumes outer texn
-    → Inner txn can commit, even if outer txn roll backs
+    → Pause T1 → Creates T2 → resumes T1
 
 3. MANDATORY
-    → Fails if no transaction exists
+    → Fails, if no transaction exists
 
 4: SUPPORTS:
     → Runs if transaction exists
     → If not runs without transaction
-
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

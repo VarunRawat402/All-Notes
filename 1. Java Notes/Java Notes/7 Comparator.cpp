@@ -1,7 +1,18 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------
+COMPARATOR VS COMPARABLE:
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 Comparator:
     → Functional Interface
     → Used to sort the objects 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Comparable:
+    → Interface, Needs to implement and override compareTo()
+    → Used to define one sorting logic for the objects
+    → Works directly with Collections.sort() or Arrays.sort()
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Sorting Based on Age:
@@ -22,16 +33,7 @@ Collections.sort(l1,Comparator.comparing(Student::getName).reversed());
 
 Sorting Based on multiple feilds:
 
-Collections.sort(
-    l1,Comparator.comparingInt(Student::getAge).thenComparing(Student::getName)
-);
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Comparable:
-    → Interface, Needs to implement and override compareTo()
-    → Used to define one sorting logic for the objects
-    → Works directly with Collections.sort() or Arrays.sort()
+Collections.sort(l1,Comparator.comparingInt(Student::getAge).thenComparing(Student::getName));
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

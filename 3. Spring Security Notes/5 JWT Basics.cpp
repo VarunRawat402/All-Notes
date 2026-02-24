@@ -4,42 +4,29 @@ Spring Security & JWT Notes
 
 Flow of JWT Authentication:
 
-1. User → Client (Frontend):
-    → User enters credentials (username/password) on login screen.
-    → Client sends a login request to backend.
-    → Validates credentials against DB.
-    → If invalid → 401 Unauthorized
-    → If valid → generates and returns JWT
-
-2. Client Stores JWT:
-
-3. Backend (JWT Validation)
-    → Client calls secured APIs and attaches JWT
-    → Extracts token from Authorization header
-    → Verifies JWT Token
-    → If invalid → 401 Unauthorized
-    → If valid returns response
-    → Client renders response data to the user.
+Client  → sends username and password 
+Backend → Validates credentials → returns JWT
+Client  → Calls secured APIs using jwt 
+Backend → Extract token from header → validate token
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 JWT BEST PRACTICES AND IMPLEMENTATION:
 
 1: Use Strong Signing Algorithms
-	→ Avoid weak secrets with HS256.
-	→ Prefer RS256 / ES256 (asymmetric) for production.
+	→ Weak secrets      → HS256.
+	→ Strong secrets    → RS256 / ES256
 
-2: Never hardcode secrets, Use environment variables, Vault, or cloud secret managers.
-3: Access tokens: 5-15 minutes, Use refresh tokens for long-term access.
-4: Logging JWTs can expose tokens if logs are leaked.
-5: Avoid sensitive info in jwt token
+2: Expiration time : 5-15 min
+3: Avoid sensitive info in jwt token
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-JWT (JSON Web Token):
-→ Structure     : header.payload.signature
-→ Stateless     : No session storage on the server.
-→ Validation    : is entirely based on the token.
+JWT Structure:
+
+1: header       → Signing algorithm(HS256/RS256) & Token Type(JWT)
+2: Payload      → Sub, name, role, iat, expiration, custom data
+3: Signature    → Used to verify token 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -49,45 +36,9 @@ Spring Security Filter Chain:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Filters:
-→ Filter                : Intercepts HTTP requests/responses before they reach the servlet.
-→ OncePerRequestFilter  : Ensures the filter runs once per request, even during internal forwards.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Filter Methods:
 → doFilter()        → implement your logic.
 → chain.doFilter()  → passes request/response to the next filter or controller.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-JWT Claims:
-→ Standard claims include:
-    → sub → username (subject)
-    → exp → expiration timestamp
-    → Custom claims
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Token Generation:
-1. Authenticate username and password.
-2. Create claims map for custom info.
-3. Use Jwts.builder() to create token
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Extracting Claims:
-→ Use Jwts.parserBuilder() with secret key (HS256) or public key (RS256).
-→ Parse token → returns a Claims object.
-→ Extract values like username, expiration, custom fields.  
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-JWT Validation:
-    → Extract claims from the token.
-    → Get the expiration date from claims.
-    → If expiration date is before the current date, the token is expired.
-    → If expiration date is after the current date, the token is valid.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

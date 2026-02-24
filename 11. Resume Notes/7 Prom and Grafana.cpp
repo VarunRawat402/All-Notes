@@ -42,4 +42,4 @@ spring.kafka.consumer.properties.spring.json.type.mapping = txncreation:com.exam
 //This will automatically add typeId = txnupdate in the json data
 spring.kafka.producer.properties.spring.json.type.mapping=txnupdate:com.example.wallet.wallet.kafkaUtil.TxnUpdate
 
-------------------------------------------------------------------------------------------------------------------------------------------------
+1------------------------------------------------------------------------------------------------------------------------------------------------444

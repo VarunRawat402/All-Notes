@@ -233,7 +233,7 @@ Git Revert:
     → It is a safe way to undo changes in a public branch because it undo the changes and preserves the commit history.
     → 'git revert <commit-hash>'
 
-A -- B -- C -- D (HEAD)     'git rever D'     →     A -- B -- C -- D -- E (HEAD)
+A -- B -- C -- D (HEAD)     'git revert D'     →     A -- B -- C -- D -- E (HEAD)
 
 D's changes will be removed 
 

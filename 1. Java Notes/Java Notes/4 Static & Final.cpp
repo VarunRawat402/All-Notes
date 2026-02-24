@@ -5,7 +5,7 @@ Static:
 Static Methods:
     → Can only access static variables and static methods
     → Used for utility classes
-    Cannot be overridden
+    → Cannot be overridden
 
 Static Blocks:
     → Executes one time when the class is loaded into memory
@@ -31,10 +31,5 @@ Final Keyword:
 4. Final Objects:
     → You can change the properties of final object
     → You cannot reassign the object again
-
-Ex: 
-    final Student s1 = new Student("Varun");
-    s1.setName("New Name");         // ✅ Allowed
-    s1 = new Student("X");          // ❌ Not allowed
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------

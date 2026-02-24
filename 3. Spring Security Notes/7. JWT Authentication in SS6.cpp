@@ -2,8 +2,17 @@
 JWT TOKEN IN SS6:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-→ In this we dont use jwts.builder() and jwts.parser() to create and parse the token
-→ We use jwtEncoder and jwtDecoder to create and parse the token
+Nimbus:
+    → Spring Security 6 uses Nimbus for jwt implementation
+    → JwtEncoder and JwtDecoder are Interfaces
+    → Nimbus is underlying implementation 
+
+Nimbus Supports:
+    → OAuth2 Server
+    → Production Grade Security
+    → Standard level JWT Validation
+    → Key Rotation
+    → RSA / HMAC Algo
 
 Dependency:
     <dependency>
@@ -13,26 +22,8 @@ Dependency:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Application.properties:
-
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          secret-key: ${JWT_SECRET:mySuperSecretKeyThatIsAtLeast32CharactersLong!12345}         //for HS256 (symmetric)
-          private-key:    classpath:private.pem                                                 //for RS256 (asymmetric - recommended for production)
-          public-key:     classpath:public.pem
-
-jwt:
-  access-token-expiration: 900                  //15 minutes in seconds
-  refresh-token-expiration: 604800              //7 days in seconds
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
 JWT Config ( Encoder and Decoder)
-    → Configure jwtEncoder and jwtDecoder with secret key
-    → Automatically sign and validate the token using secret key
+    → Configure JwtEncoder & JwtDecoder with secret key
 
 @Configuration
 public class JwtConfig {
@@ -81,12 +72,8 @@ public class JwtService {
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(expirationSeconds);
 
-        //Extract User roles
-        var roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+        var roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
-        //Build JWT claim using JwtClaimSet
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("my-application")
                 .subject(userDetails.getUsername())
@@ -97,20 +84,16 @@ public class JwtService {
                 .claim("type", tokenType)
                 .build();
 
-        // JwtEncoder automatically signs the claim with the configured private key (RS256)
-        Jwt encodedJwt = jwtEncoder.encode(JwtEncoderParameters.from(claims));
-        
-        return encodedJwt.getTokenValue();
+        Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(claims));
+        return jwt.getTokenValue();
+
     }
 
     //Validate and parse token
     public Jwt validateAndParseToken(String token) {
         try {
-
-            // JwtDecoder automatically verifies signature and expiration
             Jwt jwt = jwtDecoder.decode(token);
             return jwt;
-
         } catch (JwtException e) {
             throw new RuntimeException("Invalid JWT token: " + e.getMessage(), e);
         }
@@ -121,13 +104,13 @@ public class JwtService {
         return generateToken(userDetails, refreshTokenExpiration, "refresh");
     }
 
-    //Extract Username from jwt token
+    //Extract Username
     public String extractUsername(String token) {
         Jwt jwt = validateAndParseToken(token);
         return jwt.getSubject();
     }
 
-    //Extract user roles from jwt token
+    //Extract user roles
     public List<String> extractRoles(String token) {
         Jwt jwt = validateAndParseToken(token);
         return jwt.getClaim("roles");
@@ -168,32 +151,11 @@ class JwtValidationException extends RuntimeException {
 
 JWT Filter:
 
-@Component
-@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
-    //Function to extract JWT token from header
-    private String extractTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        
-        // Also check for token in query parameter (for WebSocket, etc.)
-        String queryToken = request.getParameter("token");
-        if (StringUtils.hasText(queryToken)) {
-            return queryToken;
-        }
-        
-        return null;
-    }
-
-    //Function to Check additional user validation
     private boolean isUserValid(UserDetails userDetails) {
         return userDetails.isEnabled() && 
                userDetails.isAccountNonLocked() && 
@@ -202,44 +164,35 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                  HttpServletResponse response, 
-                                  FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            String jwtToken = extractTokenFromRequest(request);
-            
-            if (StringUtils.hasText(jwtToken)) {            //If token is present
-                
-                //extractUsername() validates the token and return the username
-                String username = jwtService.extractUsername(jwtToken);     
-                logger.debug("✅ Token validated for user: {}", username);
-                
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            String authHeader = request.getHeader("Authorization");
+            String jwtToken = null;
+            String username = null;
+
+            if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+                jwtToken = bearerToken.substring(7);
+                username = jwtService.extractUsername(jwtToken);     
+            }
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    
-                    // Additional security checks
+
                     if (isUserValid(userDetails)) {
-
-                        //create the authentication token and set the user as authenticated
-                        UsernamePasswordAuthenticationToken authentication = 
-                            new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-
+                        UsernamePasswordAuthenticationToken authentication =  new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     } else {
-                        logger.warn("🚫 User account invalid: {}", username);
+                        logger.warn("User account invalid: {}", username);
                     }
-                }
             }
-            
-        } catch (Exception e) {
-            logger.error("💥 JWT Authentication failed for {}: {}", requestUri, e.getMessage());
-        }
-
+        } catch (Exception e) { logger.error("JWT Authentication failed for {}: {}", requestUri, e.getMessage());}
         filterChain.doFilter(request, response);
     }
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
+
