@@ -15,6 +15,7 @@ Code:
                     .anyRequest().authenticated()
             )
             .formLogin(withDefaults())
+            .httpBasic(Customizer.withDefaults());
             .logout(withDefaults());
 
         return http.build();
