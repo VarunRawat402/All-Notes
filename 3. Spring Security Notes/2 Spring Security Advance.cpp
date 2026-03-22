@@ -2,15 +2,7 @@
 Spring Security: Key Concepts and Explanations
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-1. Basic Authentication:
-
-→ Client sends username/password in the Authorization header
-→ Server needs to store session data
-→ less secure than jwt
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-2. MITM (Man-in-the-Middle) Attacks:
+1. MITM (Man-in-the-Middle) Attacks:
 
 → Attacker intercepts communication between user and server.
 → Client  →  Attacker  →  Server
@@ -19,7 +11,7 @@ Spring Security: Key Concepts and Explanations
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-3. CSRF (Cross-Site Request Forgery):
+2. CSRF (Cross-Site Request Forgery):
 
 → User logs in bank site, sessionId is stored in browser
 → User visits attacker site, attacker sent request to bank
@@ -36,7 +28,7 @@ Spring Security: Key Concepts and Explanations
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-4. CORS (Cross-Origin Resource Sharing):
+3. CORS (Cross-Origin Resource Sharing):
 
 → Browser blocks requests to different origin by default
 → Server needs to allow browser by sending CORS Headers
@@ -53,25 +45,31 @@ public class MyController {
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Hashing:
-• Data → Hash
-• Irreversible
-• Passwords are hashed and stored
+
+→ Hashing is a 1 way transformation of data into a string (hash).
+→ input → hash function → fixed-length output
+→ "password123" → 5f4dcc3b5aa765d61d8327deb882cf99
+→ Not Reversible, used for storing passwords securely.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Encryption:
-• Keys → Encrypt / Decrypt
-• Reversible with correct key.
-• Used for secure communication (TLS, JWT).
 
-→ Symmetric Encryption:
-  • Same key for encrypt / decrypt
-  • Fast but Key sharing is risky
+→ Encryption is a two-way transformation of data.
+→ plaintext → encryption → ciphertext
+→ ciphertext → decryption → plaintext
 
-→ Asymmetric Encryption:
-  • Public key → encrypt
-  • Private key → decrypt
-  • Slower than symmetric encryption.
+1 Symmetric Encryption:
+  → Same key for encrypt / decrypt
+  → Fast but Key sharing is risky
+  → Example : AES(key)
+
+2 Asymmetric Encryption:
+  → It uses 2 keys for encryption / decryption
+  → Public key → encrypt
+  → Private key → decrypt
+  → Example: RSA
+  → Slower than symmetric encryption.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

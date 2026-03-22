@@ -1,5 +1,37 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-New Spring Security Configs ( Security Filter Chain ):
+User-Based Authentication:
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Basic Authentication Flow:
+
+→ User sends username + password in Authorization Header 
+→ Authorization header type is 'Basic' which is base64 encoded
+→ It converts both username + password to base64 encoded : 
+    → Base64(username:password)   →   "varun:pass123" → Base64 → YWRtaW46c2VjcmV0
+    → Authorization: Basic YWRtaW46c2VjcmV0
+
+→ BasicAuthenticationFilter intercepts the request and decodes the encoded (username:password) 
+→ Creates UsernamePasswordAuthenticationToken() → passes to AuthenticationManager()
+→ User is fetched using username from DB and password is matched using BcryptPasswordEncoder(raw,storedPassword)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+How BcryptPassword Encoder works:
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Hashing:
+
+1: Generates random salt
+2: Combine salt + raw password
+3: Apply Bcrypt hashing algo and hash the password
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Verification:
+
+1: Extract Salt + cost from the stored password
+2: Hash the raw password with same cost and salt 
+3: Compare both passwords
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Authorization Configuration:
