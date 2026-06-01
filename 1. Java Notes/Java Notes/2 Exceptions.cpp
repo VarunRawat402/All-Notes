@@ -4,7 +4,6 @@ Exception:
 
 1: Checked Exception :
     → Compile time exception
-    → Must Handle them or compilation will fail
 
 Example: 
     IOException             → Error while reading or writing a file
@@ -14,11 +13,10 @@ Example:
 
 2: Unchecked Exception : 
     → Runtime Exception
-    → Should be handled to avoid application crashes
 
 Example: 
     ArrayIndexOutOfBoundsException  → Accessing invalid array index
-    ArithmeticException             → Illegal arithmetic operation
+    NullPointerException            → Accessing null value
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Exception Handling:
@@ -54,7 +52,7 @@ public static void checkAge(int age) {
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 4: Throws Keyword:
-    → Specify which exceptions a method might throw
+    → Used to tell what exception this method might throw
     → Caller must handle or propagate
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

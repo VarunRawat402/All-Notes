@@ -21,4 +21,9 @@ C: Data Duplication (CQRS-style):
     → Order Service → stores userId + userName
     → Order Service stores some data of user, to avoid calling user-service for user data
 
+Topics:
+Database Replication
+Database Sharding 
+Database Partitioning
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

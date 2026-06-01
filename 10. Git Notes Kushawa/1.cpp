@@ -2,18 +2,6 @@
 Git Notes - Comprehensive Guide
 ------------------------------------------------------------------------------------------------------------------------
 
-1. Repository: 
-    → Where code is stored and tracked
-    → Local Repository  - Exists on your computer
-    → Remote Repository - GitHub, GitLab, Bitbucket
-
-2. Working Folder:
-    → The project folder where you create, edit, or delete files.
-
-3. Staging Area:
-    → A temporary area between the Working folder and the Local Repository.
-    → It is where you prepare and organize which changes you want to include in your next commit.
-
 Git Workflow:
     → Working Folder → Staging Area → Local Repository → Remote Repository
 

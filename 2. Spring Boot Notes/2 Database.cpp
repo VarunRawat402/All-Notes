@@ -41,17 +41,11 @@ public class JDBCRepository {
     """;
 
     public void insertQuery(Student student) {
-        jdbcTemplate.update(insertq,
-                student.getId(),
-                student.getName(),
-                student.getCourse());
+        jdbcTemplate.update(insertq, student.getId(), student.getName(), student.getCourse());
     }
 
     public Student selectQuery(int id) {
-        return jdbcTemplate.queryForObject(
-                selectq,
-                new BeanPropertyRowMapper<>(Student.class),
-                id);
+        return jdbcTemplate.queryForObject(selectq, new BeanPropertyRowMapper<>(Student.class), id);
     }
 }
 
@@ -85,17 +79,5 @@ public class JpaRepository {
     }
 
 }
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-SQL properties file ( queries.sql ):
-    → Used to run SQL queries automatically at application startup.
-    → Location : same folder as application.properties is in
-    → Jpa picks up this folder and run all the sql queries in it as soon as the application starts
-
-Ex:
-create table Student(
-    id int not null,name varchar(255) not null,course varchar(255) not null,primary key(id)
-);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

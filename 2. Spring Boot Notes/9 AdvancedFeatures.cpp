@@ -2,40 +2,7 @@
 Advanced Rest API Features:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: Content Negotiation ( REST API ):
-    → Used to return response in different formats ( JSON, XML, etc ) based on client request.
-    → Client specifies the desired format using the Accept header.
-
-Accept: application/json
-Accept: application/xml
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-How It Works in Spring Boot
-    → Spring Boot supports JSON by default.
-    → To support XML, you must add an XML message converter.
-
-Spring automatically:
-    → Reads Accept header
-    → Chooses the correct converter (JSON/XML)
-    → Serializes the response
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Dependency (XML Support):
-<dependency>
-    <groupId>com.fasterxml.jackson.dataformat</groupId>
-    <artifactId>jackson-dataformat-xml</artifactId>
-</dependency>
-
-@GetMapping(value = "/user", produces = { "application/json", "application/xml" })
-public User getUser() {
-    return new User(1, "Varun");
-}
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-2: Spring Boot Actuator:
+1: Spring Boot Actuator:
 
 Actuator provides production-ready features to monitor and manage applications.
     → Health monitoring (DB up or down)
@@ -73,7 +40,7 @@ How do you expose actuator endpoints securely:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-3: SCHEDULED:
+2: SCHEDULER:
 
 What is a Scheduler?
     → A scheduler allows you to run code automatically at fixed intervals or specific time.

@@ -14,7 +14,7 @@ Abstraction:
 2: Interfaces (interface keyword) :
 
     → default + static + abstract  
-    → static final variables
+    → only static final variables
     → Cannot have a constructor
     → Multiple Inheritance Supported
     → Cannot override static methods
@@ -37,10 +37,6 @@ Example:
     → You want to define a contract without implementation
     → You want to provide common behavior for subclasses
     → You want loose coupling
-
-Example:
-    → PaymentMethod → interface
-    → CreditCard and UPI implement interface → Cart can work with any payment type
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

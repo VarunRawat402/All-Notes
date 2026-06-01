@@ -54,7 +54,7 @@ Serial Version UID:
 → If you change something in class, JVM version Id will also change
 
 Note:
-    → Static and Transient variables are not seialized
+    → Static and Transient variables are not serialized
     → If Parent class is not serializable, Child class can still be serializable
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

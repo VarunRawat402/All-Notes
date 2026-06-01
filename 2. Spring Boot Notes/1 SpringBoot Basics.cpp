@@ -41,10 +41,9 @@ Examples:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 @RequestParam:
-    → Takes query parameters from URL
-    → It is used when single param does not define a signle entity
+    → Comes after ? in the URL
     → Used when filtering, sorting, pagination etc etc
-    → It can be optional when required=false
+    → It is optional if required = false
     → /users?status=active&sort=name&page=2
 
 @GetMapping("/users")
@@ -55,10 +54,9 @@ public List<User> getUsers(@RequestParam String status, @RequestParam int page) 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 @PathVariable:
-    → Takes params from URL path
-    → It is used when param defines a single entity
-    → It is not optional even with required=false
-    → Need to use multiple mappings to make it optional
+    → Part of the URL path itself
+    → Used to identify a specific resource
+    → It is not optional, Value needs to be passed or URL will fail
     → /orders/456/items/9 
 
 @GetMapping("/users/{id}")
@@ -69,9 +67,15 @@ public User getUser(@PathVariable Long id) {
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Why Main() is static:
-    → main() is static so JVM can call main() immediately, without creating any object.
-    → If it were not static:
-    → JVM would need to create an object, but it would not know which constructor to call.
+    → When JVM starts, no objects exist yet
+    → JVM needs to call main to start the program
+    → To call a method without an object → it must be static
+
+If main() is not static:
+    → JVM would need to create an object first
+    → But which constructor to call?
+    → What if constructor needs arguments?
+    → JVM has no way to know → so it would fail
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

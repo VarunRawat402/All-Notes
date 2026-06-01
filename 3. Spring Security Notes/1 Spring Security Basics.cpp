@@ -4,7 +4,7 @@ Lecture 1: SPRING SECURITY
 
 1. Authentication:
     → Validates username + password 
-    → Validates Token
+    → Validates jwt Token
 
 2. Authorization:
     → Checks roles + authorities after authentication
@@ -27,7 +27,7 @@ Session:
     → Client sends jessionID with every request and server uses it to identify the session
     → Need some kind of storage to store sesssion, redis is mostly used
     → Session
-        ├── sessionId
+        ├── JsessionId
         ├── userId
         ├── username
         ├── roles
@@ -58,7 +58,7 @@ Key Components:
 
 3. AuthenticationProvider:
     → Validates Credentials
-    → Returns authenticated Authentication object which contains userDetails and authorities
+    → Returns authenticated object which contains userDetails and authorities
 
 4. Authentication Object:
     → Contains Principal(UserDetails), Credentials (usually null after auth), Roles.
@@ -67,7 +67,7 @@ Key Components:
 
 Security Context:
     → Stores all authentication and authorization data.
-    → Holds the Authentication object for the current request.
+    → Holds the authenticated object for the current request.
 
 Use Cases:
 1. Access Current User:
@@ -87,8 +87,8 @@ UsernamePasswordAuthenticationToken():
 
 //Username-password Authentication
 //Created with just username and password, no authorities
-// At this point → authenticated = false
-// AuthenticationManager will validate this
+//At this point → authenticated = false
+//AuthenticationManager will validate this
 
 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username,password);
 Authentication result = authenticationManager.authenticate(token);

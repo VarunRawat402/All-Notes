@@ -45,9 +45,8 @@ public interface PersonRepository extends JpaRepository<Person,Long>{}
 Why @Repository is not needed in JpaRepository Interface;
 
 → Spring Data automatically scans the JpaRepository Interface 
-→ Creates a proxy implementation class at runtime
-→ Register it as a spring bean
-→ Converts JPA Exception to Spring Exception so we dont need to take care of vendor specific exception like Hibernate or EclipsLink
+→ It automatically creates a bean for them at startup
+→ Converts DB exceptions to Spring Exception so we dont need to take care of vendor specific exception like Hibernate or EclipsLink
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 JPA Relationships:-
