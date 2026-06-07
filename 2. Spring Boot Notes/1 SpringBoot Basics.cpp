@@ -3,30 +3,36 @@ Spring Boot Basics:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Spring Framework:
-    → Requires a lot of manual configuration
-    → Manually set up application server, dependencies, and configurations manually
+    → A framework to build Java enterprise applications
+    → You dont create objects, Spring creates and manages them for you
+    → Handles: object creation, dependency injection, configuration
+    → Problem: configuring Spring itself was complex (XML, boilerplate)
 
 SpringBoot:
-    → Automatically configures beans using dependencies in pom.xml
+    → Built ON TOP of Spring Framework
+    → Solves Springs configuration complexity
+    → Automatically configuration using dependencies in pom.xml
     → Embedded Tomcat/Jetty server included
     → Pre-defined dependencies like spring-boot-starter-web
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Inversion Of Control:
-
-→ Instead of you managing the lifecycle of beans, Spring creates and manages them.
-→ @Component → Spring automatically creates a bean of that class.
-→ All auto-created beans are stored inside the IoC Container.
-→ Objects created manually using new are not stored in the IoC Container, so Spring cannot inject them.
+    → Instead of YOU creating objects, Spring creates and manages them
+    → Scans classes, creates beans, manages lifecycle
+    → All auto-created beans are stored inside the IoC Container.
+    → Objects created manually using new are not stored in the IoC Container, so Spring cannot inject them.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Dependency Injection:
+    → DI allow us to use beans created by spring anywhere in the application
 
-→ DI allows us to use beans created by Spring anywhere in the application.
-→ If Spring did not create an object, then that object is not available for injection.
-
+3 ways to inject:
+    → Constructor Injection
+    → Setter Injection
+    → Field Injection
+    
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 SpringBoot Starters Dependency:
@@ -42,7 +48,7 @@ Examples:
 
 @RequestParam:
     → Comes after ? in the URL
-    → Used when filtering, sorting, pagination etc etc
+    → Used when filtering, sorting, pagination etc etc is required
     → It is optional if required = false
     → /users?status=active&sort=name&page=2
 

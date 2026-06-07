@@ -4,6 +4,7 @@ JWT TOKEN IN SS6:
 
 Nimbus:
     → Spring Security 6 uses Nimbus for jwt implementation
+    → Spring native + less code
     → JwtEncoder and JwtDecoder are Interfaces
     → Nimbus is underlying implementation 
 
@@ -61,23 +62,25 @@ public class JwtService {
     @Value("${jwt.refresh-token-expiration:604800}")
     private long refreshTokenExpiration;
 
-    //Create JWT Token, called by Login API
+    //To create JWT token, called by Login API
     public String generateAccessToken(UserDetails userDetails) {
         return generateToken(userDetails, accessTokenExpiration, "access");
     }
 
-    //create JWT token with claims
+    //To create Refresh token, called by Login API
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateToken(userDetails, refreshTokenExpiration, "refresh");
+    }
+
+    //Generate JWT / Refresh Token
     private String generateToken(UserDetails userDetails, long expirationSeconds, String tokenType) {
 
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(expirationSeconds);
-
-        var roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("my-application")
                 .subject(userDetails.getUsername())
-                .audience(Arrays.asList("web-app", "mobile-app"))
                 .issuedAt(now)
                 .expiresAt(expiry)
                 .claim("roles", roles)
@@ -86,10 +89,9 @@ public class JwtService {
 
         Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(claims));
         return jwt.getTokenValue();
-
     }
 
-    //Validate and parse token
+    //Validate + Parse Token
     public Jwt validateAndParseToken(String token) {
         try {
             Jwt jwt = jwtDecoder.decode(token);
@@ -99,18 +101,13 @@ public class JwtService {
         }
     }
 
-    //Create Refresh Token, called by API
-    public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, refreshTokenExpiration, "refresh");
-    }
-
     //Extract Username
     public String extractUsername(String token) {
         Jwt jwt = validateAndParseToken(token);
         return jwt.getSubject();
     }
 
-    //Extract user roles
+    //Extract Roles
     public List<String> extractRoles(String token) {
         Jwt jwt = validateAndParseToken(token);
         return jwt.getClaim("roles");
@@ -118,6 +115,7 @@ public class JwtService {
 
     //Create new JWT token from Refresh token
     public String refreshAccessToken(String refreshToken, UserDetails userDetails) {
+
         if (!isRefreshToken(refreshToken)) {
             throw new RuntimeException("Invalid refresh token");
         }
@@ -141,12 +139,6 @@ public class JwtService {
     }
 }
 
-class JwtValidationException extends RuntimeException {
-    public JwtValidationException(String message) {
-        super(message);
-    }
-}
-
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 JWT Filter:
@@ -156,40 +148,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
-    private boolean isUserValid(UserDetails userDetails) {
-        return userDetails.isEnabled() && 
-               userDetails.isAccountNonLocked() && 
-               userDetails.isAccountNonExpired() && 
-               userDetails.isCredentialsNonExpired();
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         try {
-
             String authHeader = request.getHeader("Authorization");
             String jwtToken = null;
             String username = null;
 
             if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
-                jwtToken = bearerToken.substring(7);
+                jwtToken = authHeader.substring(7);
                 username = jwtService.extractUsername(jwtToken);     
             }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                // Load user details from DB using username extracted from JWT
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                    if (isUserValid(userDetails)) {
-                        UsernamePasswordAuthenticationToken authentication =  new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    } else {
-                        logger.warn("User account invalid: {}", username);
-                    }
+                // Create authenticated token with userDetails + authorities (3 args = already authenticated, no need to validate again)
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                // Attach request metadata (IP address, session ID) to the authentication object
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                // Store authentication in SecurityContext → Spring now knows who the current user is
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception e) { logger.error("JWT Authentication failed for {}: {}", requestUri, e.getMessage());}
+
+        } catch (Exception e) { 
+            logger.error("JWT Authentication failed for {}: {}", requestUri, e.getMessage());
+        }
+        
         filterChain.doFilter(request, response);
     }
 }

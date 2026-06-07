@@ -59,39 +59,21 @@ for(Map.Entry<Integer,String> val : m.entrySet()){
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Immutable Map:
-    → Map that cannot be modified after creation
-    → Prevent accidental changes
-    → Thread-safe
-    → Ideal for constants/configuration
-    → Map.of()
-    → Map.copyof()
-
-1: Map.of():
-    → Directly creates immutable map
-    → Fastest for small maps
-    → No null keys/values
-    → java 9+
-
-2: Map.copyOf():
-    → Creates immutable copy of an existing map
-    → Changes in original map do NOT affect the new one
-    → java 10+
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Concurrent Hashmap():
     → Thread-safe implementation of Map
     → Alternative to Collections.synchronizedMap()
-
-Collections.synchronizedMap():
-    → One global lock → poor concurrency
+    → Collections.synchronizedMap() : One global lock → poor concurrency
 
 ConcurrentHashMap:
-→ No global lock ✅
-→ Reads (get) 🔹 lock-free, very fast
+
+→ No global lock 
+
+→ Reads (get)   ;
+    → lock-free, very fast
     → hash → bucket → read volatile value
-→ Writes (put) 🔹 fine-grained locking
+
+→ Writes (put):
+    → fine-grained locking
     → hash → bucket → lock bucket → insert/update → unlock
     → Multiple threads can work on different buckets concurrently
 
@@ -99,7 +81,6 @@ Notes:
 → volatile → guarantees memory visibility
 → Reads dont need locks → very fast
 → Writes lock only the affected bucket → high throughput
-
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Internal working of HashMaps:
@@ -112,11 +93,10 @@ Put Operation:
 → Compare with existing objects in bucket if they are equal or not using equals()
 → If true → overrides, if false → add
 
-→ Store in Bucket:
-    → Empty bucket → store directly
-    → If bucket occupied (collision) →
-        → Java 7    → LinkedList
-        → Java 8+   → Tree structure (if bucket grows large)
+→ Empty bucket → store directly
+→ If bucket occupied (collision) →
+    → Java 7    → LinkedList
+    → Java 8+   → Tree structure (if bucket grows large)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

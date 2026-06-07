@@ -73,13 +73,14 @@ JPA Relationships:-
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 @JoinColumm : 
-    → Creates foreign key column
     → Represents the owning side
+    → This table contains the foreign key column of another table 
     
 mappedBy = "user" :  
+    → Represents the non-owning side
     → user is the name of the feild in the owning side
     → Java variable name is used not database column name
-    → Represents the non-owning side
+    
 
 Code:
 class Student {                 // Owning side
@@ -102,17 +103,34 @@ class Department {              // Non-owning side
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-
 Fetching:
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Lazy Fetching:
-    → Loads related data only when accessed
+    → Load related data only when you actually access it.
     → Better performance
 
+Example:
+    User user = userRepo.findById(1);
+    // SQL fires:
+    // SELECT * FROM users WHERE id = 1  ← only this
+
+    user.getOrders(); // NOW orders SQL fires
+    // SELECT * FROM orders WHERE user_id = 1
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 Eager Fetching:
-    → Loads related data immediately
+    → Load everything immediately
     → Can cause performance issues
     → Avoid unless necessary
+
+Example:
+    // you load User
+    User user = userRepo.findById(1);
+    // SQL fires:
+    // SELECT * FROM users WHERE id = 1
+    // SELECT * FROM orders WHERE user_id = 1  ← fired immediately too
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

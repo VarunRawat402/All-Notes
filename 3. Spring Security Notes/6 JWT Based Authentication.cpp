@@ -2,14 +2,8 @@
 Jwt Implementation using JJWT:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-JJWT: 
-    → It is a library, java JWT
-    → Used to create and parse token
-    → External Library, used before SS6
-
-Jwts:
-    → It is a util class
-    → Provides Builder & Parser to create and validate tokens
+JWTS (jjwt library):
+    → External library, more manual control.
     → Jwts.builder() → "Create JWT"
     → Jwts.parser() → "Read & validate JWT"
 
@@ -46,10 +40,6 @@ public class UserService {
             return false;
         }
     }
-
-    public List<User> getAll() {return userRepository.findAll();}
-
-    public User findByUserName(String username) {return userRepository.findByUsername(username);}
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -84,6 +74,16 @@ public class JwtUtil {
     private static final String SECRET_KEY = "TaK+HaV^uvCHEFsEVfypW#7g9^k*Z8$V";
     private final SecretKey signingKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
+    // Generate token
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 50))
+                .signWith(signingKey)
+                .compact();
+    }
+
     //Parse and validate token (signature + expiration automatically checked)
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
@@ -91,11 +91,6 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    //Extract username
-    public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
     }
 
     //Validate token (if no exception -> valid)
@@ -108,14 +103,9 @@ public class JwtUtil {
         }
     }
 
-    // Generate token
-    public String generateToken(String username) {
-        return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 50))
-                .signWith(signingKey)
-                .compact();
+    //Extract username
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
     }
 }
 
@@ -131,30 +121,37 @@ public class JwtFilter extends OncePerRequestFilter {           //OncePerRequest
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader("Authorization");
-        String username = null;
-        String jwt = null;
+        try {
+            String authHeader = request.getHeader("Authorization");
+            String jwtToken = null;
+            String username = null;
 
-        //Extract token and username from header
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+            if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+                jwtToken = authHeader.substring(7);
+                username = jwtUtil.extractUsername(jwtToken);     
+            }
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                // Load user details from DB using username extracted from JWT
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                // Create authenticated token with userDetails + authorities (3 args = already authenticated, no need to validate again)
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                // Attach request metadata (IP address, session ID) to the authentication object
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                // Store authentication in SecurityContext → Spring now knows who the current user is
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            }
+            
+        } catch (Exception e) { 
+            logger.error("JWT Authentication failed for {}: {}", requestUri, e.getMessage());
         }
 
-        if (username != null && jwtUtil.validateToken(jwt)) {
-
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                //validates the user with userdetails
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                //set extra details
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                //set the user as authenticated in security context
-                SecurityContextHolder.getContext().setAuthentication(auth);
-        }
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 }
 

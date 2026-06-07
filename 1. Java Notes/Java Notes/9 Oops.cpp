@@ -4,35 +4,24 @@ Java OOPs:
 
 Destructor:
     → Java does not have destructors.
-    → Java uses Garbage Collection (GC).
-    → Resource cleanup is done using close() or try-with-resources.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Default Constructor:
     → Automatically generated when no constructor is defined
     → If you define any constructor, default is not generated
     → Takes no parameters.
 
-Parameterized Constructor:
-    → Takes parameters to create object 
-
-Copy Constructor: 
-    → Takes another object as a parameter and creates a new object with the same values.
-    → Used to duplicate objects.
-
-Constructor Chaining:
-    → When you create an object of a child class, the parent class constructor is called first, then the child class constructor.
-    → Happens using super().
-
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Note:
-Primitive types are passed by value:
-    → Changes inside method do not change the original value
+1: Primitives are passed by value:
+    → Value cannot be changed inside another method
 
-Objects are passed by reference:
-    → Changes inside method change the actual object
+2: Objects are passed by value of reference
+    → Value can be changed inside another method
+    → Cannot assign new reference to the object
+
+3: Integer and String are also objects but they are immutable:
+    → Value cannot be changed inside another method
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -51,11 +40,6 @@ Access Modifiers:
 4: Default:
     → Accessible within the same package only.
     → Not accessible outside the package.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-POLYMORPHISM:
-    → One object behaving in multiple forms.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -78,7 +62,6 @@ Ex:
 
 2: Method Overriding:
     → Runtime Polymorphism
-    → A child class provides its own implementation of a parent class method.
     → The method call is decided at runtime based on the object type.
 
 Ex:
@@ -99,46 +82,40 @@ Ex:
     cat.makeSound();            // Calls Cat's makeSound() method
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-
 INHERITANCE:
-    → Using properties and methods of a parent class in a child class.
-
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Single Level Inheritance:
-
 Ex:
-    class Animal {}
-
-    class Dog extends Animal {}
+    class Parent { }
+    class Child extends Parent { }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Multilevel Inheritance:
-
 Ex:
-    class Animal {}
-
-    class Dog extends Animal {}
-
-    class Breed extends Dog{}
+    class GrandParent { }
+    class Parent extends GrandParent { }
+    class Child extends Parent { }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-3: Multiple Inheritance:    
-    → In Multiple Inheritance 1 class can extends 2 classes or more.
+3: Hierarchical Inheritance:
+
+Ex:
+    class Parent { }
+    class Child1 extends Parent { }
+    class Child2 extends Parent { }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+4: Multiple Inheritance:    
     → In java we dont have multiple inheritance but we can acheive it through Interfaces.
 
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-4: Hierarchical Inheritance:
-
-Ex:
-    class Animal {}
-
-    class Dog extends Animal {}
-
-    class Cat extends Animal{}
+Ex:   
+    interface Father { }
+    interface Mother { }
+    class Child implements Father, Mother { }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -147,16 +124,17 @@ ENCAPSULATION:
 
 Key Concepts of Encapsulation
 
-Private fields          → Restricts the access of data.
-Public getters/setters  → Controlled access of Data from oustide.
-Better Control          → You can validate, restrict, or modify behavior when getting or setting values.
+Private fields          → Restricts the access of data from outside.
+Public getters/setters  → Give controlled access of Data to oustide.
+Better Control          → Control over everything
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Super():
-    → Calls parent class constructor
-    → Used to initialize parent variables through constructor
-    → Access parent class variables/methods (non-private) using super.variable / super.method()
+    → Used to access parent class things
+    → super() is used to call the parent constructor, should be the first line in the childs constructor
+    → super.name is used to access parent variable
+    → super.hello() is used to call parent method
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -168,8 +146,8 @@ Parent reference with Child object:
 → If parent methods are overriden then overriden methods will get executed ( run time polymorphism )
 
 Note:
-    → What you can access depends on the reference
-    → What is going to be executed depends on the object
+    Reference → what you CAN access
+    Object    → what actually EXECUTES
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -196,16 +174,20 @@ Finalize():
 Shallow Copy
     → Top-level object does not share reference
     → Nested objects share same reference
-    → Default Behavior
+    → Default Behavior of clone()
 
 Deep Copy
     → Top-level and nested objects both does not share reference
-    → Changes do not affect the other object
-    → Must override clone()
-    → Manually clone nested objects
+    → Must override clone() and manually clone nested objects
+    → Must implement Cloneable interface
 
 Cloneable:
-    Cloneable   → Marker Interface, Tells JVM that cloning is allowed
-    clone()     → Method from Object class, Used to create copy of an object
+    → Marker Interface
+    → Must be implemented, otherwise throws CloneNotSupportedException 
+    → Tells JVM that cloning is allowed
+
+clone():
+    → Method from Object class
+    → Used to create copy of an object
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

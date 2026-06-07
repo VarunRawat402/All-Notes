@@ -2,18 +2,20 @@
 JAVA 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-JVM (Java Virtual Machine):
-    → Executes .class file and runs the java program
-    → Handle GC
-    
-JRE (Java Runtime Environment):
-    → JVM + Java libraries
-
 JDK (Java Development Kit):
-    → Used to Develop Java programs
-    → Compiles code
+    → Compile + run java code
+    → Coverts the java code to .class file using compiler
     → Runs code
     → Contains JRE + JVM
+
+JRE (Java Runtime Environment):
+    → JVM + built-in Java libraries
+    → Ex: Arraylist, Scanner etc.
+
+
+JVM (Java Virtual Machine):
+    → Runs the .class file and executes the java program
+    → Handle GC
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -26,10 +28,6 @@ Primitive Default        → 0 / false
 Non-primitive Default    → null
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-
-Char ( 16bit ):
-    → Used to store single digit characters
-    → Every char has ASCII Value 
 
 ASCII Values:
 
@@ -69,25 +67,23 @@ Example:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is Garbage Collection:
-    → It automatically removes unused objects from heap memory.
+    → It automatically removes objects with no reference from heap memory.
     → If no reference of objects → eligible for Garbage collection
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you ensure Garbage Collection is working correctly:
-    → Check JVM GC logs
-    → VisualVM
-    → JConsole
-    → Check Heap usage monitoring
-    → Check GC metrics dashboards
+    → Avoid memory leaks ( remove references of objects when no need )
+    → Heap usage is stable over time
+    → Monitor via VisualVM / JConsole
+    → Check GC logs
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you debug OutOfMemoryError:
-    → Enable Heap Dump
-    → Capture dump on OOM
-    → Analyze the dumps using tools
-    → Find memory leaks
-    → Check caches or fix static references
+    → Read error: tells which memory area is full
+    → Take heap dump: -XX:+HeapDumpOnOutOfMemoryError
+    → Analyze with Eclipse MAT or VisualVM
+    → Look for leaked objects
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

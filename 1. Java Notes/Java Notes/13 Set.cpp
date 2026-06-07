@@ -13,9 +13,9 @@ Syntax:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: HashSet : Fastest, No Order
+1: HashSet : 
+    → Fastest, No Order
     → Average time → O(1)
-    → No order is maintained
     → Not thread-safe
     → Allows 1 null element
 
@@ -37,14 +37,3 @@ Syntax:
     → No null elements allowed
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-
-Common Methods:
-add()	        : Adds an element (E). Returns false if already present.
-remove()	    : Removes an element.
-contains()	    : Checks if an element exists.
-size()	        : Returns the number of elements.
-isEmpty()	    : Checks if the set is empty.
-clear()	        : Removes all elements.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-

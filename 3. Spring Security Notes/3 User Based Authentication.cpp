@@ -4,33 +4,36 @@ User-Based Authentication:
 
 Basic Authentication Flow:
 
-→ User sends username + password in Authorization Header 
-→ Authorization header type is 'Basic' which is base64 encoded
-→ It converts both username + password to base64 encoded : 
-    → Base64(username:password)   →   "varun:pass123" → Base64 → YWRtaW46c2VjcmV0
-    → Authorization: Basic YWRtaW46c2VjcmV0
+→ Client combines username + password → encodes in Base64
 
-→ BasicAuthenticationFilter intercepts the request and decodes the encoded (username:password) 
-→ Creates UsernamePasswordAuthenticationToken() → passes to AuthenticationManager()
-→ User is fetched using username from DB and password is matched using BcryptPasswordEncoder(raw,storedPassword)
+→ "varun:pass123" → Base64 → YWRtaW46c2VjcmV0
+→ Authorization: Basic YWRtaW46c2VjcmV0
+
+→ BasicAuthenticationFilter intercepts request → decodes Base64 → gets username + password
+→ Creates UsernamePasswordAuthenticationToken → passes to AuthenticationManager → Authenticates the user
+
+Note:
+    → Base64 is NOT encryption → anyone can decode it
+    → Always use HTTPS with Basic Auth → otherwise credentials exposed in transit
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 How BcryptPassword Encoder works:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Hashing:
+Hashing (storing password):
 
-1: Generates random salt
-2: Combine salt + raw password
-3: Apply Bcrypt hashing algo and hash the password
+→ Generates random salt
+→ Combines salt + raw password
+→ Applies BCrypt algorithm → produces final hash → stored in DB
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Verification:
+Verification (login):
 
-1: Extract Salt + cost from the stored password
-2: Hash the raw password with same cost and salt 
-3: Compare both passwords
+→ Extracts salt + cost factor from stored hash
+→ Hashes incoming raw password with same salt + cost
+→ Compares both hashes → match = authenticated ✅
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -51,26 +54,6 @@ Code:
             .logout(withDefaults());
 
         return http.build();
-    }
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-InMemory Authorization:
-    → No need to implement UserDetails or UserDetailsService for in memory authentication
-    → Hardcode the credentials 
-    → Used for testing
-
-Code:
-    @Bean
-    public UserDetailsService userDetailsService(){
-
-        UserDetails admin = User.withUsername("varun")
-                .password(passwordEncoder().encode("1234")).roles("ADMIN").build();
-
-        UserDetails user = User.withUsername("arun")
-                .password(passwordEncoder().encode("1234")).roles("USER").build();
-
-        return new InMemoryUserDetailsManager(admin,user);
     }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

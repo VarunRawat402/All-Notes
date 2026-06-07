@@ -60,24 +60,4 @@ Hibernate:
     → Converts java objects to tables automatically, removes JDBC boiler plate code		
     → Supports features like lazy loading, caching, criteria API, transaction management, etc.	
 
-
-@Repository
-public class JpaRepository {
-
-    @Autowired
-    EntityManager entityManager;
-
-    public void insert(Student student){
-        entityManager.merge(student);
-    }
-    public Student findById(int id){
-        return entityManager.find(Student.class,id);
-    }
-    public void deleteById(int id){
-        Student student = entityManager.find(Student.class,id);
-        entityManager.remove(student);
-    }
-
-}
-
 -----------------------------------------------------------------------------------------------------------------------------------------------------

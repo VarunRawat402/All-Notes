@@ -5,19 +5,20 @@ COMPARATOR VS COMPARABLE:
 Comparator:
     → Functional Interface
     → Used to sort the objects 
+    → Sorting is decided outside of the class
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Comparable:
-    → Interface, Needs to implement and override compareTo()
-    → Used to define one sorting logic for the objects
+    → Interface, Implemented by the class itself
+    → The class itself implements and decides how to sort the objects
+    → Needs to override compareTo() method for sorting logic
     → Works directly with Collections.sort() or Arrays.sort()
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Sorting Based on Age:
 
-Modern approach:
 Collections.sort(l1, Comparator.comparingInt(Student::getAge));               
 Collections.sort(l1, Comparator.comparingInt(Student::getAge).reversed());
 
@@ -25,7 +26,6 @@ Collections.sort(l1, Comparator.comparingInt(Student::getAge).reversed());
 
 Sorting Based on Name:
 
-Modern approach:
 Collections.sort(l1,Comparator.comparing(Student::getName));
 Collections.sort(l1,Comparator.comparing(Student::getName).reversed());
 
@@ -43,14 +43,12 @@ class Student implements Comparable<Student> {
     String name;
     int age;
 
+    // ascending → this comes first
+    // zero     → equal
+    // descending → other comes first
     @Override
     public int compareTo(Student other) {
-        return this.age - other.age;            // Default sorting: by age
-    }
-
-    @Override
-    public String toString() {
-        return name + " (" + age + ")";
+        return this.age - other.age;
     }
 }
 

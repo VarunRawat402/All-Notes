@@ -2,14 +2,19 @@
 Java 8 Features:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
+Sequential Programming:
+    → You write everything manually what you want to do 
+    → Create loop, add all the values into sum
+    → returns sum
+
+Functional Programming:
+    → Use functions to do the task instead of writitng everything manually
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 1: Streams():
     → Functional way to process collections
     → Processes data without modifying original collection
-    → filter() / map() / forEach()
-
-Syntax:
-    int[] arr = {1,2,3,4};
-    IntStream s1 = Arrays.stream(arr);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -30,6 +35,7 @@ interface Greeting {
 }
 
 Greeting g = () -> System.out.println("Hello Java 8");
+g.sayHello();
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

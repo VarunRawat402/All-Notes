@@ -2,47 +2,47 @@
 Strings:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: String          → Immutable (value cannot be changed)
-2: StringBuilder   → Mutable, fast, not thread-safe
-3: StringBuffer    → Mutable, slower, thread-safe
+1: String          → Immutable (new object on every change)
+2: StringBuilder   → Mutable + fast + not thread-safe
+3: StringBuffer    → Mutable + slower + thread-safe
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Security:
 
-→ Strings are used in sensitive areas like : Database URLs / File paths / Network connections.
-→ If Strings were mutable, malicious code could change these values at runtime, leading to security issues.
+→ Strings used in DB URLs, file paths, network connections
+→ Immutable = no one can change these values at runtime
+→ Prevents malicious modification mid-execution
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2. String Pool:
 
-→ Java stores string in a special memory String Pool.
-→ String s1 = "Hello";
-→ String s2 = "Hello"; 
-→ Only one "Hello" object is created in the pool, s1 and s2 point to the same object
-→ If Strings were mutable, changing s1 would also change s2, which breaks string pooling.
+→ Java stores strings in String Pool to save memory
+→ Multiple reference points to same object
+        String s1 ----\
+                        --> "Hello"
+        String s2 ----/
+→ If mutable → changing s1 would change s2 → pool breaks
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Thread-Safety:
 
-→ Strings cannot change after creation, means no state change
-→ No thread can modify the actual string making other threads reads the same and correct value
-→ No synchronization needed → better performance
+→ Multiple threads can read the same string simultaneously without any synchronization needed. 
+→ No one can modify it, so no conflicts.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-4: HashCode Caching:
+4: HashMap Working:
 
 → hashCode()    → converts key into hashcode.
-→ Bucket index  → hashCode % numberOfBuckets
+→ Calculates bucket Index using hashcode
 → Inside bucket → .equals() is used to find exact key between multiple keys
 
 If String were mutable:
-        → Hashcode() is generated based on value
-        → If value changes Hashcode would change
-        → Key would become unreachable in HashMap / HashSet
+→ Value changes → hashcode changes → different bucket
+→ Original key becomes unreachable — data lost in HashMap
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

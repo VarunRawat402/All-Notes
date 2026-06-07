@@ -4,66 +4,47 @@ Abstraction:
 
 1: Abstract Classes (abstract keyword) :
 
-    → normal + static + abstract methods
-    → instance + static variables
-    → constructor
+    → Contains normal + static + abstract methods
+    → Contains instance + static variables
+    → Contains constructor to initialize instance variables
     → Multiple inheritance not supported
+    → Can override abstract + default methods
     → Cannot override static methods
-    → Can override abstract and default methods
+   
 
 2: Interfaces (interface keyword) :
 
-    → default + static + abstract  
-    → only static final variables
+    → Contains default + static + abstract methods
+    → Contains only static final variables
     → Cannot have a constructor
     → Multiple Inheritance Supported
-    → Cannot override static methods
     → Can override abstract and default methods
-
+    → Cannot override static methods
+   
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 When to Use Abstract Class vs Interface:
 
 1: Use Abstract Class When:
-    → You want to provide base functionality + shared state
-    → You want to give default implementations for all subclassses
-    → You want constructors
-
-Example:
-    → Animal → abstract class, with name field and run() method
-    → Subclasses Dog and Cat inherit common behavior
+    → You want to provide partial implementation + state
+    → "IS A" relationship (Dog IS an Animal)
 
 2: Use Interface When:
     → You want to define a contract without implementation
-    → You want to provide common behavior for subclasses
-    → You want loose coupling
+    → "CAN DO" relationship (Bird CAN fly, Airplane CAN fly)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Note:
-→ If Interface A has method fun() and Interface B extends A with greet(),
-→ Student class implementing B must implement both methods
-
-interface A { void fun(); }
-interface B extends A { void greet(); }
-
-class Student implements B {
-
-    public void fun(){ 
-        /* implementation */ 
-    }
-
-    public void greet(){ 
-        /* implementation */ 
-    }
-}
+→ If Interface A has method fun()
+→ Interface B extends A with greet(),
+→ Class C implementing B must implement both methods
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-Tight Coupling vs Loose Coupling
+Tight Coupling
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 → Without Interface → Tight Coupling
-
 → PaymentService depends directly on all payment classes
 → Adding a new payment type → need to modify PaymentService → bad design
 
@@ -89,9 +70,10 @@ class PaymentService {
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
+Loose Coupling
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 With Interface → Loose Coupling:
-
 → All payment types implement PaymentMethod
 → PaymentService depends only on interface, not on concrete classes
 → Adding new payment types → no changes to PaymentService

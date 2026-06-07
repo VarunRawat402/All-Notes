@@ -2,79 +2,77 @@
 Spring Framework Concepts:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Spring Container (IoC Container):
-    → Creates beans
-    → Manages bean lifecycle
-    → Injects dependencies
-
-Spring Context (ApplicationContext):
-    → Advanced form of Spring Container:
-    Includes:
-        → Event handling
-        → AOP support
-        → Internationalization (i18n)
-        → Property & profile management
-
-So ApplicationContext = Container + extra features.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
 Dependency Injection Types:
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Constructor Injection ( Best ):
-    → Dependencies are passed by the constructor.
-    → Gurantees that the dependency is provided at object creation.
-    → Immutability - dependencies should be final 
-    → Testability  - Easier for unit testing
+    → Dependency passed when object is created using constructor
+    → Dependency is mandatory, cant create object without it
+    → Easy to test (pass mock in constructor)
+    → Circular dependency caught at startup
 
 Ex:
 @Service
-class Car {
-    private final Engine engine;
+class UserService {
+    private final UserRepository userRepository ;
 
-    public Car(Engine engine) {
-        this.engine = engine;
+    UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 }
+
+Mocking in Unit Testing:
+
+// in test → just pass mock through constructor
+UserRepository mockRepo = mock(UserRepository.class);
+UserService service = new UserService(mockRepo); // ✅ easy
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Setter Injection:
-    → Dependency injected after object creation using setter methods
-    → Used when dependency is optional
-    → Can cause runtime errors without dependency
-    → Feilds cannot be final 
+    → Object created first, dependency set after via setter
+    → Dependency is optional
+    → Use when dependency not always required
 
 Ex:
 @Service
-class Car {
-    private Engine engine;
+class UserService {
+    private UserRepository userRepository ;
 
     @Autowired
-    public void setEngine(Engine engine) {
-        this.engine = engine;
+    void setRepo(UserRepository repo) {
+        this.repo = repo;
     }
 }
+
+Mocking in Unit Testing:
+
+// in test → you CAN call setter manually
+UserService service = new UserService();
+service.setRepo(mockRepo); // ✅ works technically
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Feild Injection ( Worst ):
-    → @Autowired is used to inject dependencies
-    → Hard to test
-    → No Immutability
-    → If you create car object manually, dependency will not be injected in the object making testing harder
+    → Spring injects directly into field via reflection
+    → Hard to test, private field, cant pass mock
+    → Dont use in production
 
 Ex:
 @Service
-class Car {
-    @Autowired
-    private Engine engine; // Field Injection
+class UserService {
+    public UserRepository userRepository ;
 
-    public void drive() {
-        engine.start();
-        System.out.println("Car is moving...");
-    }
+    @Autowired
+    private UserRepository repo;   // private field, no constructor, no setter
 }
+
+Mocking in Unit Testing:
+
+// in test → how do you set repo?
+UserService service = new UserService();
+service.repo = mockRepo; // ❌ private field, can't access directly
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

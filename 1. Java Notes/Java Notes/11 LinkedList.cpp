@@ -3,11 +3,7 @@ Linked List:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 → Node  =  data + reference of next node
-→ Dynamically sized
-→ Does not require contiguous memory allocation
-
-Syntax:
-    LinkedList<String> ll = new LinkedList<>();
+→ LinkedList<String> ll = new LinkedList<>();
 
 Time Complexity:
 
@@ -34,35 +30,5 @@ Access:     O(n) — cannot directly access index
 
 Note:
 → In java LinkedList is implemented as a Doubly Linked List
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-1. Adding Elements:
-
-list.add("Apple");        // Add at end
-list.add(1, "Mango");     // Add at index
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-2. Removing Elements:
-
-list.remove("Apple");                // Remove specific element
-list.remove(2);                      // Remove element at index
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-3. Accessing Elements:
-
-list.getFirst();        // Get first element
-list.getLast();         // Get last element
-list.get(2);            // Get element at index
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-4. Searching & Checking:
-
-list.contains("Apple");          // Check if element exists
-list.size();                     // Get number of elements
-list.isEmpty();                  // Check if empty
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

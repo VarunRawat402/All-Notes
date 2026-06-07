@@ -13,7 +13,7 @@ Difference Between Arrays and ArrayList:
 → Array has fixed size , length()
 → ArrayList has dynamic size, size()
 → Add / Remove is difficult in array due to manual index shifting
-→ No built-in methods for add and remove
+→ No built-in methods for add and remove in array
 → Array has better performance than ArrayList due to less memory overhead
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -34,23 +34,16 @@ ArrayList
     → Fast random access ( index-based )
     → Less memory overhead
     → Best for read-heavy operations
+    → Returning list from REST API
+    → DTO collections
 
 LinkedList
     → Doubly linked list
     → No index-based access, traversal required
     → Fast insert/delete at start/middle 
     → More memory usage
-
-ArrayList
-    → Frequent reads / random access
-    → Returning list from REST API
-    → DTO collections
-
-LinkedList
     → Frequent insert/delete operations
     → Random access not required
-    → Task queues
-    → BFS traversal
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -62,7 +55,8 @@ ArrayList:
 
 CopyOnWriteArrayList:
     → On modification, creates a new copy of the list.
-    → Safe to modify while iterating because reading happens on the old array.
+    → Reading happens on the old arrayList, and every modification creates new arrayList
+    → After iteration, old copies removed and reference will point to new copy
     → Thread-safe.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -70,10 +64,6 @@ CopyOnWriteArrayList:
 CopyOnWriteArrayList():
 
 List<String> l1 = new CopyOnWriteArrayList<>();
-    l1.add("Milk");
-    l1.add("Eggs");
-    l1.add("Bread");
-
 for(String item : l1){
     if(item.equals("Eggs")){
         l1.add("Butter"); // ✅ Safe
@@ -92,8 +82,8 @@ ArrayList():
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Arrays.asList():
-    → Can change the value of the element
     → Cannot add or remove elements
+    → Can change the value of the element
     → Allows null
     → Not-Thread Safe
 
@@ -105,7 +95,7 @@ list.set(1, "X");       // ✅ Works fine (modifying elements)
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 List.of():
-    → Immutable
+    → Cannot change anything 
     → No null allowed
     → Thread Safe 
 

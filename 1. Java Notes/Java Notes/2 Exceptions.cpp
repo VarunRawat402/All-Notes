@@ -4,19 +4,15 @@ Exception:
 
 1: Checked Exception :
     → Compile time exception
-
-Example: 
-    IOException             → Error while reading or writing a file
-    FileNotFoundException   → Wrong file path / file not exist
+    → IOException             → Error while reading or writing a file
+    → FileNotFoundException   → Wrong file path / file not exist
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Unchecked Exception : 
     → Runtime Exception
-
-Example: 
-    ArrayIndexOutOfBoundsException  → Accessing invalid array index
-    NullPointerException            → Accessing null value
+    → ArrayIndexOutOfBoundsException  → Accessing invalid array index
+    → NullPointerException            → Accessing null value
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Exception Handling:
@@ -43,7 +39,7 @@ Exception Handling:
     → Used to manually throw an exception inside a method.
 
 Ex:
-public static void checkAge(int age) {
+public void checkAge(int age) {
     if (age < 18) {
         throw new IllegalArgumentException("You must be 18 or older.");
     }
