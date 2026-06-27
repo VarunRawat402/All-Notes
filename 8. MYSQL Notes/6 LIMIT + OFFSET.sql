@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 Limit:
-    → Restricts how many rows are returned
+    → Fetch limited rows
 
 Offset:
     → Skips the first X rows before fetching
@@ -10,7 +10,7 @@ Offset:
 
 Ex:
 
--- Fetch only the first 5 students
+-- Fetch first 5 rows
 SELECT * FROM students LIMIT 5;
 
 -- Skip first 2 rows, then fetch next 5 rows

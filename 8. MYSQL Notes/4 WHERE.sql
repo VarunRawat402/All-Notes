@@ -76,12 +76,3 @@ BETWEEN:
 SELECT * FROM books WHERE price BETWEEN 20 AND 30;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-SUBQUERIES
-    → A query inside another query, inner query runs first
-
--- Fetch all books that cost more than the average price of all books
-SELECT * FROM books
-WHERE price > (SELECT AVG(price) FROM books);
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------
