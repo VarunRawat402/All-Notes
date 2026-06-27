@@ -1,10 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
-Git Notes - Comprehensive Guide
-------------------------------------------------------------------------------------------------------------------------
-
-Git Workflow:
-    → Working Folder → Staging Area → Local Repository → Remote Repository
-
+Git Notes:
 ------------------------------------------------------------------------------------------------------------------------
 
 Basic Git Commands:
@@ -18,168 +13,125 @@ Basic Git Commands:
 ------------------------------------------------------------------------------------------------------------------------
 
 Branching:
-    → A branch is a separate line of development
-    → It lets you work on features, bug fixes, or development without changing the main code.
+    → Work on features/fixes without changing main code
 
-1: 'git branch'
-    → Shows all branches
+1: 'git branch'                                 → Shows all branches
 
-2: 'git branch user'
-    → Creates a user branch 
+2: 'git checkout -b feature/loginPage'          → Creates feature branch 
 
-3: 'git switch user'
-    → Switch to user branch
+3: 'git checkout feature/loginPage'             → Switch to feature branch
 
-4: 'git switch -c user'
-    → Create user branch and switch to it
+4: 'git branch -d user'                         → Deletes local branch if its merged
 
-5: Delete a branch: 
-    'git branch -d user'
-        → Deletes only if user branch is already merged
+5: 'git branch -D user'                         → Deletes local branch even if its not merged
 
-    'git branch -D user'
-        → Deletes user branch even if not merged
+6: 'git branch -m <new-name>'                   → Rename current branch
 
-6: Rename branches: 
-    'git branch -m <new-name>'
-        → Rename current branch
-
-    'git branch -m <old-name> <new-name>'
-        → Rename any branch
+7: 'git branch -m <old-name> <new-name>'        → Rename any branch
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Remote Repositories Operations:
 
 
-1: 'git remote add origin <repository-url>'
-    → Link Github repo to local 
+1: 'git remote add origin <repository-url>'         → link local repo to GitHub
 
-2: 'git clone <repository-url>'
-    → Init git + Link github repo to local + download all code
+2: 'git clone <repository-url>'                     → clone repo + init + link (all in one)
 
-3: 'git push origin main'
-    → Push changes to main branch
+3: 'git push origin dev'                            → Push changes to dev branch
 
-4: 'git pull origin main'
-    → Pull changes from main branch + merge them
+4: 'git pull origin dev'                            → fetch + merge from dev branch
 
-5: 'git fetch origin main'
-    → Fetch changes from main branh + No Merging
+5: 'git fetch origin dev'                           → fetch only, no merge
 
-6: 'git fetch --all'
-    → Downloads updates from remote
-    → Does NOT merge automatically
-    → Used when you want to review changes first
-
-7: 'git push origin --delete <branch-name>'
-    → Removes branch from the remote repository
+6: 'git push origin --delete <branch-name>'         → delete branch from remote
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Merging and Rebasing:
 
 - Merging: 
-    → combines one branch into another.
-    → Switch to the branch that should receive changes
-    → Merge the feature branch into it
+    → Combines one branch into another
+    → Creates a merge commit → preserves full history
 
 Example:
-    `git switch main`
-    `git merge feature/login`
+    'git checkout feature/loginPage'
+    'git fetch origin'
+    'git merge origin/dev'              // brings dev changes into feature branch
 
 - Rebasing: 
-    → moves your branch commits on top of another branch.
-    → Switch to the branch you want to update
-    → Reapply its commits on top of the target branch
-    → Mostly used for local or personal branches.
+    → Moves your commits on top of another branch
+    → Temporarily removes your commits → updates branch → replays commits on top
+    → Cleaner history (no merge commits) → linear history
 
 Example:
-    `git switch feature/login`
-    `git rebase main`
+    'git checkout feature/login'
+    'git fetch origin'
+    'git rebase origin/dev'
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Typical Branch Workflow:
 
-1. Create a feature branch
-2. Make changes and commit
-3. Push branch to remote
-4. Merge into main
-5. Delete the feature branch
+1. 'git checkout -b feature/login'    → create feature branch
+2. 'git commit'                       → make changes + commit work
+3. 'git push origin feature/login'    → push to remote
+4. 'git pull origin dev'              → merge after review
+5. 'git branch -d feature/login'      → delete feature branch
 
-feature → commit → push → merge → delete
-
-Do NOT rebase a branch that others are using
-    Rebase only local / personal branches
+feature → commit → push → PR/merge → delete
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Git Stash:
+    → Temporarily saves uncommitted changes
+    → Use when switching branches without committing
 
-Git stash temporarily saves your uncommitted changes 
-Used when you need to switch branches quickly without committing.
+1. 'git stash'                        → save changes with no description
+2. 'git stash save "description"'     → save with label
 
-1: 'git stash' or 'git stash save "description"'
-    Saves tracked file changes
+3. 'git stash list'                   → view all stashes
 
-2: 'git stash list'
-    View All Stashes
+4. 'git stash apply'                  → apply latest stash, keeps stash
+5. 'git stash apply stash@{n}'        → apply specific stash, keeps stash
+6. 'git stash pop'                    → apply latest stash + delete it
 
-3: Apply stashed changes: 
-    'git stash apply'
-    'git stash apply stash@{n}'
-        Applies stash but does NOT remove it
-
-4: 'git stash pop'
-    Applies stash and deletes it
-
-5: Delete a stash: 
-    'git stash drop'
-    'git stash drop stash@{n}'
-
-6: 'git stash clear'
-    Deletes all stashed changes
+7. 'git stash drop'                   → delete latest stash
+8. 'git stash drop stash@{n}'         → delete specific stash
+9. 'git stash clear'                  → delete ALL stashes
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Git Ignore:
-    → It is a file in which we add all the files we dont want git to TRACK, STAGE, COMMIT in repository
-    → Common use: logs, build files, passwords, environment configs.
+    → Used to tells Git which files to NOT track, stage, or commit
 
-Ex:
-
-1: '*.css'
-    → Ignore all .css files
-
-2: 'passwords/'
-    → Ignores all files inside the passwords directory
+Examples:
+    *.css           → ignore all CSS files
+    passwords/      → ignore entire passwords directory
+    .env            → ignore environment file
+    *.log           → ignore all log files
     
 Note:
-→ Git does not affect files which are already tracked
 → To ignore the file which is already tracked
 → 'git rm --cached <filename>'
 
 ------------------------------------------------------------------------------------------------------------------------
 
 Git Restore:
-    → It is used to remove the changes and going back to last commit 
+    → It is used to Undo changes in local
     → It is also used to unstage the staged files
     → File Level
 
 Scenario 1: Remove Changes: 
-    → 'git restore myfile.py'
-    → You updated a file but changes are bad 
-    → It will remove all the changes till last commit 
+    → 'git restore application.yaml'
 
 Scenario 2: You staged a file by mistake:
-    → 'git restore --staged myfile.py'
+    → 'git restore --staged application.yaml'
     → File is removed from staging area
 
 Scenario 3: Completely Reset a File:
-    → 'git restore --staged myfile.py'   # Unstage
-    → 'git restore myfile.py'            # Discard all recent changes
-    → File becomes exactly like the last commit
+    → 'git restore --staged application.yaml'   # Unstage
+    → 'git restore application.yaml'            # Discard all recent changes
 
 ------------------------------------------------------------------------------------------------------------------------
 

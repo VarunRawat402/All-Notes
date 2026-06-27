@@ -13,10 +13,7 @@ JDBC:
     → JDBC gives full control over SQL queries unlike JPA which autogenerates SQL.
 
 Dependencies:
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
+    → spring-boot-starter-jdbc
 
 Application.properties:
 spring.h2.console.enabled=true                 // enable H2 UI

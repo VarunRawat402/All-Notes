@@ -63,12 +63,13 @@ public class DemoApplication {
 Start() vs Run():
 
 run():
-    → It is defined in Thread class and Runnable interface
-    → When you call run(), It runs the method in the same thread
-    → Does not create a new thread
+    → Just a normal method call → runs in CURRENT thread
+    → No new thread created
+    → Calling run() directly = no multithreading
+    → Present in both Thread and Runnable
 
 start():
-    → If is defined in Thread class
-    → When you call start(), It creates a new thread and calls run() method internally
+    → Creates a NEW thread → calls run() method internally
+    → Actual multithreading happens here
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

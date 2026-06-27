@@ -2,12 +2,8 @@
 Spring Framework Concepts:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Dependency Injection Types:
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
 1: Constructor Injection ( Best ):
-    → Dependency passed when object is created using constructor
+    → Dependency is passed when object is created using constructor
     → Dependency is mandatory, cant create object without it
     → Easy to test (pass mock in constructor)
     → Circular dependency caught at startup
@@ -77,11 +73,11 @@ service.repo = mockRepo; // ❌ private field, can't access directly
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 @PostConstruct (Executed After Bean Creation):
-    → Run methods automatically after the bean is created and dependencies are injected.
+    → Run methods automatically after the bean is created
     → Used for Initialization, Resource setup
 
 @PreDestroy (Executed Before Bean Destruction):
-    → Runs before the bean is removed from the Spring context.
+    → Runs before the bean is removed
     → Used for cleanup, closing connections
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -108,32 +104,32 @@ Note:
 
 Example:
     Bean Name : debitPaymentService & creditPaymentService
-    Bean Type : PaymentService
+    Bean Type : PaymentType
 
-interface PaymentService {void pay();}
+interface PaymentType {void pay();}
 
 @Primary
-public class DebitPaymentService implements PaymentService {
+public class DebitPaymentService implements PaymentType {
     public void pay() {System.out.println("Paid using Debit Card");}
 }
 
-public class CreditPaymentService implements PaymentService {
+public class CreditPaymentService implements PaymentType {
     public void pay() {System.out.println("Paid using Credit Card");}
 }
 
 @Service
-class TransportService {
+class PaymentService {
 
     @Autowired                              //Spring injects DebitPaymentService
-    private PaymentService paymentService;
+    private PaymentType paymentType;
 }
 
 @Service
-class TransportService {
+class PaymentService {
 
     @Autowired
     @Qualifier("creditService")             //Spring injects CreditPaymentService
-    private PaymentService paymentService;
+    private PaymentType paymentType;
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

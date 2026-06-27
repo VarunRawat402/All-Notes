@@ -5,13 +5,11 @@ JAVA
 JDK (Java Development Kit):
     → Compile + run java code
     → Coverts the java code to .class file using compiler
-    → Runs code
     → Contains JRE + JVM
 
 JRE (Java Runtime Environment):
     → JVM + built-in Java libraries
     → Ex: Arraylist, Scanner etc.
-
 
 JVM (Java Virtual Machine):
     → Runs the .class file and executes the java program

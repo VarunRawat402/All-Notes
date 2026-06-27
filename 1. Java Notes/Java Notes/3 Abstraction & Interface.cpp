@@ -10,7 +10,7 @@ Abstraction:
     → Multiple inheritance not supported
     → Can override abstract + default methods
     → Cannot override static methods
-   
+    
 
 2: Interfaces (interface keyword) :
 

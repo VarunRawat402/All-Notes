@@ -4,22 +4,20 @@ Spring Boot Basics:
 
 Spring Framework:
     → A framework to build Java enterprise applications
-    → You dont create objects, Spring creates and manages them for you
-    → Handles: object creation, dependency injection, configuration
+    → You dont create beans manually, Spring automatically creates and manages them for you
     → Problem: configuring Spring itself was complex (XML, boilerplate)
 
 SpringBoot:
     → Built ON TOP of Spring Framework
     → Solves Springs configuration complexity
-    → Automatically configuration using dependencies in pom.xml
+    → Automatic configuration using dependencies in pom.xml
     → Embedded Tomcat/Jetty server included
     → Pre-defined dependencies like spring-boot-starter-web
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Inversion Of Control:
-    → Instead of YOU creating objects, Spring creates and manages them
-    → Scans classes, creates beans, manages lifecycle
+    → Instead of YOU creating beans manually, Spring automatically creates and manages them for you
     → All auto-created beans are stored inside the IoC Container.
     → Objects created manually using new are not stored in the IoC Container, so Spring cannot inject them.
 
@@ -74,7 +72,7 @@ public User getUser(@PathVariable Long id) {
 
 Why Main() is static:
     → When JVM starts, no objects exist yet
-    → JVM needs to call main to start the program
+    → JVM needs to call main method to start the program
     → To call a method without an object → it must be static
 
 If main() is not static:
@@ -91,28 +89,32 @@ Command line runner :
     → @Override the run() method
 
 Main():
-    → You cannot use autowired fields + access beans + repo, service, controller etc
-    → It is static and runs before spring creates beans, load configs, autowire dependency
+    → Runs BEFORE Spring creates beans, loads configs, autowires dependencies
+    → Cannot use @Autowired fields, beans, repos, services here
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-How to use Logger:
+Logging:
 
-Sl4j:
-    It is a wrapper API which is wrapped around logging framework
-    It is used to everyone can write logs using sl4j common even if implementation inside is different
+SLF4J:
+    → Just an API (wrapper)
+    → You write logs using SLF4J → actual logging done by framework underneath
+    → Benefit: switch logging framework without changing code
 
 Log4j:
-    It is a logging framework which implements logging and logs to actual file
+    → Actual logging framework → does the real work
 
-Option 1:
-    → private static final Logger logger = LoggerFactory.getLogger(Controller.class);
-    → logger.info("This is an info message");
-    → Controller is the class name.
+How to use:
 
-Option 2:
-    → Use @Slf4j on top of the class
-    → log.info("message");
+Option 1: Manual logger
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+    logger.info("This is an info message");
 
+Option 2: Lombok (cleaner)
+    @Slf4j  → on top of class
+    log.info("message");  → use directly
+
+Log levels (low → high):
+    TRACE → DEBUG → INFO → WARN → ERROR
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

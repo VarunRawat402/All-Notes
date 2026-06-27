@@ -13,7 +13,7 @@ Map:
 Types of Maps:
 
 1: HashMap<>();
-    → No ordering guarantees
+    → No ordering
     → Fastest
     → Allows 1 null key + multiple null values
     → Not thread-safe
@@ -68,7 +68,7 @@ ConcurrentHashMap:
 
 → No global lock 
 
-→ Reads (get)   ;
+→ Reads (get):
     → lock-free, very fast
     → hash → bucket → read volatile value
 

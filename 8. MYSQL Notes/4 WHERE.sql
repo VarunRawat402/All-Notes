@@ -1,87 +1,87 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
-WHERE in MYSQL:
-    Used to filter records and return only those rows that satisfy condition.
+WHERE:
+    → Filters rows based on a condition
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Basic Commands:
 
--- Fetch books with category Technology
+-- Fetch all books in the Technology category
 SELECT * FROM books WHERE category = 'Technology';
 
--- Fetch books where price is less than 30
+-- Fetch all books where price is less than 30
 SELECT * FROM books WHERE price < 30.00;
 
--- Fetch books where publication date is on or after 1st March 2023
+-- Fetch all books published on or after 1st March 2023
 SELECT * FROM books WHERE publication_date >= '2023-03-01';
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Logical Operators:
 
--- AND: both conditions must be true
+-- AND: Fetch Technology books that also cost less than 30
 SELECT * FROM books WHERE category = 'Technology' AND price < 30;
 
--- OR: any one condition must be true
+-- OR: Fetch books that are either Technology OR cost less than 30
 SELECT * FROM books WHERE category = 'Technology' OR price < 30;
 
--- Multiple logical operators together
--- First OR is evaluated, then AND (due to brackets)
+-- Brackets: Fetch Technology or Mystery books that cost less than 25
+-- OR inside brackets runs first, then AND
 SELECT * FROM books WHERE (category = 'Technology' OR category = 'Mystery') AND price < 25;
 
--- NOT: excludes matching records
+-- NOT: Fetch all books that are NOT in Technology category
 SELECT * FROM books WHERE NOT category = 'Technology';
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Finding NULL values:
-    NULL represents absence of value, not zero or empty string.
+    → NULL means value is absent, not zero or empty string
+    → Use IS NULL / IS NOT NULL (= NULL does not work)
 
--- Fetch rows where author is NULL
+-- Fetch books where author is missing
 SELECT * FROM books WHERE author IS NULL;
 
--- Fetch rows where author is NOT NULL
+-- Fetch books where author is present
 SELECT * FROM books WHERE author IS NOT NULL;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Pattern matching:
-    'Like' is used to match the pattern in the text
-    '%' means multiple words
-    '_' means single word
+    % → matches any number of characters
+    _ → matches exactly one character
 
--- Title contains 'sql' anywhere
+-- Fetch books where title contains 'sql' anywhere
 SELECT * FROM books WHERE title LIKE '%sql%';
 
--- Title starts with 'sql'
+-- Fetch books where title starts with 'sql'
 SELECT * FROM books WHERE title LIKE 'sql%';
 
--- Title ends with 'sql'
+-- Fetch books where title ends with 'sql'
 SELECT * FROM books WHERE title LIKE '%sql';
 
--- Case-sensitive search using BINARY
+-- Case-sensitive: fetch books where title contains exactly 'SQL' (uppercase)
 SELECT * FROM books WHERE title LIKE BINARY '%SQL%';
 
--- Author name: 1 character + 'ohn' + anything
+-- Fetch authors where name is like 'John', 'Bohn' (1 char + ohn + anything)
 SELECT * FROM books WHERE author LIKE '_ohn%';
 
--- Author name exactly 4 characters long
+-- Fetch authors where name is exactly 4 characters long
 SELECT * FROM books WHERE author LIKE '____';
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 BETWEEN:
+    → Fetches rows where value falls within a range (inclusive on both ends)
 
--- Fetch books priced between 20 and 30
+-- Fetch books where price is between 20 and 30 (including 20 and 30)
 SELECT * FROM books WHERE price BETWEEN 20 AND 30;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 SUBQUERIES
-    A subquery is a query written inside parentheses.
-    Subquery executes first, then the outer query.
+    → A query inside another query, inner query runs first
 
--- Fetch books priced above average price
-SELECT * FROM books 
+-- Fetch all books that cost more than the average price of all books
+SELECT * FROM books
 WHERE price > (SELECT AVG(price) FROM books);
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------

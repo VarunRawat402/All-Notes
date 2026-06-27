@@ -1,80 +1,67 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-Thread Pool:
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-→ Group of pre-created reusable threads
-→ Tasks are submitted to threadPool
-
------------------------------------------------------------------------------------------------------------------------------------------------------
 Executor Framework:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Executor: 
-    → Base interface
-    → Has execute(Runnable)
-
-ExecutorService: 
-    → Main interface used in real apps
-    → Submit tasks, manage lifecycle
-    → Methods: submit(), shutdown(), awaitTermination()
-
-ScheduledExecutorService: 
-    → Run tasks with delay or periodically.
-
-Executors: 
-    → Used to create thread pools
-    → Utility class
+Executor                  → base interface + execute() method
+ExecutorService           → Run tasks + submit(), shutdown(), awaitTermination() methods
+ScheduledExecutorService  → Run tasks with delay or periodically
+Executors                 → utility Class to create thread pools
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Common Thread Pools:
 
-ExecutorService threadPool = Executors.newFixedThreadPool(3);                                //fixed-size thread pool.
-ExecutorService threadPool = Executors.newCachedThreadPool();                               //Threads will get created dynamically based on number of tasks
-ExecutorService threadPool = Executors.newSingleThreadExecutor();                           //Single worker thread.
-ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);               //fixed-size thread pool for schedule tasks
+ExecutorService threadPool = Executors.newFixedThreadPool(3);                                 //fixed 3 threads, tasks queue if all busy
+ExecutorService threadPool = Executors.newCachedThreadPool();                                 //creates threads dynamically as needed, reuses idle
+ExecutorService threadPool = Executors.newSingleThreadExecutor();                             //single thread, tasks execute one by one
+ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);                    //fixed threads for scheduled/periodic tasks
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+ExecutorService Methods:
 
 1: shutdown():
-    → No new tasks are accepted after shutdown()
-    → Existing tasks will get completed normally
+    → Stop accepting new tasks
+    → Already submitted tasks finish normally
 
 2: shutdownNow():
-    → Stops all running tasks
-    → Interrupts threads
+    → Stop accepting new tasks
+    → Interrupts all running tasks immediately
+    → Returns list of tasks that never started
 
 3: isShutdown():
-    → true if shutdown started, false if not
+    → true  → shutdown started 
+    → false → still running
 
 4: awaitTermimation():
-    → When all tasks are finished and shutdown is done then we reach terminated state
-    → It is used to do some tasks after all the threads completed and shutdown is done
-
------------------------------------------------------------------------------------------------------------------------------------------------------
+    → Blocks until all tasks finish + shutdown completes
+    → Use to do cleanup AFTER all threads are done
 
 5: submit() :
-    → Used to run task in threadPool
-    → returns Future object
+    → Submits task to thread pool
+    → Returns Future object
 
 6: future.get():
-    → It is used to get the result from the future object
-    → Blocking operation, blocks the current thread
-    → Gets result or exception
+    → Used to get the result from the future object
+    → waits until task finishes → returns result
+    → Throws exception if task failed
+    → Future<Integer> future = pool.submit(() -> 10 + 20);
+    → Integer result = future.get(); // blocks until done → 30
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 RUNNABLE:
     → Functional interface
-    → No return value
+    → No return value 
+    → Used when result is not needed
     → Cannot throw checked exception
     → Runnable r = () -> System.out.println("Running");
 
 CALLABLE:
     → Functional & Generic interface
-    → Returns value
-    → Can throw checked exception
+    → Returns value → Callable<Integer>
     → Used when result is needed
+    → Can throw checked exception
     → Callable<Integer> c = () -> 5 * 5;
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -120,25 +107,22 @@ pool.invokeAll(tasks,2,TimeUnit.SECONDS);                               //Run al
 
 ScheduledExecutorService:
     → Used for scheduled tasks
-    → Shedule a task or run at fixed intervals
+    → Run tasks once after delay OR repeatedly at intervals
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-schedule(): 
-    → Run the task once after given time
+1: schedule(): 
+    → Run task ONCE after given delay
 
 Code:
-threadPool.schedule(() -> {
-    System.out.println("Task runs after 3 seconds");
-}, 3, TimeUnit.SECONDS);
+    threadPool.schedule(() -> System.out.println("runs after 3s"), 3, TimeUnit.SECONDS);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-scheduleAtFixedRate():
-    → Run a task at a fixed interval
-    → First run is after 1 sec and next runs will be every 2 sec
-    → Does not wait for previous tasks to finish
-    → New tasks will run after 2 sec, tasks can overlap
+2: scheduleAtFixedRate():
+    → Run task repeatedly at fixed interval
+    → Starts next run based on START time of previous task
+    → Tasks can OVERLAP if previous task takes longer than interval
 
     → InOrder to shutdown with FixedRate() we need to schedule the shutdown() too
     → otherwise the shutdown will be instant
@@ -146,25 +130,23 @@ scheduleAtFixedRate():
 Code:
 ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(1);
 
-threadPool.scheduleAtFixedRate(()->{
-    System.out.println("This will run every second");
-},1,2,TimeUnit.SECONDS);
+// first run after 1s → then every 2s from start time
+threadPool.scheduleAtFixedRate(()->{System.out.println("This will run every second");} , 1, 2 , TimeUnit.SECONDS);
 
-threadPool.schedule(()->{
-    pool.shutdown();
-},8,TimeUnit.SECONDS);
+//To stop → must schedule shutdown() separately
+threadPool.schedule(() -> threadPool.shutdown(), 8, TimeUnit.SECONDS);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-scheduleWithFixedDelay():
-    → Runs a task with fixed interval
-    → Wait for previous tasks to finish
-    → If previous task took 10 sec then it will run after 10 + 2 sec
+3: scheduleWithFixedDelay():
+    → Run task repeatedly but waits for previous task to FINISH
+    → Delay starts AFTER previous task completes → no overlap
 
 Code:
-threadPool.scheduleWithFixedDelay(() -> {
-    System.out.println("Fixed Delay: " + System.currentTimeMillis());
-}, 1, 2, TimeUnit.SECONDS); // Initial delay 1s, then wait 2s *after each run*
+
+// first run after 1s → waits for finish → then waits 2s → runs again
+// if task takes 10s → next run after 10 + 2 = 12s
+threadPool.scheduleWithFixedDelay(task, 1, 2, TimeUnit.SECONDS);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

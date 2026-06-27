@@ -30,8 +30,8 @@ JWT Structure:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Spring Security Filter Chain:
-→ addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class) 
+JWT filter:
+    → addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class) 
     → place your JWT filter before default authentication.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -42,7 +42,8 @@ Filter Methods:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-JWT Validation in doFilter():
+JWT Validation:
+
 1. Get the "Authorization" header from the request.
 2. Extract the token from the header.
 3. Extract the username from the token.
@@ -52,18 +53,5 @@ JWT Validation in doFilter():
     → Set user details and roles, marks user as authenticated.
     → Add the user as a verified user in the Spring Security context.
     → Pass the request and response to the next filter using chain.doFilter().
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-JWT and Refresh Token Flow:
-
-Client sends username + password
-Server validates and generates jwt + refresh token
-Jwt token is return to the client
-refresh token is stored in httpOnly cookie in the browser 
-that cookie is automatically sent with request
-You can also set the path of the cookie : path : /auth, means it will get sent on paths starting with auth/
-Server extracts the refresh token from the cookie + validates it and generate new access token and returns it
-Client sends same request again with new access token
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

@@ -3,82 +3,79 @@ Advanced Rest API Features:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Spring Boot Actuator:
+    → Provides production-ready endpoints to monitor and manage your app
+    → Use cases: health checks, metrics, logs, thread dumps, DB status
 
-Actuator provides production-ready features to monitor and manage applications.
-    → Health monitoring (DB up or down)
-    → Metrics collection (memory, CPU, HTTP requests, GC)
-    → Check logs and thread dumps (Debugging)
-    → Integrate with monitoring tools (Prometheus, Grafana, ELK, etc.)
-
-1: Add the Dependency:
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-actuator</artifactId>
-</dependency>
-
-2: Expose the points:
-    Application.properties:
-    management.endpoints.web.exposure.include=*
+Setup:
+    1. Add dependency: spring-boot-starter-actuator
+    2. management.endpoints.web.exposure.include=*   // expose all endpoints
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Common Actuator endpoints:
-
-/actuator/health    : Shows application health (up, down, details)
-/actuator/info	    : Displays arbitrary info properties (from application.properties)
-/actuator/env	    : Exposes environment properties
-/actuator/metrics	: Lists available metrics (like jvm.memory.used, http.server.requests)
-/actuator/beans	    : Displays all Spring Beans
+Common Endpoints:
+    /actuator/health    → app health status (UP/DOWN, DB status)
+    /actuator/info      → app info (from application.properties)
+    /actuator/env       → environment properties
+    /actuator/metrics   → JVM memory, CPU, HTTP requests, GC stats
+    /actuator/beans     → all Spring beans loaded
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-How do you expose actuator endpoints securely:
+Secure Actuator Endpoints (Production):
+
+→ Expose only what you need:
     management.endpoints.web.exposure.include=health,metrics
     management.endpoint.health.show-details=when_authorized
-    .authorizeHttpRequests()
+
+→ Restrict access to ADMIN only:
     .requestMatchers("/actuator/**").hasRole("ADMIN")
+
+⚠️ Never expose all endpoints (*) in production
+   → /actuator/env exposes secrets, /actuator/beans exposes internals
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: SCHEDULER:
+    → Runs code automatically at fixed intervals or specific times
+    → Enable with @EnableScheduling annotation on main class
+    → @EnableScheduling must be on main class, else @Scheduled won't work
 
-What is a Scheduler?
-    → A scheduler allows you to run code automatically at fixed intervals or specific time.
+Cron Expression (6 fields):
 
-Cron Expression:
-    → A cron expression defines the exact time a scheduled job should run.
-
-Spring uses 6 fields:
-    → second, minute, hour, day-of-month, month, day-of-week
-    → Example: 0 15 10 * * ? → Runs at 10:15 AM every day.
-
-Enable Scheduling in Spring:
-
-@EnableScheduling
-@SpringBootApplication
-public class MyApp {}
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-Examples:
-
-Fixed Rate (every 5 seconds)
-
-@Scheduled(fixedRate = 5000)
-public void runTask() {
-    System.out.println("Runs every 5 seconds");
-}
-
-Every day at 10:15 AM
-@Scheduled(cron = "0 15 10 * * ?")
-public void dailyTask() {
-    System.out.println("Runs at 10:15 AM every day");
-}
-
-Every Sun at 9 AM:
-@Scheduled(cron = "0 0 9 * * SUN")
-public void dailyTask() {
-    System.out.println("Runs at 9:00 AM every SUN");
-}
+second  minute  hour  day-of-month  month  day-of-week
+    0      15     10       *           *        ?
+→ Runs at 10:15 AM every day
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
+Every day at 10:15 AM:
+    @Scheduled(cron = "0 15 10 * * ?")
+    public void dailyTask() { }
+
+Every Sunday at 9 AM:
+    @Scheduled(cron = "0 0 9 * * SUN")
+    public void weeklyTask() { }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+fixedRate:
+    → use when: task must run on strict schedule regardless of execution time
+    runs at: 0s, 5s, 10s, 15s → doesnt care how long method took
+    ex: fetch live stock prices every 5s
+
+Ex:
+    @Scheduled(fixedRate = 5000)
+    public void task() { }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+fixedDelay:
+    → use when: next run should wait for current to finish
+    → ex: DB cleanup → dont start new cleanup before old one finishes
+    → runs at: 0s, 8s, 16s → waits 5s AFTER method finishes
+
+Ex:
+    @Scheduled(fixedDelay = 5000)
+    public void task() { }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------

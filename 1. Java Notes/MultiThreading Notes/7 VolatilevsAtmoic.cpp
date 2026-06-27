@@ -5,31 +5,29 @@ Volatile vs Atomic :
 Thread visibility Problem:
 
 → In Java, each thread caches variable's values in its own working memory.
-
 → A thread read a variable's value from main memory and cached it 
-→ Another thread updates the variable in main memory
-→ First thread still reading the old value from its own memory which may lead to incorrect behaviour
-→ This is called visibility problem
+→ Thread A updates variable in main memory
+→ Thread B still reads old cached value → incorrect behaviour
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Volatile:
 
-→ It ensures threads always reads latest value from main memory 
+→ Forces thread to always read/write directly from main memory
+→ Solves VISIBILITY problem only
+→ Does NOT solve atomicity → i++ still not thread safe
+→ Use for simple flags
 
-→ volatile solves visibility, not atomicity.
-→ It does not make operations like i++, i+=1 thread-safe
-→ Used for boolean flags
-
-Example: 
-    volatile boolean running = true;
+volatile boolean running = true;
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Atomic:
 
-→ It allows thread-safe operations without lock / synchronization
-→ Internally use CAS (Compare-And-Swap)
+→ Thread safe operations WITHOUT locks
+→ Internally uses CAS (Compare-And-Swap)
+    → reads value → compares with expected → updates only if matches
+    → if someone else changed it → retry
 
 Common Atomic Classes:
 
@@ -38,13 +36,10 @@ Common Atomic Classes:
 3: AtomicBoolean
 4: AtomicReference
 
-Safe atomic operations
-    → incrementAndGet()     →    +1 and return integer
-    → addAndGet(5)          →     +5 and return integer
-
 Example:
 
 AtomicInteger count = new AtomicInteger(0);
-count.incrementAndGet();  // Thread-safe
+count.incrementAndGet();            // +1 and return integer
+count.addAndGet(5);                 // +5 and return integer
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

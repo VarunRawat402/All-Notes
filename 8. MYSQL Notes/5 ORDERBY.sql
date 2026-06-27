@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 ORDER BY:
-    Sort the result
+    → Sorts the result
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Section 1: Database and Table Setup
@@ -25,41 +25,39 @@ INSERT INTO products VALUES
 
 Section 2: Basic Sorting Operations:
 
--- ASC is default
+-- Sort by ASC price
 SELECT * FROM products ORDER BY price ASC;
+
+-- Sort by DESC price
 SELECT * FROM products ORDER BY price DESC;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Section 3: Advanced Sorting Techniques:
 
--- Multiple column sorting
 -- First sort by category, if same then sort by price
-SELECT * FROM products 
-ORDER BY category DESC, price DESC;
+SELECT * FROM products ORDER BY category DESC, price DESC;
 
--- Sort using column position (price is 4th column)
+-- Sort by column position (4 = price column)
 SELECT * FROM products ORDER BY 4;
 
--- Using WHERE with ORDER BY
-SELECT * FROM products WHERE category = 'Electronics' 
-ORDER BY price;
+-- Fetch only Electronics products sorted by price
+SELECT * FROM products WHERE category = 'Electronics' ORDER BY price;
 
--- Case-sensitive sorting
+-- Case-sensitive sorting (lowercase comes after uppercase)
 SELECT * FROM products ORDER BY BINARY category;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Section 4: Function-Based Sorting:
 
--- Sort by length of product name
+-- Sort by length of their name (shortest first)
 SELECT * FROM products ORDER BY LENGTH(product_name);
 
--- Sort by day extracted from timestamp
+-- Sort by the day of the month they were last updated
 SELECT * FROM products ORDER BY DAY(last_updated);
 
--- Product with highest stock quantity
-SELECT * FROM products 
-ORDER BY stock_quantity DESC LIMIT 1;
+-- Fetch the single product with the highest stock quantity
+SELECT * FROM products ORDER BY stock_quantity DESC LIMIT 1;
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------

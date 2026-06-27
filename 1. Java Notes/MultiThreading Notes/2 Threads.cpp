@@ -3,75 +3,64 @@ Multithreading Notes:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Thread Class:
-    → Class + No Multiple Inheritance + Each thread requires a new object
-    → 5 threads = 5 student object
+    → Extend Thread + no multiple inheritance
+    → Each thread needs its own object → 5 threads = 5 objects
+    → Needs to Override run() method 
 
 Runnable Interface:
-    → Interface + Can extend another class + Multiple threads can share one object
+    → Implement Runnable + multiple inheritance allowed
+    → 1 object = multiple threads
+    → Needs to Override run() method 
 
-If runnable is so good then why Thread class is there?
-    → Thread class creates threads, provide start(), join() methods
-    → Runnable does not create threads it uses thread class to perform tasks
-    → Runnable Execution → Thread creates → Thread run() → calls runnable run()
+Why Thread class exists:
+    → Thread class creates + manages threads (start(), join() etc)
+    → Runnable just defines the TASK, not the thread
+    → Runnable execution → Thread created → Thread.run() → calls Runnable.run()
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-How to create a new Thread:
------------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: Using Thread Class:
-    → Override run()
+1. Thread Class:
 
-public class Student extends Thread{
-    @Override
-    public void run(){
-        System.out.println("Hello world");
-    }
+public class Student extends Thread {
+    public void run() { System.out.println("Hello"); }
 }
 Student s1 = new Student();
 s1.start();
 
------------------------------------------------------------------------------------------------------------------------------------------------------
 
-2: Using Runnable Interface:
-    → Override run()
+2. Runnable Interface:
 
-public class Student implements Runnable{
-    @Override
-    public void run(){
-        System.out.println("Hello world");
-    }
+public class Student implements Runnable {
+    public void run() { System.out.println("Hello"); }
 }
-Student student = new Student();
-Thread t1 = new Thread(student);
+Thread t1 = new Thread(new Student());
 t1.start();
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Join():
-    → Makes other threads wait untill join thread finish
-    → Throws InterruptedException ( Must handle or declare it )
-
-Code:
-Thread t1 = new Thread(()->{System.out.println("Hello world");});
-t1.start();
-t1.join();
+    → Makes other threads wait untill join thread finishes
+    → Throws InterruptedException → must handle
+    → t1.start();
+    → t1.join(); // main thread waits for t1 to finish
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Daemon Thread:
-    → Background thread, runs in background
+    → Background thread (ex: GC, logs)
     → If all normal threads finish, JVM will exit even if daemon threads are still running.
+    → Must set BEFORE start()
     → setDaemon(true) → to make a thread daemon thread
 
 Code:
-Thread t1 = new Thread(()->{System.out.println("Hello world");});
-t1.setDaemon(true);
+    t1.setDaemon(true);
+    t1.start();
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Multiple Ways of Creating a Thread:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: Custom Class:
+1. Custom Class (implements Runnable):
 
 Admin admin = new Admin();
 Thread t1 = new Thread(admin);

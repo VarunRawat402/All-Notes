@@ -4,65 +4,49 @@ Lock
 
 Intrinsic Locks:
     → Every Java object has an intrinsic lock
-    → synchronized keyword acquire this lock and automatically released when the method exits
-    → Simple and safe, but less flexible.
+    → synchronized acquires this lock + automatically release when the method exits
 
 Explicit Locks:
-    → You manually control locking and unlocking
-    → More flexible: tryLock(), timeout, interruptible lock, fairness policies.
-    → Lock lock = new ReentrantLock();
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-lock.lock() : 
-    → Acquires the lock object
-    → Code between lock and unlock is blocked section
-    → Must always unlock in finally block
+    → You manually lock + unlock
+    → More flexible → tryLock, timeout, interrupt, fairness
+    → ALWAYS unlock in finally block → or lock never released
 
 Code:
-public class Counter {
-
     private final Lock lock = new ReentrantLock();
-
-    public void getHello(){
-        lock.lock();
-        try {System.out.println("Hello world");}
-        finally {lock.unlock();}
+    lock.lock();
+    try { 
+        // critical section 
     }
-} 
+    finally { lock.unlock(); }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 ReentrantLock():
-    → Same thread can lock the same lock multiple times without unlocking
-    → Prevents self-deadlock
-    → Relocking happens only on same threads
+    → Same thread can lock same lock multiple times without unlocking itself
+    → Prevents self-deadlock when method calls another method with same lock
+    → Must unlock same number of times as locked
 
 //Thread first locks in method1(), then locks the same lock again in method2()
 //then unlocked the lock 2 times in finally blocks
-//It only happens in same thread if thread 2 lock the method2() we cannot prevent that
+
 Code:
 public class ReentrantExample {
 
     private final ReentrantLock lock = new ReentrantLock();
 
     public void method1() {
+
         lock.lock();
         try {
-            System.out.println("method1()");
             method2();
-        } finally {
-            lock.unlock();
-        }
+        } finally { lock.unlock(); }
     }
 
     public void method2() {
         lock.lock();
         try {
             System.out.println("method2()");
-        } finally {
-            lock.unlock();
-        }
+        } finally { lock.unlock(); }
     }
 }
 
@@ -71,14 +55,11 @@ public class ReentrantExample {
 tryLock() : 
     → If lock is free → acquires lock → returns true
     → If not → returns false
-    → It does not block or wait
     → Used with if()
 
-tryLock(2, TimeUnit.SECONDS) :
-    → If lock is free → acquires lock → returns true
-    → If not → it waits up to the given time
-    → If the lock is still not available → returns false
-    → This method can throw InterruptedException
+Example:
+    if (lock.tryLock()) { ... }                        // instant try
+    if (lock.tryLock(2, TimeUnit.SECONDS)) { ... }     // wait max 2 seconds
 
 Example:
 public class TryLockExample {
@@ -102,42 +83,21 @@ public class TryLockExample {
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-InterruptedException:
-    → Thrown when a blocking operation is interrupted
-
-Common methods that throw it:
-    Thread.sleep()
-    wait()
-    join()
-    BlockingQueue.take()
-    lock.lockInterruptibly()
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Thread scheduling is non-deterministic
-
-→ When you call .start(), the thread goes to the OS queue
-→ Then scheduler decides which thread to run first
-→ So even though Thread-1 was created first, the CPU might run Thread-2 earlier or for longer.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Fair Lock:
     → Threads acquire the lock in the order they requested it
+    → No thread is starved.
 
-Unfair Lock (default):
-    → Some threads skip the queue and acquire the lock before requested threads.
-
-→ Fair lock ensures predictable behavior — no thread is starved.
-→ Unfair lock gives better performance, but some threads might get starved if others keep jumping ahead.
+Unfair Lock:
+    → Threads can skip other waiting threads and acquire the lock
+    → Better performance, but some threads might get starved if others keep jumping ahead.
 
 → Lock lock = new ReentrantLock(true);    // fair lock
-→ Lock lock = new ReentrantLock();        // unfair lock
+→ Lock lock = new ReentrantLock();        // unfair  + Default
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Read & Write Locks:
-    → Used when Data is read frequently, but modified rarely.
+    → Use when reads are frequent, writes are rare
 
 Read Lock:
     → Multiple threads can lock the read lock simultaneously.
@@ -145,10 +105,24 @@ Read Lock:
 
 Write Lock:
     → Only one thread can hold the lock at a time.
-    → No read or write locks can be acquired when the write lock is active.
+    → No read + write locks can be acquired when the write lock is active.
 
 → ReadWriteLock rwLock = new ReentrantReadWriteLock();
 → Lock readLock = rwLock.readLock();
 → Lock writeLock = rwLock.writeLock();
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+InterruptedException:
+    → Thrown when thread is interrupted during a blocking operation
+    → Common in: sleep(), wait(), join(), tryLock(timeout), take()
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Thread scheduling is non-deterministic:
+
+→ When you call .start(), the thread goes to the OS queue
+→ Then scheduler decides which thread to run first
+→ So even though Thread-1 was created first, the CPU might run Thread-2 earlier or for longer.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------

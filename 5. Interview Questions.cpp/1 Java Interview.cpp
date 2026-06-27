@@ -7,12 +7,13 @@ Finalize vs Try with resource:
 
 Finalize:
     → Method() in Object class
-    → When object has no reference, GC call finalize() automatically
+    → Called by GC when object have no reference
     → GC can call it after some time, or may never call it you dont know and resource will never gets closed.
 
 Try with resource:
-    → Use close() method in AutoCloseable interface
-    → close() is automatically called after try block executes
+    → Automatically close resource after try block ends
+    → Class must implement AutoCloseable + override close()
+    → Guaranteed to run
     → Works even if exception occurs
 
 Example:
@@ -23,232 +24,216 @@ try (Resource res = new Resource()) {
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Why Do We Make a Constructor private:
-    → A private constructor is used to restrict object creation from outside the class.
+    → Prevents anyone from creating object directly
+    → You control HOW the object is created
 
 1. Singleton Pattern
-   └─ Only one instance of the class exists
+    → Only ONE instance should exist in entire app
+    → Private constructor → no one can create new instance
 
 2. Utility Classes
-   └─ Class has only static methods, no object needed
+    → Class has only static methods, no need to create object
 
 3. Factory Methods
-   └─ Force usage of static method for object creation
+    → Control object creation through a factory method
+    → Add logic before creating object
 
 4. Prevent Inheritance
-   └─ Subclasses cannot call super(), class cannot be extended
+    → Subclasses cannot call super(), class cannot be extended
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Serialization vs Deserialization in Java:
 
-Serialization   : Java object → byte stream 
-Deserialization : byte stream → Java object
+Serialization:
+    → Converting Java object → byte stream
+    → Save to file, send over network, store in DB
+    → Serializable is a marker interface (no methods).
+    → It is used to tell JVM this class is allowed to serialize
 
-→ Serializable is a marker interface (no methods).
-→ It is used to tell JVM this class is allowed to serialize
-→ Uses : Store object in file / sent over network / cached
+Deserialization:
+    → Converting byte stream → back to Java object
+    → Reconstruct object from saved/received data
 
 Serial Version UID:
 → It is a unique Id of the class which is used during deserialization to verify compatibility.
 → If you dont define one, JVM will create one automatically
-→ If you change something in class, JVM version Id will also change
+→ If you change something in class, Serial ID will also change and throws InvalidClassException
 
 Note:
     → Static and Transient variables are not serialized
     → If Parent class is not serializable, Child class can still be serializable
 
+Real world use:
+→ REST APIs     → Java object → JSON (Jackson does this automatically)
+→ Caching       → store object in Redis
+→ Messaging     → send object over Kafka/RabbitMQ
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Race Conditions:
-    → When multiple threads try to modify the same data concurrently → data corruption
+    → When multiple threads modify same data simultaneously → data corruption
 
-Example: Wallet Balance Update
-→ 2 threads read balance = 100
-→ Thread A deducts 60 → new balance 40
-→ Thread B deducts 70 → new balance 30
-→ Final value depends on which thread writes last
+Example (Wallet):
+→ Thread A reads balance = 100 → deducts 60 → writes 40
+→ Thread B reads balance = 100 → deducts 70 → writes 30
+→ One deduction is lost → data corrupted
+→ Result depends on which thread writes last (unpredictable)
 
-1. Pessimistic Locking:
-    → SELECT * FROM wallet WHERE user_id = ? FOR UPDATE;
+Fixes:
 
-2: Atomic operations:
+1. Pessimistic Locking (DB level):
+    → SELECT * FROM wallet WHERE user_id = ? FOR UPDATE
+    → locks row until transaction completes, no other thread can touch it
+
+2. Atomic Operations (Java level):
     → AtomicInteger count = new AtomicInteger();
     → count.incrementAndGet();
+    → thread safe operations without synchronization
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-What is Thread starvation?
-    → When a thread is continuously ignored and other threads keep executing over it
+Thread Starvation:
+    → A thread keeps getting ignored while other threads keep running
+    → Thread never gets CPU time → task never executes
 
-Common causes:
+Common Causes:
+    → Unfair locks → same threads keep getting lock
+    → High priority threads always preferred → low priority starves
+    → Long synchronized blocks → other threads waiting forever
+    → Thread pool too small → tasks pile up, some never execute
 
-1: Unfair Locks
-2: High priority Thread keeps running, low priority threads starving
-3: Long synchronized blocks making other threads starve
-4: Small thread pool size
+Fix:
+    → Fair locks → ReentrantLock(true) → threads get lock in order
+    → Avoid long synchronized blocks
+    → Increase thread pool size
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Difference between PUT and PATCH with a real API example:
 
 1. PUT:
-    → Updates the entire entity with the provided data
-    → If feilds are missing, they are considered null or defaulted
+    → Replaces ENTIRE object with what you send
+    → Missing fields → set to null/default
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2. PATCH:
-    → Updates only the speicified feilds which are provided
-    → If feilds are missing, they are left unchanged
+    → Updates ONLY the fields you send
+    → Missing fields → stay unchanged
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transactions:
-    → In Transaction either all methods are commited or no one gets commited
+    → All operations commit together or none commit
+    → Only rolls back DB operations, not in-memory changes
     → @Transactional does not work on static + private methods
-    → Only roll back database operations not memory operations
-    → Needs to call the method from another service
+    → Must be called from ANOTHER class (Spring proxy limitation)
 
-How @Transactional works internally:
+Internal Working:
 
-→ Spring creates a proxy
-→ Method is called through proxy
-→ Opens 1 DB connection
+→ Spring creates a PROXY around your class
+→ Method called through proxy → opens DB connection
 → Disables auto-commit
 → Executes method
-→ If success → COMMIT
-→ If exception → ROLLBACK
+→ Success   → COMMIT ✅
+→ Exception → ROLLBACK ❌
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transaction rollback rules:
-    → Transaction roll backs automatically for RuntimeException
+    → Transaction roll backs automatically → RuntimeException
     → Transaction does not roll back if exception is catched
     → Rollbackfor is used to roll back the transaction for specific checked exceptions
-
-@Transactional(rollbackFor = Exception.class)
-public void process() throws Exception {
-    throw new Exception();
-}
+    → @Transactional(rollbackFor = Exception.class)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transaction Propagation:
-    → Propagation defines how Transactional method behaves when called inside another transaction.
+    → Defines what happens when @Transactional method is called inside another transaction
 
 1: REQUIRED (default):
-    → Join existing txn
+    → Join existing transaction if one exists
+    → If no transaction → create new one
+    → Both methods share same transaction → one fails = both rollback
 
 2: REQUIRES_NEW:
-    → Always start NEW transaction.
-    → Pause T1 → Creates T2 → resumes T1
+    → Always creates a brand new transaction
+    → Pauses outer transaction (T1) → runs its own (T2) → resumes T1
+    → T2 commits/rollbacks independently of T1
 
-3. MANDATORY
-    → Fails, if no transaction exists
+3: MANDATORY:
+    → Must have existing transaction → if not → exception
 
 4: SUPPORTS:
-    → Runs if transaction exists
-    → If not runs without transaction
-
+    → Runs WITH transaction if one exists
+    → Runs WITHOUT transaction if none exists
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Transaction Isolation:
-    → How one transaction is protected from changes made by other running transactions.
+    → Protects a transaction from changes made by other concurrent transactions
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-Isolation Protects From 3 Problems:
+3 Problems Isolation Solves:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Dirty Read:
     → Reading data that is not yet commited by another transaction            
-
-Example:
-    → Initial balance → 1000
-    → T1    → update balance = 5000   (not committed yet)
-    → T2    → reads: balance = 5000   ← sees uncommitted value
-    → Then T1 rolls back.                     
-    → Real balance = 1000
-    → But T2 used 5000 → wrong.   
+    → Reading UNCOMMITTED data from another transaction
+    → T1 updates balance 1000 → 5000 (not committed)
+    → T2 reads 5000 → T1 rolls back → T2 used 5000 instead of 1000
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Non-Repeatable Read:
-    → Same query gives different result inside same transaction.
-
-Example:
-    → T1    → read balance   → 1000
-    → T2    → update balance → 2000     → commit
-    → T1    → again reads    → balance  → 2000
+    → Same query gives DIFFERENT result within same transaction
+    → T1 reads balance = 1000
+    → T2 updates balance = 2000 → commits
+    → T1 reads again → gets 2000 → inconsistent data
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: Phantom Read:
-    → New rows appear during same transaction.
-
-Example:
-    → T1    → select count(*) where status='ACTIVE' → 10
-    → T2    → insert new ACTIVE row     → commit
-    → T1    → again                     → count → 11
+    → New ROWS appear during same transaction
+    → T1 counts ACTIVE users = 10
+    → T2 inserts new ACTIVE user → commits
+    → T1 counts again → gets 11 → unexpected 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Isolation Levels:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1: READ_UNCOMMITTED:
-    → Lowest Safety
-    → Can read uncommitted changes
-    
-Allows:
-    → dirty read ❌
-    → non-repeatable read ❌
-    → phantom read ❌
+    → can read uncommitted data
+    → Dirty read ❌ | Non-repeatable ❌ | Phantom ❌
+    → Almost never used in production
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: READ_COMMITTED
-    → Most Common Default
-    → Only committed data visible
-    → Prevents: dirty read ✅ blocked
-
-Allows:
-    → non-repeatable read ❌
-    → phantom read ❌
+    → Only reads committed data
+    → Dirty read ✅ | Non-repeatable ❌ | Phantom ❌
+    → Default in PostgreSQL, Oracle
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 3: REPEATABLE_READ
-    → Rows read once cannot change during txn
-
-Prevents:
-    → dirty read ✅
-    → non-repeatable read ✅
-
-Allows:
-    → phantom read ❌ (depending on DB engine)
-
-Example:
-    → T1 reads balance = 1000
-    → T2 tries to update same row → blocked until T1 finishes
-    → T1 reads again → still 1000
+    → Rows read once → locked → can't be changed by others until txn ends
+    → Dirty read ✅ | Non-repeatable ✅ | Phantom ❌
+    → Default in MySQL
+    → T1 reads balance → T2 tries to update → blocked until T1 finishes
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 4: SERIALIZABLE:
-    → Highest Safety
-    → Transactions behave like they run one by one
-
-Prevents:
-    → dirty read ✅
-    → non-repeatable read ✅
-    → phantom read ✅
-
-Example:
-    → If T1 running:
-    → T2 must wait      → even for inserts affecting query range.
+    → Highest safety → transactions run as if one by one
+    → Dirty read ✅ | Non-repeatable ✅ | Phantom ✅
+    → Slowest → use only when data accuracy is critical
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Example:
+
 @Transactional(
   propagation = Propagation.REQUIRED,
   isolation = Isolation.READ_COMMITTED,

@@ -3,6 +3,7 @@ Jwt Implementation using JJWT:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 JWTS (jjwt library):
+
     → External library, more manual control.
     → Jwts.builder() → "Create JWT"
     → Jwts.parser() → "Read & validate JWT"
@@ -30,37 +31,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public boolean saveNewUser(User user) {
-        try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(Arrays.asList("USER"));
-            userRepository.save(user);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-}
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-UserServiceImplementation:
-
-public class UserDetailsServiceImpl implements UserDetailsService {
-
-    private finalUserRepository userRepository;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getUsername())
-                    .password(user.getPassword())
-                    .roles(user.getRoles().toArray(new String[0]))
-                    .build();
-        }
-        throw new UsernameNotFoundException("User not found with username: " + username);
+    public void saveNewUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("USER"));
+        userRepository.save(user);
     }
 }
 
@@ -173,11 +147,11 @@ public class SpringSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/public/**").permitAll() // Open access to public endpoints
-                        .requestMatchers("/user/**").hasRole("USER") // Requires authentication
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Only allows users with 'ADMIN' role
+                        .requestMatchers("/public/**").permitAll()          // Open access to public endpoints
+                        .requestMatchers("/user/**").hasRole("USER")        // Requires authentication
+                        .requestMatchers("/admin/**").hasRole("ADMIN")      // Only allows users with 'ADMIN' role
                 )
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
+                .csrf(AbstractHttpConfigurer::disable)                      // Disable CSRF protection
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Add your custom JWT filter before the default UsernamePasswordAuthenticationFilter
                 .build();
     }

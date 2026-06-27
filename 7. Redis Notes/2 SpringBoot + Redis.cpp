@@ -3,8 +3,9 @@ SpringBoot + Redis
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 1. @Cacheable:
-    → Cache hit  → method NOT executed
-    → Cache miss → method executed → result cached
+    → Used for read operations
+    → Cache hit  → Method not executed
+    → Cache miss → Method executes and result is cached
 
 @Cacheable(value = "users", key = "#id")
 public User getUser(Long id) {
@@ -14,8 +15,9 @@ public User getUser(Long id) {
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2. @CachePut:
-    → Used for Update/write operations
-    → Method always executes  →  Cache always updated
+    → Used for update operations
+    → Method always executes
+    → Cache is updated with the latest result
 
 @CachePut(value = "users", key = "#user.id")
 public User updateUser(User user) {
@@ -26,7 +28,7 @@ public User updateUser(User user) {
 
 3. @CacheEvict:
     → Removes data from cache
-    → Used when deleting data or when cache becomes stale
+    → Used when data is deleted or becomes stale
 
 @CacheEvict(value = "users", key = "#id")
 public void deleteUser(Long id) {
@@ -40,9 +42,8 @@ beforeInvocation = true:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 4. @Caching:
-    → Combine multiple cache actions
-    → One method affects multiple caches
-    → Deletes cache from both users and userList
+    → Combines multiple cache operations
+    → Useful when a method affects multiple caches
 
 @Caching(
    evict = {
@@ -57,8 +58,8 @@ public void deleteUser(Long id) {
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 5. @CacheConfig:
-    → Reduce repetition
-    → Common cache name across service
+    → Defines common cache configuration at class level
+    → Reduces repetition
 
 @CacheConfig(cacheNames = "users")
 @Service

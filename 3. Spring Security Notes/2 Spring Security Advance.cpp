@@ -9,7 +9,6 @@ Spring Security: Key Concepts and Explanations
 
 Prevention:
   → HTTPS          → encrypts data in transit, attacker cant read it
-  → Certificate    → validates server 
   → VPN            → encrypted tunnel for communication
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -27,6 +26,8 @@ Prevention:
   → Spring Security generates a CSRF token per session
   → Every request must include correct CSRF token + session
   → Missing/wrong token → request blocked
+  → Csrf token is stored in the session 
+  → It is send to client in request and client sends it back with request
 
 Note:
   → CSRF protection needed when auth uses cookies/sessions
@@ -54,7 +55,6 @@ Hashing:
 
 Encryption:
   → 2-way transformation → can encrypt and decrypt
-  → plaintext → encrypt → ciphertext → decrypt → plaintext
   → Used when you need the original data back
 
 1. Symmetric Encryption:

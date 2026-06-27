@@ -3,39 +3,33 @@ CompletableFuture:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 CompletableFuture is a Java class for asynchronous programming:
-    → Run tasks without blocking threads
-    → Chain multiple async operations
-    → Combine results of multiple async tasks
-    → Handle errors cleanly
+    → Runs tasks without blocking threads
+    → Chain multiple async operations and combine results
     → Introduced in Java 8.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Old async approach (Future):
+Old async problem (Future):
 
 Future<User> future = threadPool.submit(() -> getUser());
-User user = future.get();                   // BLOCKING ❌
+User user = future.get();                   // BLOCKS thread until done
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Starting a task:
 
 1: runAsync():
-    → Returns CompletableFuture<Void>
     → no return value
-    → Used for fire-and-forget
+    → fire and forget
 
 Code:
-CompletableFuture.runAsync(() -> {
-    sendEmail();
-});
-
------------------------------------------------------------------------------------------------------------------------------------------------------
+CompletableFuture.runAsync(() -> { sendEmail(); } );
 
 2: supplyAsync():
     → returns a value
 
 Code:
-CompletableFuture<User> future =
-    CompletableFuture.supplyAsync(() -> getUser());
+CompletableFuture<User> future = CompletableFuture.supplyAsync(() -> getUser());
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Chaining operations:
@@ -45,55 +39,41 @@ Chaining operations:
     → transform result like a map
     → Runs in same thread
 
-CompletableFuture<UserDto> future =
-    CompletableFuture.supplyAsync(() -> getUser())
-        .thenApply(user -> convertToDto(user));
-
------------------------------------------------------------------------------------------------------------------------------------------------------
+CompletableFuture.supplyAsync(() -> getUser()).thenApply(user -> convertToDto(user));
 
 2: thenApplyAsync():
     → async transformation
     → Runs in another thread
 
-.thenApplyAsync(user -> convertToDto(user))
-
------------------------------------------------------------------------------------------------------------------------------------------------------
+CompletableFuture.supplyAsync(() -> getUser()).thenApplyAsync(user -> convertToDto(user))
 
 3: thenAccept():
     → consume result (no return)
     → Access to result
 
-.thenAccept(user -> log.info(user.getName()));
-
------------------------------------------------------------------------------------------------------------------------------------------------------
+CompletableFuture.supplyAsync(() -> getUser()).thenAccept(user -> log.info(user.getName()));
 
 4: thenRun():
     → run something after completion
     → No access to result
 
-.thenRun(() -> log.info("Done"));
-
------------------------------------------------------------------------------------------------------------------------------------------------------
+CompletableFuture.supplyAsync(() -> getUser()).thenRun(() -> log.info("Done"));
 
 5: thenCombine():
     → combine two futures
-    → CompletableFuture<User> userFuture = getUserAsync();
-    → CompletableFuture<Wallet> walletFuture = getWalletAsync();
+    → Tasks are independent
+    → Need both results
 
-CompletableFuture<UserProfile> profile =
-    userFuture.thenCombine(walletFuture,
-        (user, wallet) -> new UserProfile(user, wallet));
-
-Used when:
-→ Tasks are independent
-→ Need both results
+CompletableFuture<User> userFuture = getUserAsync();
+CompletableFuture<Wallet> walletFuture = getWalletAsync();
+CompletableFuture<UserProfile> profile = userFuture.thenCombine(walletFuture,(user, wallet) -> new UserProfile(user, wallet));
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-Exception handling
+Exception Handling:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: exceptionally():
-    → fallback
+    → fallback on failure
 
 future.exceptionally(ex -> {
     log.error(ex.getMessage());

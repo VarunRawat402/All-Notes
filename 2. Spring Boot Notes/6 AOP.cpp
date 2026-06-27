@@ -1,165 +1,104 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------
+AOP (Aspect Oriented Programming):
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 AOP:
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-AOP separates common logic from business logic.
-    → Logging
-    → Transactions
-    → Auditing
-    → Metrics
-
-How AOP Works (Simple Flow)
-    → Aspect    → Common code 
-    → Pointcut  → path where it should run 
-    → Spring AOP runs this automatically.
-
-Types of AOP Tools:
-
-1: Spring AOP:
-    → Most commonly used
-    → Works only on Spring Beans Class
-
-2: AspectJ:
-    → Fully featured AOP framework
-    → Works on any Java class
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Basic AOP Example (Logging):
-    → write Logs before every method of UserService
-
-@Configuration
-@Aspect
-@Slf4j
-public class LoggingAspect {
-
-    @Before("execution(* com.example.service.UserService.*(..))")
-    public void logMethod() {
-        logger.info("Method called...");
-    }
-}
+    → Separates common/repeated logic from service logic
+    → Write once → apply everywhere automatically
+    → Ex: Logging, Transactions, Auditing, Metrics
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 AOP Terminology:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Compile-Time Concepts:
-
-1: Advice: 
+Advice:
     → The actual code you want to run
-    → logger.info("Method executing");
+    → ex: logger.info("Method executing");
 
+Pointcut:
+    → Expression that decides WHERE advice runs
+    → ex: @Before("execution(* com.example.service.UserService.*(..))")
+    → runs before ALL methods in UserService
 
-2: PointCut:
-    → Expression that decides where code runs
-    → @Before("execution(* com.example.service.UserService.*(..))")
+Aspect:
+    → Advice + Pointcut combined in one class
+    → @Aspect annotation marks it
 
-3: Aspect:
-    → Combination of Advice + Pointcut
-
-4: Weaver
-    → The framework that applies the advice to matching pointcuts.
-    → This process is called Weaving.
-
-5: JoinPoint:
-    → Gives us the metadata of the original method
-
-From JoinPoint you can get:
-    → joinPoint.getSignature().getName()
-    → joinPoint.getArgs()
-    → joinPoint.getTarget()
+JoinPoint:
+    → Metadata of the method being intercepted
+    → joinPoint.getSignature().getName() → method name
+    → joinPoint.getArgs()                → method arguments
+    → joinPoint.getTarget()              → class it belongs to
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 Important AOP Annotations:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------------------
-@Before: 
-    → Runs Before method  
-    → (Logging, security)
 
-@After: 
-    → uns after method
-    → (Cleanup)
+@Before         → runs BEFORE method          → use for: logging, security checks
+@After          → runs AFTER method           → use for: cleanup (runs always)
+@AfterReturning → runs if method SUCCEEDS     → use for: capture/log return value
+@AfterThrowing  → runs if method THROWS       → use for: error logging
 
-@AfterReturning: 
-    → Runs if method returns successfully	
-    → (Capture result value)
-
-@AfterThrowing: 
-    → Runs if method throws exception	
-    → (Error logging)
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Code For All the Annotations:
+Code Example:
 
 @Aspect
 @Configuration
+@Slf4j
 public class LoggingAspect {
 
     @Before("execution(* com.example.service.UserService.*(..))")
     public void logBefore(JoinPoint jp) {
-        logger.info("BEFORE: {}", jp.getSignature().getName());
+        log.info("BEFORE: {}", jp.getSignature().getName());
     }
 
     @After("execution(* com.example.service.UserService.*(..))")
     public void logAfter(JoinPoint jp) {
-        logger.info("AFTER: {}", jp.getSignature().getName());
+        log.info("AFTER: {}", jp.getSignature().getName());
     }
 
-    @AfterReturning(value = "execution(* com.example.service.UserService.getUserById(..))", returning = "result"
-    )
+    @AfterReturning(
+        value = "execution(* com.example.service.UserService.getUserById(..))",
+        returning = "result")
     public void logAfterReturning(JoinPoint jp, Object result) {
-        logger.info("RETURNED: {}", result);
+        log.info("RETURNED: {}", result);
     }
 
-    @AfterThrowing(value = "execution(* com.example.service.UserService.*(..))", throwing = "ex"
-    )
+    @AfterThrowing(
+        value = "execution(* com.example.service.UserService.*(..))",
+        throwing = "ex")
     public void logAfterThrowing(JoinPoint jp, Throwable ex) {
-        logger.error("EXCEPTION: {}", ex.getMessage());
+        log.error("EXCEPTION: {}", ex.getMessage());
     }
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Around Annotations ( @Around ):
-
-Most powerful advice because it:
-    → Runs before and after
-    → Can modify arguments
-    → Can change return value
-    → Can handle exceptions
+@Around annotation:
+    → Most powerful advice → wraps entire method execution
+    → Use: run before + after, modify args, change return value, handle exceptions
+    → Must call jp.proceed() → actually executes the real method
+    → Whatever you return here → thats what caller gets
+    → jp.proceed() not called → real method never executes
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Example 1 : Calculate Execution Time:
+Example 1: Calculate Execution Time:
 
-Code:
 @Around("execution(* com.example.service.UserService.*(..))")
 public Object logExecutionTime(ProceedingJoinPoint jp) throws Throwable {
-
-    long start = System.currentTimeMillis();            //start time
-    Object result = jp.proceed();                       //execute method
-    long end = System.currentTimeMillis();              //end time
-
-    logger.info("{} took {} ms",
-            jp.getSignature().getName(),
-            end - start);
-
-    return result;
+    long start = System.currentTimeMillis();
+    Object result = jp.proceed();               // execute real method
+    long end = System.currentTimeMillis();
+    log.info("{} took {} ms", jp.getSignature().getName(), end - start);
+    return result;                              // return original result
 }
 
------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Example 2: Modify Return Value:
-    → We can access the result and modify it
-    → value return here, will return by the actual method
 
 @Around("execution(* com.example.service.UserService.getUserById(..))")
-public Object modifyReturnValue(ProceedingJoinPoint joinPoint) throws Throwable {
-
-    Object result = joinPoint.proceed();
-    return result*10;                               //Modified result value
+public Object modifyReturnValue(ProceedingJoinPoint jp) throws Throwable {
+    Object result = jp.proceed();               // execute real method
+    return result * 10;                         // return modified result
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -185,7 +124,7 @@ public class LoggingAspect {
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Custom Annotation:
-    → -----------------------------------------------------------------------------------------------------------------------------------------------------You want AOP on selected methods only, not entire package or Entire Service
+    → You want AOP on selected methods only, not entire package or Entire Service
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

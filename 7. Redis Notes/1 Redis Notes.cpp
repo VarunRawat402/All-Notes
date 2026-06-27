@@ -3,81 +3,91 @@ Redis Notes:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 What is Redis:
-    → In-memory data store
-    → Used as database, cache, and message broker
+    → In-memory data storage
+    → Can be used as:
+        - Database
+        - Cache
+        - Message Broker
 
 To connect Redis:
 	→ redis-cli -h <host-name> -p <port> -a <password>
-
-Cloud Redis usually requires authentication
-Port is taken from the connection string
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Why Redis is fast:
 
-In-memory storage:
-    → Data stored in RAM (not disk)
-    → Accessing memory is thousands of times faster than disk.
+1. In-Memory Storage
+    → Data is stored in RAM, not disk
+    → Memory access is much faster than disk access
 
-Single-threaded: 
-    → Single-threaded, non-blocking I/O
-    → No context switching
-    → Very fast reads & writes
+2. Single-Threaded Architecture
+    → Single-threaded with non-blocking I/O
+    → Fast read and write operations
 
-Efficient data structures: 
-    → Redis supports optimized structures like Strings, Hashes, Lists, Sets, Sorted Sets
-    → Operations run in O(1) or O(log N)
+3. Optimized Data Structures
+    → Supports Strings, Hashes, Lists, Sets, Sorted Sets
+    → Most operations run in O(1) or O(log N)
 
-Pipelining & batching: 
-    → Redis can handle multiple commands in a single request, reducing network round-trips.
+4. Pipelining & Batching
+    → Multiple commands can be sent in one request
+    → Reduces network round-trips
+    → Improves performance
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 When Redis Memory Is Full:
 
-1: Increase memory / add Redis nodes
-2: Evict existing keys (based on eviction policy)
+1. Increase memory or add Redis nodes
+2. Evict existing keys using an eviction policy
 
-Always store cache data with expiry to avoid memory issues.
-If keys have no expiry, nothing is deleted → insertion fails when memory fulls.
+
+Best Practice:
+    → Always set an expiry (TTL) for cache
+    → Expired keys are automatically removed
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Disadvantages:
 
-1: Startup time increases because Redis loads data from disk into RAM.
-2: Duplicate storage — same data in RAM and disk at the same time.
+1. Increased Startup Time
+    → Redis loads data from disk into RAM on startup
+    → Larger datasets take longer to load
 
-Ex: 
-→ 1 gb data loaded from disk in memory when server starts.
-→ So Memory is using 1 gb and disk is also using 1 gb of storage of same data.
+2. Duplicate Storage
+    → Same data exists in both RAM and disk
+
+Example:
+    → 1 GB data stored on disk
+    → On startup, Redis loads it into RAM
+    → Total storage used = 1 GB RAM + 1 GB Disk
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis data structures:
 
-Strings: 
-    → Cache small values
-    → Counters, tokens, feature flags
+1. Strings
+    → Store strings using keys
+    → Used for counters, tokens, feature flags, cache values
 
-Hashes: 
-    → Store objects / maps
-    → User profiles, cart items
+2. Hashes
+    → Store data as key-value pairs
+    → Used for user profiles, cart data, product info
 
-Lists: 
-    → Queues
-    → Background jobs, notifications
+3. Lists
+    → Ordered collection of values
+    → Used for queues, background jobs, notifications
 
-Sets / Sorted Sets: 
-    → Unique values, rankings
-    → Leaderboards, analytics
+4. Sets / Sorted Sets
+    → Store unique values
+    → Used for leaderboards, rankings, analytics
 
-Hash Example:
+Examples:
+
+Hash:
 Map<String, Object> user = Map.of("name", "Varun", "age", 25);
 redisTemplate.opsForHash().putAll("user:1001", user);
 
-List Example:
+List:
 redisTemplate.opsForList().rightPush("queue:orders", orderId);
 String orderId = (String) redisTemplate.opsForList().leftPop("queue:orders");
 
@@ -98,67 +108,74 @@ Hash:
 Redis Caching Patterns:
 
 1: Cache-Aside (Lazy Loading):
-    Application checks Redis first  →  if key not found   →  fetch from DB  →  populate Redis.
-    It is implemented by manually putting and getting the data from the cache or Spring cache Annotations
-    Application perform actions and have the control
+    → Check Redis first
+    → If cache miss, fetch from DB and store in Redis
+    → Application controls cache reads/writes
+    → Can be implemented manually or using Spring Cache annotations
+    → Redis Miss → DB → Redis → Response
 
 2: Read-Through:
-    App requests data from cache  → if key not found  → cache fetch from DB  → populate Redis 
-    Cache automatically loads from DB on a cache miss
-    Cache perform actions and have the control
+    → Application requests data from cache
+    → On cache miss, cache automatically fetches from DB and updates Redis
+    → Cache controls data loading
+    → Cache Miss → Cache fetches from DB → Redis → Response
 
 3: Write-Through:
-    Writes go to both DB and cache simultaneously.
+    → Write to both Redis and DB at the same time
 
 4: Write-back:
-    Writes go to cache first  →  Redis asynchronously updates the DB later
+    → Write to Redis first
+    → Redis updates DB asynchronously later
+    → Faster writes but risk of data loss before DB update
 
 5: Time-to-Live (TTL):
-    Cache entries expire automatically after a set time to prevent stale data.
+    → Keys expire automatically after a configured time
 
 6: Cache Eviction:
-    Old or less-used keys are removed automatically when memory is full.
+    → Removes old/less-used keys when memory is full based on the configured eviction policy
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Memory:
-    → Redis is in-memory
-    → Without persistence → all data lost on restart
+    → Redis stores data in memory
+    → Without persistence, all data is lost on restart
 
 1: RDB (Redis Database Backup / Snapshotting):
-    → Creates snapshots of the entire dataset at intervals ( every 5 minutes )
-    → Saves to a .rdb file on disk.
-    → Fast for loading large datasets, compact storage.
-    → If Redis crashes, you restore the last snapshot; data between snapshots may be lost.
+    → Creates snapshots of the entire dataset at intervals
+    → Stores snapshots in a .rdb file
+    → Fast recovery and compact storage
+    → Data written after the last snapshot may be lost
 
 2: AOF (Append-Only File):
-    → Appends every write command to a log file (.aof)
-    → On restart, Redis replays the log to reconstruct the dataset.
-    → Slower than RDB, but more durable.
+    → Logs every write operation in a .aof file
+    → On restart, Redis replays the log to rebuild data
+    → Higher durability than RDB
+    → Slightly slower due to write logging
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-RDB: 
-    → Good for backups
+RDB
+    → Snapshot-based
     → Fast restart
+    → Good for backups
     → Minimal performance impact
     → Some data loss possible
 
-AOF:
-    → Logs every write operation
+AOF
+    → Logs every write
     → High durability
     → Near-zero data loss
     → Slight performance overhead
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 Combination: 
-→ Many production systems use both RDB + AOF for speed + durability.
+    → RDB provides fast recovery
+    → AOF provides strong durability
+    → Commonly used together in production
 
-RDB + AOF (Production Best Practice):
-→ RDB → fast recovery
-→ AOF → strong durability
-
-Example (E-commerce App):
-→ Product catalog / less critical data → RDB
+Example:
+→ Product catalog, reference data → RDB
 → Cart, orders, payments → AOF
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -166,111 +183,94 @@ Example (E-commerce App):
 Redis Replication:
 
 How it works:
-    → Master handles all writes, can also handle reads
-    → Replicates data to replicas asynchronously
-    → Replicas handle read requests → reduces master load
+    → Leader handles all writes + reads
+    → Data is replicated asynchronously to replicas
+    → Replicas mainly handle read requests
+    → Reduces load on the leader
 
-Implication:
-    → High performance.
-    → Possible replication lag.
-    → In case of master crash, recent writes may be lost if not yet replicated.
+Limitations:
+    → Replication lag can occur
+    → Recent writes may be lost if master fails before replication completes
 
 New replica joining:
     → Master sends full RDB snapshot
     → Then streams incremental updates
 
 Note:
-Read critical data from master to avoid stale reads due to replication lag.
+    → Read critical data from master to avoid stale reads due to replication lag.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Sentinel:
-    → Continuously monitors master & replicas using heartbeats.
+    → Monitors master and replicas using heartbeats
 
 If the master fails:
-→ Promotes one replica to master automatically.
-→ Updates other replicas to follow the new master.
-→ Notifies client applications of the new master address.
-→ No manual intervention required for all this
+    → Promotes a replica to master
+    → Reconfigures other replicas to follow the new master
+    → Notifies clients of the new master address
+    → No manual intervention required
 
-Manual Configuration:
-    → On failure → downtime increases + reconfiguration
+Without Sentinel:
+    → Manual failover and reconfiguration
+    → Higher downtime
 
-→ With Sentinel, You connect to redis and master node through sentienl automatically
-→ Configure reads from replicas using LettuceConnectionFactory
-→ If master fails, it will automatically update to the current master
-
-@Bean
-public LettuceConnectionFactory redisConnectionFactory() {
-    RedisSentinelConfiguration sentinelConfig = new RedisSentinelConfiguration()
-            .master("mymaster")
-            .sentinel("127.0.0.1", 26379)
-            .sentinel("127.0.0.1", 26380)
-            .sentinel("127.0.0.1", 26381);
-
-    LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-            .readFrom(ReadFrom.REPLICA_PREFERRED) // read from replicas if available
-            .build();
-
-    return new LettuceConnectionFactory(sentinelConfig, clientConfig);
-}
+With Sentinel:
+    → Applications connect through Sentinel
+    → Sentinel automatically discovers the current master
+    → Client configuration is updated automatically after failover
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Locks:
-    Used to prevent multiple threads from accessing the same resource simultaneously
+    → Used to ensure only one application instance accesses a shared resource at a time
+    → Prevents race conditions in distributed systems
 
-Command:
-→ SET key value NX PX timeout
-
-Meaning:
-→ NX → set only if key does not exist (atomic)
-→ PX / EX → TTL → lock auto-expires if process crashes
-
-→ Prevents race conditions in distributed applications.
-→ Avoids duplicate processing when multiple instances of a service run concurrently.
+Benefits:
+    → Prevents duplicate processing
+    → Ensures only one service instance executes a critical operation
+    → Useful in distributed applications with multiple service instances
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Redis Pub Sub:
 
-→ Publisher sends messages to a channel.
-→ All subscribers connected at that moment receive the message.
+→ Publisher sends messages to a channel
+→ All subscribers currently connected receive the message
 → No persistence / No Replay
-→ Messages sent while a subscriber is offline are lost.
+→ Messages sent while a subscriber is down are lost.
 → Very low latency (<1ms), works entirely in memory.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-How do you protect DB when Redis is down:
-    When Redis goes down, the cache layer is unavailable, and all requests may hit the database directly.
+When Redis Is Down:
 
-→ Serve DB data safely (fallback logic)
-→ Rate limit requests per user
-→ Circuit Breaker pattern → prevent DB overload
+Problem:
+    → Cache becomes unavailable
+    → Requests bypass cache and hit the DB directly
+    → Can overload the database
+
+Protection Strategies:
+    → Fallback to DB reads
+    → Rate limit requests
+    → Use Circuit Breaker pattern to reduce DB pressure
+    → Degrade non-critical features if needed
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Cache Double Delete Strategy:
-    → Prevents stale cache after DB update
+    → Prevent stale data from being written back to cache after a DB update
 
-T1: UPDATE user (uncommitted)
-T2: SELECT user → A
-T1: COMMIT
-T1: DELETE cache
-T2: PUT A in cache  ❌ (AFTER delete)
+Problem Scenario:
 
-So Delete cache 2 times:
+T1: Update user in DB
+T2: Read old user data (before update is committed)
+T1: Commit transaction
+T1: Delete cache
+T2: Writes old data back to cache 
 
-@Transactional
-public void updateUser(User user) {
-    userRepo.save(user);          // 1. DB update
-    redisTemplate.delete(key);    // 2. First delete
-
-    Executors.newSingleThreadScheduledExecutor()
-        .schedule(() -> redisTemplate.delete(key),
-                  500, TimeUnit.MILLISECONDS); // 3–4
-}
+Solution:
+    → Delete cache immediately after DB update
+    → Delete cache again after a short delay
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

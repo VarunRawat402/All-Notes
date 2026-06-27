@@ -2,25 +2,14 @@
 Synchronization:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-→ When a method is synchronized, only one thread can access it.
-
-What Exactly Gets Locked?
-    → synchronized always locks a monitor
-    → Monitor can be:
-        → Object lock   → this
-        → Class lock    → ClassName.class
+→ Only ONE thread can access synchronized method/block at a time
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-1: Object-Level Synchronization
+1. Method Level (locks entire method):
 
-class Printer {
-    private int balance = 1000;
-
-    public synchronized void withdraw(int amount) {
-        balance -= amount;
-        System.out.println("Remaining Balance: " + balance);
-    }
+public synchronized void withdraw(int amount) {
+    balance -= amount;
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -29,23 +18,20 @@ class Printer {
     → Locks only critical section
     → Better performance than method-level
 
-class BankAccount {
-    private int balance = 1000;
-
-    public void withdraw(int amount) {
-        synchronized (this) {
-            balance -= amount;
-        }
-        System.out.println("Remaining Balance: " + balance);
+public void withdraw(int amount) {
+    synchronized (this) {
+        balance -= amount;       // only this part locked
     }
+    System.out.println(balance); // runs without lock
 }
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-DeadLock:
-    → Deadlock happens when two or more threads are blocked forever
-    → Thread 1 → holds R1 → waits for R2
-    → Thread 2 → holds R2 → waits for R1
+Deadlock:
+    → Two threads waiting for each others lock → both stuck forever
+    → T1 holds R1 → waits for R2
+    → T2 holds R2 → waits for R1
+    → Neither releases → deadlock
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

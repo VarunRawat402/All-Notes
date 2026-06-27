@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-JPA and HIBERNATE :
+JPA:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 SpringBoot Application Connection to Database:
@@ -20,8 +20,7 @@ Hibernate DDL Auto (startup behavior):
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-REPOSITORY:
-    → Interface that gives CRUD + query methods.
+Types of REPOSITORY:
     
 1: CrudRepository:
     → Basic CRUD methods
@@ -42,10 +41,10 @@ public interface PersonRepository extends JpaRepository<Person,Long>{}
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Why @Repository is not needed in JpaRepository Interface;
+Why @Repository annotation is not needed in JpaRepository Interface;
 
 → Spring Data automatically scans the JpaRepository Interface 
-→ It automatically creates a bean for them at startup
+→ It automatically creates a bean for them at startup so no need to use the annotation
 → Converts DB exceptions to Spring Exception so we dont need to take care of vendor specific exception like Hibernate or EclipsLink
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,22 +52,20 @@ JPA Relationships:-
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 @OneToOne (One-to-One Relationship)
-    → 1 entity ↔ 1 entity
-    → Example: 1 user has 1 profile.
+    → Example: 1 Student has 1 Library Card
 
 @OneToMany (One-to-Many Relationship)
-    → One ↔ many
-    → Example: 1 customer can have many orders.
+    → Example: 1 Student has many Books
 
 @ManyToOne (Many-to-One Relationship)
-    → Many ↔ one
-    → Example: Many orders belong to 1 customer.
+    → Example: Many Books belong to 1 Student
+    → Usually paired with @OneToMany on other side
 
 @ManyToMany (Many-to-Many Relationship)
-    → Many ↔ many
-    → Uses join table
+    → Example: Student ↔ Courses ( one student many courses, one course many )
     → Avoid in real projects → prefer separate entity
-    → Example: A student can enroll in many courses, and a course can have many students.
+    → Uses a join table in DB
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -98,7 +95,7 @@ class Department {              // Non-owning side
     @Id
     private Long id;
 
-    @OneToMany(mappedBy = "department",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "department",fetch = FetchType.LAZY)
     private List<Student> students;
 }
 
@@ -111,12 +108,11 @@ Lazy Fetching:
     → Better performance
 
 Example:
-    User user = userRepo.findById(1);
-    // SQL fires:
     // SELECT * FROM users WHERE id = 1  ← only this
-
-    user.getOrders(); // NOW orders SQL fires
+    User user = userRepo.findById(1);
+    
     // SELECT * FROM orders WHERE user_id = 1
+    user.getOrders(); // NOW orders SQL fires
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -126,11 +122,9 @@ Eager Fetching:
     → Avoid unless necessary
 
 Example:
-    // you load User
-    User user = userRepo.findById(1);
-    // SQL fires:
     // SELECT * FROM users WHERE id = 1
     // SELECT * FROM orders WHERE user_id = 1  ← fired immediately too
+    User user = userRepo.findById(1);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

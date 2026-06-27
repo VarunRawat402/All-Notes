@@ -3,7 +3,7 @@ Scenario Interview Questions:
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How do you improve API performance:
-    → fetch only required fields (DTOs) from the repository
+    → fetch only required fields using DTOs from the repository
     → Pagination for large datasets
     → Caching frequently accessed data
     → Proper indexing on frequently searched fields
@@ -16,142 +16,114 @@ How do you improve API performance:
 How do you handle concurrent updates to the same database row:
 
 1: Pessimistic Locking / Database-level row lock:
-    → DB locks the row
-    → Other transactions trying SELECT ... FOR UPDATE wait
-    → Transaction A updates balance → COMMIT
-    → Transaction B acquires lock → updates balance
+    → DB locks the row when transaction starts
+    → Other transactions trying to access same row → WAIT
+    → T1 locks row → updates → commits → lock released
+    → T2 acquires lock → updates → commits
+    → SELECT * FROM wallet WHERE id = ? FOR UPDATE
+    → Downside: other transactions blocked → slower throughput
 
 2: Optimistic Locking / Versioning:
-    → Add version column in table
-    → Transaction A reads wallet (version=1)
-    → Transaction B reads wallet (version=1)
-    → Transaction A updates balance → increments version=2 → succeeds
-    → Transaction B tries update → fails → OptimisticLockException
-    → Retry or abort
+    → No lock → add version column to table
+    → T1 reads wallet (version=1)
+    → T2 reads wallet (version=1)
+    → T1 updates → version becomes 2 → succeeds 
+    → T2 tries update WHERE version=1 → version already 2 → fails 
+    → OptimisticLockException → retry or abort
+    → Downside: conflicts cause retries
 
-CREATE TABLE wallet (
-    id BIGINT PRIMARY KEY,
-    balance DOUBLE,
-    version BIGINT
-);
+@Version
+private Long version;  // JPA handles automatically
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Connection pooling:
-    → Maintain a set of pre-created connections (DB/Redis/HTTP)
-    → Reuse connections instead of creating new ones per request
+    → Pre-created set of DB connections ready to use
+    → Reuse connections instead of creating new one per request
 
 Without pooling:
-    → Each request opens new connection → high latency, DB overload
+    → Every request → open connection → query → close connection
+    → High latency + DB overload 
 
 With pooling:
-    → Faster response
-    → Controlled connections → better resource utilization
+    → Connections created at app startup → ready to use
+    → Request → borrow connection → query → return to pool
+    → Faster + controlled resource usage 
 
-How It Works:
-    → App starts → pool creates N connections
-    → Request arrives → borrow connection → execute query → return to pool
-    → No connection available → thread waits → timeout → exception
+spring.datasource.hikari.maximum-pool-size=10
+spring.datasource.hikari.connection-timeout=30000
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 What Causes Memory Leaks:
-    → When objects are no longer needed but still referenced due to this GC cannot reclaim the memory causes Memory Leaks.
+    → Objects no longer needed but still referenced
+    → GC cant collect them → memory keeps growing → OutOfMemoryError
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Database is slow - what steps will you take:
-    → Confirm DB is bottleneck → compare API latency vs query time
-    → Check connection pool wait time
-    → Check CPU / Memory / Disk I/O on DB
+DB is Slow - Debugging Steps:
 
-Slow Queries:
-    → Full table scans, missing indexes, N+1 queries
+1. Confirm DB is the bottleneck:
+    → Compare total API latency vs actual query execution time
+    → If query time ≈ API time → DB is the problem
 
-Connection Pool Issues:
-    → Increase pool size (within DB limits)
-    → Close leaked connections
+2. Check Slow Queries:
+    → Full table scans → missing indexes → add indexes
+    → N+1 queries → use JOIN FETCH or @EntityGraph
+    → Complex queries → optimize or break down
 
------------------------------------------------------------------------------------------------------------------------------------------------------
+3. Check Connection Pool:
+    → Threads waiting for connection → pool size too small → increase it
+    → Leaked connections → connections borrowed but never returned → fix with try-with-resources
 
-Production Code Lifecycle:
-
-main        → Production code (always stable)
-develop     → Integration branch for next release
-feature/    → New features, extracted from develop branch
-bugfix/     → Non-production fixes, extracted from develop branch
-release/    → Release preparation
-hotfix/     → Urgent production fixes, extracted from main branch
-
-
-Flow:
-
-→ Feature branch is created from develop branch
-→ Feature is created , run and unit tested locally
-
-→ Pull Request is created to develop branch
-→ After code approval, feature branch is merged to develop branch
-
-CI/CD Pipeline triggers:
-    → mvn clean verify
-    → Run unit tests
-    → Run integration tests
-    → Security scan (Snyk/Trivy/etc)
-    → Build artifact (JAR/WAR)
-
-→ Realease branch is used to release all the features to production
-→ After Multiple Features created and merged into develop branch
-→ Develop branch is merged into Release branch
-
-→ CI/CD Pipeline triggers
-    → Run all tests
-    → Create Docker image and push to ECR
-
-→ Release is merged to main for releasing the features
-
-Note:
-→ bugfix branch : Created from develop, fix the bug locally, merge to develop
-→ hotfix branch : Created from main, fix the live production bug, merged to develop and release both
+Fix Priority:
+    → Indexes first (biggest impact, easiest fix)
+    → Then N+1 queries
+    → Then connection pool tuning
+    → Then caching frequently accessed data
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 How to Store Customer Sensitive Data:
 
 1. Account Information (Bank / Card / PII):
-    → Never store in plain text
-    → Use encryption (AES-256)
-    → Encrypt → store → Decrypt → use
+    → Never store plain text
+    → Encrypt → store ciphertext → decrypt only when needed
+    → Encryption keys stored separately (not in DB, not in code)
+    → Use environment variables or secret managers (AWS Secrets Manager)
 
 2. Passwords
-    → Never encrypt/decrypt → hash only
-    → Hashing for verification → original value not needed
+    → Never encrypt and decrypt
+    → Hash only → BCrypt
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 Saga Design Pattern:
-    → Saga is used to manage distributed transactions in microservices.
+    → Manages distributed transactions across microservices
+    → No single DB transaction possible across services → Saga coordinates it
+    → On failure → runs compensating transactions to undo previous steps
     → Maintains data consistency
 
 1. Choreography-Based Saga:
     → No central coordinator
-    → Services communicate via events
-    → Each service performs local transaction → publishes event → listens to others
-    → On failure → compensating actions triggered
+    → Services communicate via events, no coordinator
+    → Each service → does its job → publishes event → next service listens
 
 Example:
-    → OrderCreatedEvent → PaymentCompletedEvent → StockReservedEvent
-    → Payment fails → PaymentFailedEvent → Order cancelled (compensation)
+    Order Created → Payment Failed → PaymentFailedEvent → Order Service listens → cancels order (compensation) 
+    → simple, no single point of failure
+    → hard to track flow, event chains get complex
 
 2. Orchestration-Based Saga:
-    → Central orchestrator controls flow
-    → Calls services in order → triggers compensations on failure
-    → Services do not talk to each other
+    → Orchestrator tells each service what to do in order
+    → Services dont talk to each other
 
 Example:
     → Orchestrator → Order Service → create order
-    → Orchestrator → Payment Service → process payment
-    → Orchestrator → Inventory Service → reserve stock
-    → Payment fails → Orchestrator triggers Order Service cancel
+    → Orchestrator → Payment Service → process payment → Payment fails
+    → Orchestrator → tells Order Service to cancel 
+    → easy to track, clear flow
+    → orchestrator = single point of failure
     
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

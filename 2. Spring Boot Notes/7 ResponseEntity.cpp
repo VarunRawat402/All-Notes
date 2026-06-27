@@ -7,10 +7,11 @@ ResponseEntity:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-Manually Creating ResponseEntity<>():
+Manually:
     → You create a new ResponseEntity object when you want complete control.
 
-Ex:
+Code:
+
 // Create a response with body + status
 ResponseEntity<String> response = new ResponseEntity<>("Success", HttpStatus.OK);
 
@@ -24,16 +25,13 @@ ResponseEntity<String> responseWithHeaders = new ResponseEntity<>("Hello", heade
 Static Helper Methods:
     → Static methods make responses cleaner and more readable.
 
-Examples:
+Code:
 
 // Returns 200 status with body:
 ResponseEntity.ok("Body")
 
 // Returns custom status with body:
 ResponseEntity.status(HttpStatus.CREATED).body("Created")	
-
-// Returns 201 Created status with location header:
-ResponseEntity.created(URI.create("/resource/1")).body(obj)
 
 // Returns 204 status no body:
 ResponseEntity.noContent().build()
