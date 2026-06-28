@@ -2,39 +2,35 @@
 Junit 4 and Junit 5 Annotations:
 --------------------------------------------------------------------------------------------------------------------------------
 
-@Disabled               : Disables a test method or Class.
+@Test               → marks method as a test case
+@Disabled           → skips test method or entire class
 
-@Test                   : Marks a method as a test case.
+@BeforeEach         → runs before EACH test method
+@AfterEach          → runs after EACH test method
+@BeforeAll          → runs ONCE before all tests    (must be static)
+@AfterAll           → runs ONCE after all tests     (must be static)
 
-@BeforeEach             : Runs before each test method.
-
-@AfterEach              : Runs after each test method
-
-@BeforeAll              : Runs once before all tests (static).
-
-@AfterAll               : Runs once after all tests (static).
-
-@DisplayName            : Sets a custom readable name for a test.
-
-@ParameterizedTest      : Marks a test that runs multiple times with different inputs.
-
-@ValueSource            : Provides simple literal values (ints, strings, etc.).
-
-@CsvSource              : Provides inline CSV values for multi-argument tests.
-
-@CsvFileSource          : Loads CSV data from a file.
-
-@Timeout                : Fails the test if it exceeds the given time limit.
+@DisplayName        → sets readable custom name for test
+@Timeout            → fails test if it exceeds given time limit
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-Database Testing Annotations:
+Parameterized Test Annotations:
 
-→ In @SpringBootTest, If you make changes in the DB, It will stay in the DB
-→ If you want to rollback changes in @SpringBootTest you can use @Transactional
+@ParameterizedTest  → marks test to run multiple times with different inputs
+@ValueSource        → single value per run (ints, strings etc)
+@CsvSource          → multiple values per run (inline CSV)
+@CsvFileSource      → multiple values loaded from CSV file
 
-→ In @DataJpaTest, If you make changes in DB, it will get rollbacked after every test
-→ If you dont want to rollback changes you can use @Commit annotation
+--------------------------------------------------------------------------------------------------------------------------------
+
+DB Testing Behavior:
+
+@SpringBootTest → changes persist in DB after test
+    → add @Transactional to rollback changes after each test
+
+@DataJpaTest → automatically rolls back after each test
+    → add @Commit if you want changes to persist
 
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -43,7 +39,7 @@ Parameterized Tests:
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-1: Single Parameter (ValueSource):
+1: Single Value (ValueSource):
 
 @ParameterizedTest
 @ValueSource(ints = {2,5,6,8,10})
@@ -69,7 +65,7 @@ void testSquare(int input, int expected) {
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-3: File-Based Parameters (CsvFileSource):
+3: Values from CSV file (CsvFileSource):
 
 @ParameterizedTest
 @CsvFileSource(resources = "/testdata.csv")
@@ -79,25 +75,24 @@ void testNumberWords(int num, String word) {
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-1: Check if all the given names is present in the DB or not:
+4. Check if names exist in DB:
 
 @ParameterizedTest
-@ValueSource(strings = {"varun","nandni"})
-public void checkUserNames(String name){
-    List<Student> l1 = studentRepository.findAll();
-
-    assertTrue(l1.stream().anyMatch(student -> student.getName().equals(name)) ,"Student with name"+name+"did not found");
+@ValueSource(strings = {"varun", "nandni"})
+void checkUserNames(String name) {
+    List<Student> students = studentRepository.findAll();
+    assertTrue(students.stream()
+        .anyMatch(s -> s.getName().equals(name)),
+        "Student with name " + name + " not found");
 }
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-2: Test if these usernames are present in repository or not:
+5. Check if usernames exist in repository:
 
 @ParameterizedTest
-@CsvSource({
-    "varun","arun","shiro"
-})
-public void nameTest(String name){
+@CsvSource({"varun", "arun", "shiro"})
+void nameTest(String name) {
     assertNotNull(userRepository.findByUsername(name));
 }
 

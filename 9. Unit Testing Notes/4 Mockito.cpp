@@ -2,36 +2,37 @@
 Mockito:
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-→ Mockito is used for unit testing where dependencies are replaced with mocks to isolate and test a single class.
-
-Mocks:
-    → Run in-memory
-    → Avoid slow I/O operations (DB, HTTP calls, external services)
-    → Help simulate edge cases like null values, errors, and exceptions
+Mockito:
+    → Framework for unit testing 
+    → replaces real dependencies with mocks
+    → Tests run in-memory → no real DB, HTTP, or external service calls
+    → Isolates the class you're testing from its dependencies
 
 ----------------------------------------------------------------------------------------------------------------------------------------
-Mockito Uses:
-----------------------------------------------------------------------------------------------------------------------------------------
 
-Mockito Uses:
+What to mock:
 
-Databases: 
-    → Mock Repository classes instead of hitting a real DB
-
-APIs / Web Services: 
-    → Mock RestTemplate, FeignClient, WebClient
-
-Third-Party Services: 
-    → Mock AWS SDK, payment gateways, SMS/email services
+→ Repository     → instead of hitting real DB
+→ RestTemplate, FeignClient, WebClient → instead of real API calls
+→ AWS SDK, payment gateways, email/SMS services
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 MOCKITO Annotations:
-    → Mockito provides annotations to reduce boilerplate code.
 
-@Mock           → Creates mock object
-@InjectMocks    → Injects mocks into the class under test
+1: @ExtendWith(MockitoExtension.class) 
+    → enables Mockito in test class
 
+2: @Mock           
+    → creates a mock object of a class/interface
+
+3: @InjectMocks    
+    → creates real instance + injects all @Mock into it
+
+4: @MockBean       
+    → replaces a Spring Bean with mock (used in controller tests)
+
+----------------------------------------------------------------------------------------------------------------------------------------
 
 Student Service Test (Using Annotations):
 
@@ -72,7 +73,7 @@ Testing Controller Layer APIs:
     → Used to test controllers without starting a real server
 
 MockMvc:
-    → Sends HTTP requests (GET, POST, PUT, DELETE)
+    → Sends HTTP requests (GET, POST, PUT, DELETE)  without starting real server
     → Verifies status, response body, headers
     → Validates JSON serialization/deserialization
 
@@ -82,21 +83,28 @@ MockMvc:
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-Code:
-
 @Test
-public void testGetStudent() throws Exception {
+void testGetStudent() throws Exception {
 
+    // mock service response
     when(studentService.getStudentById(1L)).thenReturn(new Student(1L, "John Doe"));
-    
-    mockMvc.perform(get("/students/1")).andExpect(status().isOk()).andExpect(jsonPath("$.name").value("John Doe"));
-    
+
+    // send GET request and verify response
+    mockMvc.perform(get("/students/1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("John Doe"));
+
+    // verify service method was actually called
     verify(studentService).getStudentById(1L);
 }
 
+----------------------------------------------------------------------------------------------------------------------------------------
+
 verify():
-    → Ensures a method was called
-    → Can verify call count and parameters
+    → Confirms a method was actually called during the test
+    → Can check call count and parameters
+    verify(studentService).getStudentById(1L);        // called once
+    verify(studentService, times(2)).getStudentById(1L); // called twice
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 

@@ -5,7 +5,7 @@ JOINS:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 INNER JOIN:
-    → Returns rows that have matching values in BOTH tables
+    → Returns matching rows in BOTH tables
     → Non-matching rows from either table are excluded
 
 -- Syntax

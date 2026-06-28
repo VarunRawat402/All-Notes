@@ -3,7 +3,7 @@ MYSQL:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 RDBMS:
-    → structured tables (rows + columns), strict schema
+    → structured (rows + columns), strict schema
     → MySQL, PostgreSQL, Oracle
 
 NoSQL:
