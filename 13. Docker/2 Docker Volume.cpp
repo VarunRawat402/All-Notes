@@ -3,41 +3,36 @@ Docker Volumes:
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 → Container data is temporary
-→ Container stops / crashes / removed → data is lost
-→ Persistent storage managed by Docker
-→ MySQL container recreated → data still exists
-
-→ Multiple containers can use the same volume
-→ Used for shared logs + uploads + data
+→ Container stops/crashes/removed → data lost
+→ Persistent storage
+→ Use for: DB data, shared logs, file uploads
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 Docker Volume Implementation:
 
-'docker volume create mysql-data'
-    → creates a Docker-managed volume
+'docker volume create mysql-data'             → create a named volume
+'docker volume ls'                            → list all volumes
+'docker volume inspect mysql-data'            → show volume metadata + location
 
-'docker run --name mysql-db -v mysql-data : /var/lib/mysql mysql:8.0'
-    → MySQL stores data in /var/lib/mysql
-
-'docker volume inspect mysql-data'
-    → display volume meta-data
-
-'docker volume ls'
-    → show all volumes
+'docker run --name mysql-db -v mysql-data:/var/lib/mysql mysql:8.0':
+    → mount volume to container path
+    → MySQL writes to /var/lib/mysql → actually stored in volume → persists
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 Regular Folder Bind (Bind Mounts): 
-    → Connect Host folder to container folder
-    → Container writes → saved in host folder
-    → Not managed by Docker
-    → Used for dev + testing
+    → You directly link a folder on your host machine to a folder inside container
+    → Container writes → files appear on your host machine
+    → NOT managed by Docker → you control the location
+    → Use for: local dev, testing, seeing logs on your machine
 
-Implementation:
+'docker run --name mysql -v /your/host/folder:/var/lib/mysql mysql:8.0'
 
-1: Create folder on host machine
-2: Bind folder to the container
-3: 'docker run --name mysql -v <host-folder> : <var/lib/mysql> Mysql.0'
+----------------------------------------------------------------------------------------------------------------------------------------------\
 
-----------------------------------------------------------------------------------------------------------------------------------------------
+Volumes vs Bind Mounts:
+    Docker Volume  → Docker manages location → production, DB data
+    Bind Mount     → You choose location → local dev, quick testing
+
+----------------------------------------------------------------------------------------------------------------------------------------------\

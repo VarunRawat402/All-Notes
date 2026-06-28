@@ -1,58 +1,55 @@
 ----------------------------------------------------------------------------------------------------------------------------------------------
-Network:
+Docker Networking:
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
-→ Used to communicate between containers
-→ Use container names instead of IP address
-→ Isolated from external system
+→ Allows containers to communicate with each other
+→ Use container names instead of IP addresses (IPs change on restart)
+→ Isolated from external systems by default
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 1: Bridge Network (Default):
-    'docker run --network=bridge ubuntu'
+    → Containers get internal IPs, isolated from host
+    → Containers can talk to each other via IP
+    → Port mapping required to access from outside
+    → Good security
 
-→ Use internal IPs to communicate
-→ Containers are isolated from host
-→ Port-mapping is required
-→ Provides good security.
+'docker run --network=bridge ubuntu'
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Host Network:
-    'docker run --network=host ubuntu'
+    → Container shares host machine's network directly
+    → No port mapping needed
+    → Better performance but less isolation
 
-→ Containers use host network
-→ No Port-mapping
-→ Better performance but Less isolation
+'docker run --network=host ubuntu'
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 3: None Network:
-    'docker run --network=none ubuntu'
+    → No network at all
+    → Container completely isolated, cant talk to anything
 
-→ No network connectivity.
-→ Cannot communicate with Host or other containers
+'docker run --network=none ubuntu'
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 4: Custom Network:
+    → Containers communicate using container NAMES (not IPs)
+    → Better isolation than default bridge
+    → All containers on same custom network can find each other by name
 
-→ Use container names to communicate
-→ Better isolation than default bridge
-
-'docker create network lbms-network -d bridge'
-    → Creates user-defined bridge network
-
-'docker run --network=lbms-network user-service'
-    → Run container in custom network
+'docker network create lbms-network -d bridge'    → create custom network
+'docker run --network=lbms-network user-service'  → run container in it
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 Port Mapping:
 
-→ Your application runs on application port, 8000
-→ When your application runs inside container, you cannot directly use the port
-→ You need to map the application port to host port to use it
+→ App runs inside container on application port, 8000
+→ When your application runs inside container, you cant access it directly from outside
+→ You need to map the application port to host port
 
 'docker run -it -p 6000:8000 user-service:latest'
     → App port    - 8000
@@ -61,13 +58,14 @@ Port Mapping:
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 Environmental variables:
-    → Used to configure application properties at runtime
+    → Pass config values to container at runtime
+    → Avoids hardcoding values in application
 
-'docker run -it -e key=value <application-name>'
+'docker run -it -e PORT=8000 user-service'
+    → application.properties: server.port=${PORT}
+    → Port value injected at runtime ✅
 
-Ex:
-    → server.port=${PORT}
-    → docker run -it -e PORT=8000 user-service
-    → Port value is passed at runtime
+'docker run -it -e DB_URL=jdbc:mysql://db:3306/mydb user-service'
+    → pass DB URL, credentials etc same way
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
