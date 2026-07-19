@@ -3,9 +3,9 @@ Docker Basics:
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 Image:
-
-→ Packs snapshot of application includes : code + runtime + libraries + dependencies
-→ Guarantees app runs the same on every machine
+    → Snapshot of application
+    → Includes : code + runtime + libraries + dependencies
+    → Guarantees app runs the same on every machine
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -18,9 +18,9 @@ Container:
 How to Dockerize a Spring Boot App:
 
 1: Create docker file 
-2: mvn clean install                    //Create JAR
-3: docker build -t <image-name> .       //Build Docker image
-4: docker run -it <image-name>          //Run the image in container
+2: mvn clean install                      //Create JAR
+3: docker build -t 'image-name>' .        //Build Docker image
+4: docker run -it 'image-name'            //Run the image in container
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 

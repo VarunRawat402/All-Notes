@@ -3,7 +3,7 @@ Docker Volumes:
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
 → Container data is temporary
-→ Container stops/crashes/removed → data lost
+→ If Container stops/crashes/removed → data lost
 → Persistent storage
 → Use for: DB data, shared logs, file uploads
 
