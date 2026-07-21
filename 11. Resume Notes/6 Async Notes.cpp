@@ -1,9 +1,11 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------
-ASYNC Notes:
+Async — Spring Boot
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 @Async: 
     → It is used to run a method asynchronously
+    → Runs a method in a separate thread — caller does not wait for it to finish.
+    → Used to offload non-blocking work (emails, logs, OTPs, heavy processing).
 
 Implementation:
 1: Create a Async Class, Add @Configuration and @EnableAsync Annotation
@@ -31,6 +33,12 @@ public class AsyncConfig {
     }
 }
 
+Thread lifecycle:
+    → Incoming task → assign to core thread (up to 5)
+    → Core threads full → queue the task (up to 20)
+    → Queue full → create extra threads (up to max 10)
+    → Max threads + queue full → task rejected
+
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 2: Service Class:
@@ -38,41 +46,43 @@ public class AsyncConfig {
 @Service
 public class BackgroundService {
 
+    // Fire-and-forget — caller doesn't wait for result
     @Async("taskExecutor")
     public void sendOtp(String phone) {
-        //Send OTP
+        // send OTP logic
     }
 
     @Async("taskExecutor")
     public void logUserActivity(String userId) {
-        //Log Data
+        // logging logic
     }
 
+    // Returns a future — caller can wait for result if needed
     @Async("taskExecutor")
     public CompletableFuture<String> processData() throws InterruptedException {
-        Thread.sleep(2000); // heavy work
+        Thread.sleep(2000); // simulate heavy work
         return CompletableFuture.completedFuture("done");
     }
-
-    String result = service.processData().get();  // waits
 }
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------\
 
-→ Sequential message processing to parallel consumption
-→ By processing messages faster, consumer lag reduced, which directly lowered end-to-end event latency.
+ASYNC + KAFKA (Consumer Lag Problem)
 
-→ If the @KafkaListener performs heavy operations (DB calls, external API calls, long computations):
-→ The consumer thread becomes busy and blocked.
+Problem — Blocking Kafka Consumer Thread:
+    → Each @KafkaListener runs on a consumer thread assigned to a partition.
+    → If the listener does heavy work (DB calls, API calls, long computation),
+      that thread is blocked for the duration.
 
-While the thread is busy:
-    → New messages for that partition cannot be processed
-    → Messages start waiting in Kafka
+While the thread is blocked:
+    → New messages on that partition cannot be consumed.
+    → Messages pile up in Kafka.
+    → Consumer lag increases → end-to-end latency spikes → throughput drops.
 
-This leads to:
-    → Consumer lag increase
-    → Higher end-to-end latency
-    → Slower system throughput
+Fix — Offload heavy work to async:
+    → @KafkaListener receives the message (fast, non-blocking).
+    → Hands off the heavy processing to @Async method immediately.
+    → Consumer thread is freed to pick up the next message right away.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
