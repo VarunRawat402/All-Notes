@@ -6,7 +6,7 @@ Abstraction:
 
     → Contains normal + static + abstract methods
     → Contains instance + static variables
-    → Contains constructor to initialize instance variables
+    → Contains Constructor to initialize instance variables
     → Multiple inheritance not supported
     → Can override abstract + default methods
     → Cannot override static methods
@@ -54,6 +54,7 @@ class CreditCard {
         System.out.println("Payment by Credit Card");
     } 
 }
+
 class UPI { 
     void pay(){ 
         System.out.println("Payment by UPI"); 

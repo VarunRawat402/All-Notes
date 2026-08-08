@@ -6,14 +6,10 @@ Monolithic Architecture :
 → Application where all components (UI, business logic, database access) are built and deployed as a single unit.
 → Spring Boot app handling users, orders, payments in one codebase.
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Advantages:
     → Simple to build and deploy
     → Easy debugging (everything in one place)
     → Low complexity (no service-to-service calls)
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Disadvantages:
     → Cannot scale specific parts (scale whole app only)
@@ -28,15 +24,11 @@ Microservices Architecture:
 → Each service is independently deployable and scalable
 → Example: User Service, Order Service, Payment Service
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 Advantages:
     → Independent development and deployment
     → Easy scaling (scale only required service)
     → Loose coupling (changes don’t affect other services)
     → Technology flexibility (different tech per service)
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Disadvantages:
     → High complexity (network calls, APIs, service discovery)

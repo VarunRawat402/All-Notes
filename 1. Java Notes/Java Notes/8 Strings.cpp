@@ -36,9 +36,9 @@ Strings:
 
 4: HashMap Working:
 
-→ hashCode()    → converts key into hashcode.
-→ Calculates bucket Index using hashcode
-→ Inside bucket → .equals() is used to find exact key between multiple keys
+→ Converts the key into hashcode using hashCode()
+→ Calculates bucket index using hashcode
+→ Inside the bucket → .equals() is used to find exact key between multiple keys
 
 If String were mutable:
 → Value changes → hashcode changes → different bucket

@@ -48,15 +48,15 @@ Access Modifiers:
     → Same method name, different parameters
 
 Ex:
-    public class Calculator {
-        public int add(int a, int b) {
-            return a + b;
-        }
-
-        public int add(int a, int b, int c) {
-            return a + b + c;
-        }
+public class Calculator {
+    public int add(int a, int b) {
+        return a + b;
     }
+
+    public int add(int a, int b, int c) {
+        return a + b + c;
+    }
+}
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -65,21 +65,21 @@ Ex:
     → The method call is decided at runtime based on the object type.
 
 Ex:
-    public class Animal {
-        public void makeSound() {
-            System.out.println("Some generic sound");
-        }
+public class Animal {
+    public void makeSound() {
+        System.out.println("Some generic sound");
     }
+}
 
-    public class Cat extends Animal {
-        @Override
-        public void makeSound() {
-            System.out.println("Meow");
-        }
+public class Cat extends Animal {
+    @Override
+    public void makeSound() {
+        System.out.println("Meow");
     }
+}
 
-    Animal cat = new Cat();
-    cat.makeSound();            // Calls Cat's makeSound() method
+Animal cat = new Cat();
+cat.makeSound();            // Calls Cat's makeSound() method
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 INHERITANCE:

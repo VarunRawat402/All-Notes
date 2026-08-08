@@ -61,6 +61,28 @@ What Causes Memory Leaks:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
+What is Garbage Collection:
+    → It automatically removes objects with no reference from heap memory.
+    → If no reference of objects → eligible for Garbage collection
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+How do you ensure Garbage Collection is working correctly:
+    → Avoid memory leaks ( remove references of objects when no need )
+    → Heap usage is stable over time
+    → Monitor via VisualVM / JConsole
+    → Check GC logs
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+How do you debug OutOfMemoryError:
+    → Read error: tells which memory area is full
+    → Take heap dump: -XX:+HeapDumpOnOutOfMemoryError
+    → Analyze with Eclipse MAT or VisualVM
+    → Look for leaked objects
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 DB is Slow - Debugging Steps:
 
 1. Confirm DB is the bottleneck:

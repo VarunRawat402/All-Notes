@@ -21,9 +21,9 @@ Branching:
 
 3: 'git checkout feature/loginPage'             → Switch to feature branch
 
-4: 'git branch -d user'                         → Deletes local branch if its merged
+4: 'git branch -d feature/loginPage'            → Deletes local branch if its merged
 
-5: 'git branch -D user'                         → Deletes local branch even if its not merged
+5: 'git branch -D feature/loginPage'            → Deletes local branch even if its not merged
 
 6: 'git branch -m <new-name>'                   → Rename current branch
 
@@ -32,7 +32,6 @@ Branching:
 ------------------------------------------------------------------------------------------------------------------------
 
 Remote Repositories Operations:
-
 
 1: 'git remote add origin <repository-url>'         → link local repo to GitHub
 
@@ -67,7 +66,7 @@ Example:
 Example:
     'git checkout feature/login'
     'git fetch origin'
-    'git rebase origin/dev'
+    'git rebase origin/dev'             // brings dev changes into feature branch
 
 ------------------------------------------------------------------------------------------------------------------------
 

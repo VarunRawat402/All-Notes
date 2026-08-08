@@ -20,11 +20,11 @@ Exception Handling:
 
 1. Try-Catch Block:
 
-    try {
-        int result = 10 / 0;
-    } catch (ArithmeticException e) {
-        System.out.println("Cannot divide by zero!");
-    }
+try {
+    int result = 10 / 0;
+} catch (ArithmeticException e) {
+    System.out.println("Cannot divide by zero!");
+}
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -37,13 +37,7 @@ Exception Handling:
 
 3: Throw Keyword:
     → Used to manually throw an exception inside a method.
-
-Ex:
-public void checkAge(int age) {
-    if (age < 18) {
-        throw new IllegalArgumentException("You must be 18 or older.");
-    }
-}
+    → throw new IllegalArgumentException("You must be 18 or older.");
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 

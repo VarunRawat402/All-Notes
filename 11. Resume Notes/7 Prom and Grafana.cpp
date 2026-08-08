@@ -25,10 +25,11 @@ scrape_configs:
           application: "Spring boot Service"
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
-Actuator Endpoint:
-    management.endpoints.web.exposure.include=*
-------------------------------------------------------------------------------------------------------------------------------------------------
 
+Actuator Endpoint:
+  management.endpoints.web.exposure.include=*
+
+------------------------------------------------------------------------------------------------------------------------------------------------
 
 //Consumer Service Configuration of Kafka:
 //This is used to map the kafka json event to java class automatically
@@ -42,4 +43,4 @@ spring.kafka.consumer.properties.spring.json.type.mapping = txncreation:com.exam
 //This will automatically add typeId = txnupdate in the json data
 spring.kafka.producer.properties.spring.json.type.mapping=txnupdate:com.example.wallet.wallet.kafkaUtil.TxnUpdate
 
-1------------------------------------------------------------------------------------------------------------------------------------------------444
+------------------------------------------------------------------------------------------------------------------------------------------------
